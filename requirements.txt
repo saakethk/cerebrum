@@ -1,3 +1,5 @@
 openbb
 sqlite-utils
 matplotlib
+tensorflow
+scikit-learn

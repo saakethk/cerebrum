@@ -37,20 +37,23 @@ class Data:
         output_df = output.to_dataframe()
         output_df["pct_change"] = output_df["close"].pct_change()
         output_df["forecasted_pct_change"] = output_df["pct_change"].shift(-1)
-        output_df["encoded_pct_change"] = output_df["pct_change"] > 0
+        output_df["encoded_direction"] = output_df["pct_change"] > 0
+        output_df["encoded_strength"] = ((output_df["pct_change"].abs() - output_df["pct_change"].mean()) * 100).round()
+        output_df["encoded_vector_val"] = output_df["encoded_strength"] * output_df["encoded_direction"].map({True: 1, False: -1})
         Database.create_table(dataframe=output_df, table_name=symbol)
-    
+        
 class Analysis:
     
     @staticmethod
     def visualize_data(symbol: str) -> None:
         df = Database.get_table(table_name=symbol)
         df.index = pd.to_datetime(df["date"], format='mixed')
-        plt.plot(df.index, df["encoded_pct_change"])
+        plt.plot(df.index, df["encoded_vector_val"])
         plt.show()
-        
 
 if __name__ == "__main__":
-    # Data.get_price_data(symbol="META")
-    Analysis.visualize_data("META")
+    interest_stocks = ["NVDA", "GOOGL", "AAPL", "MSFT", "AMZN", "META"]
+    for stock in interest_stocks:
+        Data.get_price_data(symbol=stock)
+    # Analysis.visualize_data("META")
 
