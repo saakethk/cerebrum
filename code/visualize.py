@@ -32,6 +32,7 @@ app.layout = [
                 "margin-bottom": "0.5em"}),
             dcc.Graph(id="price_graph", style={"height": "300px", "padding": "0px"}),
             dcc.Graph(id="percent_graph", style={"height": "300px", "padding": "0px"}),
+            dcc.Graph(id="volume_graph", style={"height": "300px", "padding": "0px"}),
             html.Div(
                 children=[
                     html.Div(
@@ -51,10 +52,6 @@ app.layout = [
         ],
         style={"width": "100%", "max-width": "700px", "margin": "auto"}
     )
-    # dag.AgGrid(
-    #     rowData=data_subset.to_dict('records'),
-    #     columnDefs=[{"field": i} for i in data_subset.columns]
-    # ),
 ]
 
 @app.callback(
@@ -63,6 +60,7 @@ app.layout = [
     Output('num_correct', 'data'),
     Output('price_graph', 'figure'),
     Output('percent_graph', 'figure'),
+    Output('volume_graph', 'figure'),
     State('num_correct', 'data'),
     Input('buy_btn', 'n_clicks'),
     Input('sell_btn', 'n_clicks'),
@@ -73,6 +71,7 @@ def update_graph(num_correct, b_clicks, s_clicks, h_clicks):
     data_subset, expected_val = get_rand_dataset(data=stock_data, seq_size=7)
     price_fig = px.line(data_subset, x="date", y="close", title="Price Graph", template="plotly_dark")
     percent_fig = px.line(data_subset, x="date", y="pct_change", title="% Change Graph", template="plotly_dark")
+    volume_fig = px.bar(data_subset, x="date", y="volume", title="Volume", template="plotly_dark")
     new_num_correct = num_correct
     total_clicks = b_clicks + s_clicks + h_clicks
     message = "You were wrong."
@@ -88,7 +87,7 @@ def update_graph(num_correct, b_clicks, s_clicks, h_clicks):
         # Hold the stock
         message = "Hold was correct."
         new_num_correct += 1
-    return message, f"Num_Correct: {new_num_correct} / {total_clicks} (Accuracy: {(new_num_correct / total_clicks if total_clicks != 0 else 0) * 100}%)", new_num_correct, price_fig, percent_fig
+    return message, f"Num_Correct: {new_num_correct} / {total_clicks} (Accuracy: {(new_num_correct / total_clicks if total_clicks != 0 else 0) * 100}%)", new_num_correct, price_fig, percent_fig, volume_fig
 
 if __name__ == '__main__':
     app.run(debug=True)
