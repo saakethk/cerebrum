@@ -9,17 +9,10 @@ from data import Data
 
 app = Dash()
 
-def get_rand_dataset(data: pd.DataFrame, seq_size: int) -> tuple[pd.DataFrame, pd.Series]:
-    # Returns the random sample from the data and the actual percent change the next day 
-    total_len: int = len(data)
-    start_index = randint(0, total_len - seq_size - 2)
-    seq = data.iloc[start_index : start_index + seq_size + 1]
-    return seq[:seq_size], seq.iloc[-1]
-
-stock_data = Data.get_price_data("AAPL")
-data_subset, expected_val = get_rand_dataset(data=stock_data, seq_size=7)
+data_subset, expected_val = Data.get_subset(symbol="AAPL", seq_size=7)
 
 app.layout = [
+    dcc.Store(id="points", data=0),
     dcc.Store(id="num_correct", data=0),
     html.Div(
         children=[
@@ -67,8 +60,7 @@ app.layout = [
     Input('hold_btn', 'n_clicks')
 )
 def update_graph(num_correct, b_clicks, s_clicks, h_clicks):
-    stock_data = Data.get_price_data("AAPL")
-    data_subset, expected_val = get_rand_dataset(data=stock_data, seq_size=7)
+    data_subset, expected_val = Data.get_subset(symbol="AAPL", seq_size=7)
     price_fig = px.line(data_subset, x="date", y="close", title="Price Graph", template="plotly_dark")
     percent_fig = px.line(data_subset, x="date", y="pct_change", title="% Change Graph", template="plotly_dark")
     volume_fig = px.bar(data_subset, x="date", y="volume", title="Volume", template="plotly_dark")

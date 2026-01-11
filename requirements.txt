@@ -2,6 +2,10 @@ openbb
 sqlite-utils
 matplotlib
 tensorflow
+tf-nightly
 scikit-learn
 dash
 dash-ag-grid
+tf-agents[reverb]
+tf-keras
+# keras==2.9.0 

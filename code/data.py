@@ -3,6 +3,7 @@ from openbb import obb
 import pandas as pd
 import sqlite3
 import sqlite_utils
+from random import randint
 
 class Database:
     # Ref: https://docs.python.org/3/library/sqlite3.html
@@ -33,7 +34,7 @@ class Data:
     @staticmethod
     def cache_price_data(symbol: str) -> None:
         # Ref: https://docs.openbb.co/python/reference
-        output = obb.equity.price.historical(symbol=symbol, start_date="1901-12-31", end_date="2026-01-01", interval="1d", provider="yfinance")
+        output = obb.equity.price.historical(symbol=symbol, start_date="1901-12-31", end_date="2026-01-01", interval="1d", provider="yfinance") # type: ignore
         output_df = output.to_dataframe()
         output_df["pct_change"] = output_df["close"].pct_change()
         output_df["encoded_direction"] = output_df["pct_change"] > 0
@@ -50,10 +51,18 @@ class Data:
         if symbol not in tables:
             Data.cache_price_data(symbol=symbol)
         return Database.get_table(table_name=symbol)
+    
+    @staticmethod
+    def get_subset(symbol: str, seq_size: int) -> tuple[pd.DataFrame, pd.Series]:
+        # Returns the random sample from the data and the actual percent change the next day
+        data: pd.DataFrame = Data.get_price_data(symbol)
+        total_len: int = len(data)
+        start_index = randint(0, total_len - seq_size - 2)
+        seq = data.iloc[start_index : start_index + seq_size + 1]
+        return seq[:seq_size], seq.iloc[-1]
 
 if __name__ == "__main__":
     interest_stocks = ["NVDA", "GOOGL", "AAPL", "MSFT", "AMZN", "META"]
     for stock in interest_stocks:
         Data.get_price_data(symbol=stock)
-    # Analysis.visualize_data("META")
 
