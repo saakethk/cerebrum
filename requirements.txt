@@ -3,3 +3,5 @@ sqlite-utils
 matplotlib
 tensorflow
 scikit-learn
+dash
+dash-ag-grid
