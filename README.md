@@ -1,5 +1,5 @@
 # cerebrum
-The machine learning framework for creating effective stock trading decisions.
+An attempt at using machine learning to build a technical trading model.
 
 ## Sources
 - 
