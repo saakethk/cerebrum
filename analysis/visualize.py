@@ -1,4 +1,4 @@
-""" Visualize the environment for reinforcement learning """
+""" Visualize the data for model """
 from dash import Dash, html, dcc, Output, Input, ctx, State
 import dash_ag_grid as dag
 import plotly.express as px
