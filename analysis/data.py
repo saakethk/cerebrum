@@ -36,13 +36,6 @@ class Data:
         # Ref: https://docs.openbb.co/python/reference
         output = obb.equity.price.historical(symbol=symbol, start_date="1901-12-31", end_date="2026-01-01", interval="1d", provider="yfinance") # type: ignore
         output_df = output.to_dataframe()
-        # output_df["pct_change"] = output_df["close"].pct_change()
-        # output_df["encoded_direction"] = output_df["pct_change"] > 0
-        # output_df["encoded_strength"] = ((output_df["pct_change"].abs() - output_df["pct_change"].mean()) * 100).round()
-        # output_df["encoded_vector_val"] = output_df["encoded_strength"] * output_df["encoded_direction"].map({True: 1, False: -1})
-        # output_df["encoded_buy"] = output_df["encoded_vector_val"] > 1
-        # output_df["encoded_sell"] = output_df["encoded_vector_val"] < -1
-        # output_df["encoded_hold"] = (output_df["encoded_buy"] == 0) & (output_df["encoded_sell"] == 0)
         Database.create_table(dataframe=output_df, table_name=symbol)
 
     @staticmethod

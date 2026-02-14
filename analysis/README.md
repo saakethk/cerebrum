@@ -12,3 +12,11 @@ This document is for me to list key finding I come across during exploratory ana
   - Idea is to first predict days on which significant price changes will occur
     - Create model to classify whether conditions on these significant price days will lead to a buy or sell
     - Can also have model which just predicts if price will go up or down tommorow
+
+- For data processing tslearn has a more efficient implementation of what I manually implemented
+  - Time Series Scaler Mean Variance
+    - Z-score based scaler
+      - Default: mean = 0, standard deviation = 1
+  - For clustering there are two types for long term clustering
+    - Static (Set window) - What I did in clustering.ipynb
+    - Rolling window (Tests multiple windows and shows changes in grouping over time)
