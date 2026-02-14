@@ -20,3 +20,12 @@ This document is for me to list key finding I come across during exploratory ana
   - For clustering there are two types for long term clustering
     - Static (Set window) - What I did in clustering.ipynb
     - Rolling window (Tests multiple windows and shows changes in grouping over time)
+  - Metric to measure similarity: https://www.geeksforgeeks.org/machine-learning/dynamic-time-warping-dtw-in-time-series/
+
+- Regime detection is process of identifying distinct states in market
+  - Regime Detection: https://medium.com/lseg-developer-community/market-regime-detection-using-statistical-and-ml-based-approaches-b4c27e7efc8b
+  - Computing cross sectional entropy can help us to distinguish whether market is ordered or unordered
+    - Indicates whether clusters are evenly distributed or unevenely distributed
+      - Even distribution indicates unordered distribution
+      - Uneven distribution indicates ordered distribution
+  
