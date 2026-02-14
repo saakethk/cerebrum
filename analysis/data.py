@@ -53,6 +53,19 @@ class Data:
         return Database.get_table(table_name=symbol)
     
     @staticmethod
+    def get_price_data_multiple(symbols: list[str], length: int) -> pd.DataFrame:
+        # Length is the number of past days to get for each stock
+        all_data: pd.DataFrame = pd.DataFrame()
+        for symbol in symbols:
+            stock_data = Data.get_price_data(symbol=symbol)[-length - 1:] # -1 is for dropna
+            stock_data["symbol"] = symbol
+            stock_data["day_returns"] = stock_data["close"].pct_change()
+            stock_data = stock_data.dropna()
+            stock_data = stock_data[["date", "symbol", "day_returns"]]
+            all_data = pd.concat([all_data, stock_data], ignore_index=True)
+        return all_data
+        
+    @staticmethod
     def get_subset(symbol: str, seq_size: int) -> tuple[pd.DataFrame, pd.Series]:
         # Returns the random sample from the data and the actual percent change the next day
         data: pd.DataFrame = Data.get_price_data(symbol)
@@ -63,6 +76,7 @@ class Data:
 
 if __name__ == "__main__":
     interest_stocks = ["NVDA", "GOOGL", "AAPL", "MSFT", "AMZN", "META"]
-    for stock in interest_stocks:
-        print(Data.get_price_data(symbol=stock))
+    # for stock in interest_stocks:
+    #     print(Data.get_price_data(symbol=stock))
+    print(Data.get_price_data_multiple(symbols=interest_stocks, length=250))
 
