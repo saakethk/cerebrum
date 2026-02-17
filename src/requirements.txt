@@ -3,3 +3,4 @@ setuptools
 openbb
 polars
 pyarrow
+mkdocstrings-python
