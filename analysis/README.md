@@ -28,4 +28,7 @@ This document is for me to list key finding I come across during exploratory ana
     - Indicates whether clusters are evenly distributed or unevenely distributed
       - Even distribution indicates unordered distribution
       - Uneven distribution indicates ordered distribution
+
+- Rolling Analysis on 422 stocks takes a long time
+  - Needs to be optimized
   

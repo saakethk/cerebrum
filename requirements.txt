@@ -9,3 +9,4 @@ dash-ag-grid
 tf-agents[reverb]
 tf-keras
 # keras==2.9.0 
+tqdm

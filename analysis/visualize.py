@@ -5,7 +5,7 @@ import plotly.express as px
 import pandas as pd
 from random import randint
 
-from data import Data
+from analysis.data import Data
 
 app = Dash()
 

@@ -25,7 +25,7 @@ class Database:
     def get_table(table_name: str) -> pd.DataFrame:
         # Ref: https://datacarpentry.github.io/python-ecology-lesson/instructor/09-working-with-sql.html
         connection = sqlite3.connect(Database.DATABASE_LOC)
-        df = pd.read_sql_query(f"SELECT * from {table_name}", connection)
+        df = pd.read_sql_query(f"SELECT * from '{table_name}'", connection)
         df.index = pd.to_datetime(df["date"], format='mixed')
         connection.close()
         return df
@@ -38,6 +38,10 @@ class Data:
         output = obb.equity.price.historical(symbol=symbol, start_date="1901-12-31", end_date="2026-01-01", interval="1d", provider="yfinance") # type: ignore
         output_df = output.to_dataframe()
         Database.create_table(dataframe=output_df, table_name=symbol)
+
+    @staticmethod
+    def get_cached_symbols() -> list[str]:
+        return Database.get_tables()
 
     @staticmethod
     def get_relevant_symbols(filename: str) -> list[str]:
@@ -73,7 +77,7 @@ class Data:
     def get_symbols_returns(symbols: list[str], length: int) -> pd.DataFrame:
         # Length is the number of past days to get for each stock
         all_data: pd.DataFrame = pd.DataFrame()
-        for symbol in tqdm(symbols):
+        for symbol in tqdm(symbols, desc="Downloading Data"):
             try:
                 stock_data = Data.get_symbol_returns(symbol=symbol)[-length:]
                 all_data = pd.concat([all_data, stock_data], ignore_index=True)
@@ -87,6 +91,8 @@ class Data:
         # Returns wide version of get_prices_data
         data = Data.get_symbols_returns(symbols=symbols, length=length)
         pivot = data.pivot(index="symbol", columns="date", values="day_returns")
+        pivot = pivot.ffill()
+        pivot = pivot.dropna(axis=1)
         return pivot
         
     @staticmethod
