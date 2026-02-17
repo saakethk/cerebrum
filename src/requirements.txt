@@ -1,1 +1,5 @@
 mkdocs-material
+setuptools
+openbb
+polars
+pyarrow
