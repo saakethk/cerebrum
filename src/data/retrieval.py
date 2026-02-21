@@ -1,5 +1,4 @@
 """ All the code necessary to get stock data """
-from abc import ABC
 from datetime import datetime, timedelta
 from openbb import obb
 import polars as pl
@@ -36,8 +35,8 @@ class Source:
     
 class YFinance(Source):
     
-    def get_tickers(self, symbol: str, start_date: datetime, 
-                    end_date: datetime, frequency: str) -> pl.DataFrame:
+    def get_tickers(self, symbol: str, start_date: datetime = (datetime.now() - timedelta(days=(365 * 100))), 
+                    end_date: datetime = datetime.now(), frequency: str = "1d") -> pl.DataFrame:
         """
         Docstring for get_tickers
         
@@ -58,7 +57,7 @@ class YFinance(Source):
 if __name__ == "__main__":
     end_date = datetime.now()
     start_date = end_date - timedelta(days=365)
-    print(YFinance().get_tickers(symbol="AAPL", start_date=start_date, end_date=end_date, frequency="1d"))
+    print(YFinance().get_tickers(symbol="AAPL"))
 
 
 

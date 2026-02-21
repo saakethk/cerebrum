@@ -4,6 +4,7 @@ A python library designed to make getting years of stock data and caching it loc
 # Key Dependencies
 - https://docs.openbb.co/odp/python
 - https://docs.pola.rs/user-guide/getting-started/#installing-polars
+- https://duckdb.org
 
 
 

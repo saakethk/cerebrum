@@ -4,3 +4,4 @@ openbb
 polars
 pyarrow
 mkdocstrings-python
+duckdb
