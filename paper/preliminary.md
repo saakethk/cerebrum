@@ -4,3 +4,11 @@
 - Time series embedding
   - https://arxiv.org/html/2511.18578v1#S2
   - https://github.com/google-research/timesfm
+- Benchmarks
+  - FinBen: A comprehensive benchmark with 24 financial tasks and 42 datasets, used for evaluating AI performance.
+  - FinanceQA: A benchmark focused on evaluating the financial analysis capabilities of large language models.
+  - FinMaster: Covers full-pipeline financial workflows to test reasoning and accuracy, with benchmarks for tasks, including complex scenarios.
+  - MME-Finance: A multimodal benchmark (1,171 English, 1,103 Chinese questions) for evaluating AI in analyzing financial charts and images.
+  - SECQUE: A benchmark for evaluating real-world financial analysis capabilities. 
+- Random walk theory
+- Monte Carlo & Markov Chain

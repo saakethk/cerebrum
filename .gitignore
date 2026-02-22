@@ -1,5 +1,4 @@
 /venv
-/.ruff_cache
-/__pycache__
-*/__pycache__
-/analysis/.ruff_cache
+*.ruff_cache
+*__pycache__
+*env
