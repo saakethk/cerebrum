@@ -5,6 +5,7 @@ from data.connector import *
 from data.retrieval import *
 
 class TestData(unittest.TestCase):
+  db_file: str = "data/duck.db"
   
   def test_yfinance_retrieval(self):
     source = YFinance()
@@ -12,16 +13,20 @@ class TestData(unittest.TestCase):
     self.assertNotEqual(len(data), 0)
 
   def test_retrieve_data(self):
-    conn = DuckDB()
+    conn = DuckDB(path=self.db_file)
     source = YFinance()
     data = source.get_tickers(symbol="AAPL")
     self.assertNotEqual(len(data), 0)
     conn.create_table(table_name="AAPL", data=data)
     results = conn.retrieve_all("AAPL")
     self.assertNotEqual(len(results), 0)
+
+  def test_db_existence(self):
+    conn = DuckDB(path=self.db_file)
+    self.assertNotEqual(len(conn.get_tables().to_dicts()), 0)
   
   def test_connector(self):
-    conn = DuckDB()
+    conn = DuckDB(path=self.db_file)
     source = YFinance()
     data = source.get_tickers(symbol="AAPL")
     all_results = conn.retrieve_all("AAPL")

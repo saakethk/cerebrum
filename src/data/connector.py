@@ -39,6 +39,10 @@ class DuckDB(Database):
     self.path = self.check_path(path)
     self.conn = duckdb.connect(database=self.path)
 
+  def get_tables(self) -> pl.DataFrame:
+    query: str = f"SHOW TABLES"
+    return self.conn.execute(query).pl()
+
   def create_table(self, table_name: str, data: pl.DataFrame) -> None:
     query: str = f"CREATE TABLE IF NOT EXISTS {table_name} AS SELECT * from data"
     self.conn.execute(query)
@@ -75,4 +79,5 @@ class DuckDB(Database):
   def retrieve_all(self, table_name: str) -> pl.DataFrame:
     query: str = f"SELECT * FROM {table_name}"
     return self.conn.sql(query).pl()
+
   
