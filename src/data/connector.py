@@ -15,6 +15,9 @@ class Database(ABC):
       os.makedirs(dir, exist_ok=True)
     return path
   
+  def get_tables(self) -> pl.DataFrame:
+    return pl.DataFrame()
+  
   def create_table(self, table_name: str, data: pl.DataFrame) -> None:
     return None
 
@@ -28,6 +31,9 @@ class Database(ABC):
     return pl.DataFrame()
 
   def retrieve_last(self, table_name: str) -> dict:
+    return {}
+  
+  def retrieve_first(self, table_name: str) -> dict:
     return {}
 
   def retrieve_all(self, table_name: str) -> pl.DataFrame:
@@ -70,6 +76,14 @@ class DuckDB(Database):
   
   def retrieve_last(self, table_name: str) -> dict:
     query: str = f"SELECT * FROM {table_name} ORDER BY date DESC LIMIT 1"
+    result: dict = self.conn.sql(query).fetchnumpy()
+    last_item: dict = {}
+    for key, value in result.items():
+      last_item[key] = value[-1]
+    return last_item
+  
+  def retrieve_first(self, table_name: str) -> dict:
+    query: str = f"SELECT * FROM {table_name} ORDER BY date LIMIT 1"
     result: dict = self.conn.sql(query).fetchnumpy()
     last_item: dict = {}
     for key, value in result.items():
