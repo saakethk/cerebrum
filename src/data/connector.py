@@ -100,7 +100,7 @@ class DuckDB(Database):
     return last_item
   
   def retrieve_all(self, table_name: str) -> pl.DataFrame:
-    query: str = f"SELECT * FROM {table_name}"
+    query: str = f"SELECT * FROM {table_name} ORDER BY date"
     return self.conn.sql(query).pl()
 
   
