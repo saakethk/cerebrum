@@ -38,6 +38,9 @@ class Database(ABC):
 
   def retrieve_all(self, table_name: str) -> pl.DataFrame:
     return pl.DataFrame()
+  
+  def delete_all(self, table_name: str) -> None:
+    return None
 
 class DuckDB(Database):
 
@@ -102,5 +105,8 @@ class DuckDB(Database):
   def retrieve_all(self, table_name: str) -> pl.DataFrame:
     query: str = f"SELECT * FROM {table_name} ORDER BY date"
     return self.conn.sql(query).pl()
+  
+  def delete_all(self, table_name: str) -> None:
+    return super().delete_all(table_name)
 
   
