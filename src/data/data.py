@@ -30,19 +30,15 @@ class Data():
 
   def get_data(self, symbol: str, start_date: datetime = (datetime.now() - timedelta(days=(365 * 100))), 
                end_date: datetime = datetime.now(), frequency: str = "1d") -> pl.DataFrame:
+    table: str = f"{symbol}_{frequency}"
     cached_start, cached_end = self.check_cached(symbol=symbol, frequency=frequency)
-    print(cached_start)
-    print(cached_end)
-    if (cached_start == None) and (cached_end == None):
-      # nothing is cached
+    if ((cached_start == None) and (cached_end == None)) or (cached_start == cached_end):
+      # nothing is cached (or one point is cached)
       data: pl.DataFrame = self.data_client.get_tickers(
         symbol=symbol, start_date=start_date,
         end_date=end_date, frequency=frequency)
-    elif (cached_start == cached_end):
-      # one single date is cached
-      data: pl.DataFrame = self.data_client.get_tickers(
-        symbol=symbol, start_date=start_date,
-        end_date=end_date, frequency=frequency)
+      self.db_client.create_table(table_name=table, data=data)
+      return data
     else:
       # there is a range of dates
       data: pl.DataFrame = pl.DataFrame()
@@ -67,14 +63,10 @@ class Data():
     # enforces uniqueness in table
     data = data.unique(subset=["date"], keep="first")
     data = data.sort("date")
-    print(data)
-    # creates table if not exists
-    if (self.is_cached(symbol=symbol, frequency=frequency)):
-      
     # caches data in table
-    self.db_client.create_table(table_name=f"{symbol}_{frequency}", data=data)
+    self.db_client.insert_all(table_name=table, all_data=data.to_dicts())
     return data
   
 if __name__ == "__main__":
-  print(Data().get_data(symbol="GE", start_date=datetime.now() - timedelta(days=365), end_date=datetime.now(), frequency="1d"))
-  print(Data().get_data(symbol="GE"))
+  print(Data().get_data(symbol="", start_date=datetime.now() - timedelta(days=365), end_date=datetime.now(), frequency="1d"))
+  # print(Data().get_data(symbol="TSLA"))

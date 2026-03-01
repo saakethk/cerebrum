@@ -21,7 +21,8 @@
       "alias": "duck",
       "type": "file",
       "path": "/Users/saake/Documents/Personal Development/cerebrum/data/duck.db",
-      "attached": false
+      "attached": false,
+      "readOnly": true
     }
   ],
   "duckdb.defaultDatabase": "duck"

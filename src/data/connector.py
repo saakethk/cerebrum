@@ -52,6 +52,7 @@ class DuckDB(Database):
   def create_table(self, table_name: str, data: pl.DataFrame) -> None:
     query: str = f"CREATE TABLE IF NOT EXISTS {table_name} AS SELECT * from data"
     self.conn.execute(query)
+    self.conn.execute(f"ALTER TABLE {table_name} ADD PRIMARY KEY (date)")
 
   def insert(self, table_name: str, data: dict) -> None:
     struct: list = []
@@ -63,7 +64,15 @@ class DuckDB(Database):
         value.append(f"'{str(item)}'")
       else:
         value.append(str(item))
-    query: str = f"INSERT INTO {table_name} ({",".join(struct)}) VALUES ({",".join(value)})"
+    query: str = f"""
+    INSERT INTO {table_name} ({",".join(struct)}) VALUES ({",".join(value)}) ON CONFLICT (date)
+    DO UPDATE SET
+      date = EXCLUDED.date,
+      open = EXCLUDED.open,
+      high = EXCLUDED.high,
+      low = EXCLUDED.low,
+      close = EXCLUDED.close,
+      volume = EXCLUDED.volume;"""
     self.conn.execute(query)
     
   def insert_all(self, table_name: str, all_data: list[dict]) -> None:
