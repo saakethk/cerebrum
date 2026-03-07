@@ -45,9 +45,8 @@ class TestData(unittest.TestCase):
 
   def test_empty_cache(self):
     data = Data()
-    tables = data.
-    conn.delete_all(table_name=)
-
+    data.empty_full_cache()
+    self.assertNotEqual(len(data.get_cached()), 0)
 
 if __name__ == '__main__':
   unittest.main()

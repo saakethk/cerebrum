@@ -3,8 +3,6 @@ import duckdb
 import os
 from abc import ABC
 import polars as pl
-import numpy as np
-from numpy.typing import NDArray
 
 class Database(ABC):
 

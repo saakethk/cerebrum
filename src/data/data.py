@@ -18,6 +18,7 @@ class Data():
       print(msg)
 
   def get_cached(self) -> list[str]:
+    # returns list of already cached data
     table_names = [table["name"] for table in self.db_client.get_tables().to_dicts()]
     return table_names
 
@@ -37,6 +38,24 @@ class Data():
     start_date = start_data["date"]
     end_date = last_data["date"]
     return (start_date.astype(datetime), end_date.astype(datetime))
+  
+  def empty_cache(self, symbol: str, frequency: str) -> bool:
+    # checks bounds of cached data (requires checking before)
+    table: str = f"{symbol}_{frequency}"
+    table_names = self.get_cached()
+    if table not in table_names:
+      return False
+    self.db_client.delete_all(table_name=table)
+    return True
+  
+  def empty_full_cache(self) -> bool:
+    # emptys full cache
+    status = True
+    table_names = self.get_cached()
+    for table in table_names:
+      symbol, frequency = table.split("_")
+      status = status and self.empty_cache(symbol=symbol, frequency=frequency)
+    return status
   
   def get_relevant_date(self, date: datetime, frequency: str):
     # gets relevant part of date
