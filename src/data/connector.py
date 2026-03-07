@@ -107,6 +107,7 @@ class DuckDB(Database):
     return self.conn.sql(query).pl()
   
   def delete_all(self, table_name: str) -> None:
-    return super().delete_all(table_name)
+    query: str = f"DELETE FROM {table_name}"
+    self.conn.execute(query)
 
   

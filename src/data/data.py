@@ -17,10 +17,14 @@ class Data():
     if (self.print_logs):
       print(msg)
 
+  def get_cached(self) -> list[str]:
+    table_names = [table["name"] for table in self.db_client.get_tables().to_dicts()]
+    return table_names
+
   def is_cached(self, symbol: str, frequency: str) -> bool:
     # returns if data is cached at all
     table: str = f"{symbol}_{frequency}"
-    table_names = [table["name"] for table in self.db_client.get_tables().to_dicts()]
+    table_names = self.get_cached()
     if (table in table_names):
       return True
     return False

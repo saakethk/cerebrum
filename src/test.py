@@ -3,6 +3,7 @@ import unittest
 
 from data.connector import *
 from data.retrieval import *
+from data.data import *
 
 class TestData(unittest.TestCase):
   db_file: str = "data/duck.db"
@@ -41,6 +42,11 @@ class TestData(unittest.TestCase):
     conn.insert_all("AAPL", data.to_dicts()[0:5])
     after_results = conn.retrieve_all("AAPL")
     self.assertEqual(len(after_results), len(before_results) + 5)
+
+  def test_empty_cache(self):
+    data = Data()
+    tables = data.
+    conn.delete_all(table_name=)
 
 
 if __name__ == '__main__':
