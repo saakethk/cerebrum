@@ -10,7 +10,7 @@ class Data():
   def __init__(self):
     self.data_client = YFinance()
     self.db_client = DuckDB(path="data/duck.db")
-    self.print_logs = False
+    self.print_logs = True
 
   def log(self, msg: str):
     # for logging caching status
@@ -79,7 +79,7 @@ class Data():
       post_cache_necessary: bool = self.check_post_cache(
         end_date=end_date, cached_date=cached_end, frequency=frequency)
       if (pre_cache_necessary and post_cache_necessary):
-        self.log(f"[cache] retrieved data before from {cached_start} to {start_date}")
+        self.log(f"[cache] retrieved data before from {start_date} to {cached_start}")
         self.log(f"[cache] retrieved data after from {cached_end} to {end_date}")
         pre_start: pl.DataFrame = self.data_client.get_tickers(
           symbol=symbol, start_date=start_date,
@@ -106,5 +106,6 @@ class Data():
 if __name__ == "__main__":
   # print(Data().get_data(symbol="SBUX", start_date=datetime.now() - timedelta(days=365), end_date=datetime.now(), frequency="1d"))
   print(Data().get_data(symbol="SBUX"))
+  # Deal with edge case where start is after start and end is after end
   # print(Data().get_relevant_date(datetime.now(), "1d"))
   # print(Data().get_data(symbol="HLT"))
