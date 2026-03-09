@@ -18,6 +18,10 @@ class Source:
         actions=False)
     return output.to_polars()
   
+  def get_valid_day(self, date: datetime) -> bool:
+    # TODO
+    return False
+  
 class YFinance(Source):
     
   def get_tickers(self, symbol: str, start_date: datetime = (datetime.now() - timedelta(days=(365 * 100))), 
