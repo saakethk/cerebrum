@@ -19,7 +19,7 @@ class Source:
     return output.to_polars()
   
   def get_valid_day(self, date: datetime) -> bool:
-    # TODO
+    # TODO: https://pandas-market-calendars.readthedocs.io/en/latest/usage.html
     return False
   
 class YFinance(Source):
