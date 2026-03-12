@@ -8,13 +8,25 @@ import pandas_market_calendars as mcal
 
 class Source:
 
-  def __init__(self):
+  def __init__(self, print_logs = True):
     self.cached_start = None
     self.cached_end = None
+    self.cached_calendar = mcal.get_calendar('NYSE')
+    self.print_logs = print_logs
+
+  def log(self, msg: str):
+    # for logging caching status
+    if (self.print_logs):
+      print(msg)
+
+  def filter_core(self, data: pd.DataFrame):
+    # gets columns considered core for quantitative trading
+    return data["date", "open", "high", "low", "close", "volume"]
     
   def get_source_tickers(self, symbol: str, start_date: datetime, 
                       end_date: datetime, frequency: str, 
                       source: Literal['fmp', 'intrinio', 'polygon', 'tiingo', 'yfinance']) -> pl.DataFrame:
+    # gets data using openbb (wrapper for its interface)
     self.cached_start = start_date
     self.cached_end = end_date
     output = obb.equity.price.historical( # type: ignore
@@ -26,24 +38,31 @@ class Source:
         actions=False)
     return output.to_polars()
   
-  def get_valid_day(self, date: datetime) -> bool:
+  def check_valid_timestamp(self, timestamp: datetime) -> bool:
     # TODO: https://pandas-market-calendars.readthedocs.io/en/latest/usage.html
-    start: datetime = date
-    end: datetime = date
-    if self.cached_start != None:
-      start = self.cached_start
-    if self.cached_end != None:
-      end = self.cached_end
-
-    nyse = mcal.get_calendar('NYSE')
-    early = nyse.schedule(start_date='2012-07-01', end_date='2012-07-10')
-    nyse.open_at_time(early, pd.Timestamp('2012-07-03 12:00', tz='America/New_York'))
-    return False
+    # for a day to be valid it must be present already and have a date object
+    schedule = self.cached_calendar.schedule( # Can make this more efficient
+      start_date=timestamp.strftime("%Y-%m-%d"), 
+      end_date=timestamp.strftime("%Y-%m-%d"))
+    ts = pd.Timestamp(timestamp, tz="America/New_York")
+    try:
+      return self.cached_calendar.open_at_time(schedule, ts)
+    except Exception as error:
+      self.log("[source] day outside of available period encountered")
+      return False
   
 class YFinance(Source):
     
   def get_tickers(self, symbol: str, start_date: datetime = (datetime.now() - timedelta(days=(365 * 100))), 
                   end_date: datetime = datetime.now(), frequency: str = "1d") -> pl.DataFrame:
-    return super().get_source_tickers(
+    data = super().get_source_tickers(
       symbol=symbol, start_date=start_date, end_date=end_date, 
-      frequency=frequency, source="yfinance")["date", "open", "high", "low", "close", "volume"]
+      frequency=frequency, source="yfinance")
+    return self.filter_core(data=data) #type: ignore
+  
+if __name__ == "__main__":
+  test = YFinance()
+  print(test.get_tickers(symbol="AAPL", frequency="1h"))
+  test_date = datetime.now() - timedelta(days=1, hours=6)
+  print(test_date)
+  print(test.check_valid_timestamp(timestamp=test_date))

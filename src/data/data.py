@@ -2,8 +2,8 @@
 import polars as pl
 from datetime import datetime, timedelta
 
-from connector import DuckDB
-from retrieval import YFinance
+from data.connector import DuckDB
+from data.retrieval import YFinance
 
 class Data():
 
