@@ -6,6 +6,14 @@ import polars as pl
 
 class Database(ABC):
 
+  def __init__(self, print_logs = True):
+    self.print_logs = print_logs
+
+  def log(self, msg: str):
+    # for logging caching status
+    if (self.print_logs):
+      print(msg)
+
   def check_path(self, path: str):
     dir = os.path.dirname(path)
     if dir == None:
@@ -51,6 +59,9 @@ class DuckDB(Database):
     return self.conn.execute(query).pl()
 
   def create_table(self, table_name: str, data: pl.DataFrame) -> None:
+    if (table_name in self.get_tables()):
+      self.log(f"[db] {table_name} already exists in cache")
+      return
     query: str = f"CREATE TABLE IF NOT EXISTS {table_name} AS SELECT * from data"
     self.conn.execute(query)
     self.conn.execute(f"ALTER TABLE {table_name} ADD PRIMARY KEY (date)")
@@ -105,7 +116,7 @@ class DuckDB(Database):
     return self.conn.sql(query).pl()
   
   def delete_all(self, table_name: str) -> None:
-    query: str = f"DELETE FROM {table_name}"
+    query: str = f"DROP TABLE IF EXISTS {table_name}"
     self.conn.execute(query)
 
   

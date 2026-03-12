@@ -39,7 +39,7 @@ class Source:
     return output.to_polars()
   
   def check_valid_timestamp(self, timestamp: datetime) -> bool:
-    # TODO: https://pandas-market-calendars.readthedocs.io/en/latest/usage.html
+    # Src: https://pandas-market-calendars.readthedocs.io/en/latest/usage.html
     # for a day to be valid it must be present already and have a date object
     schedule = self.cached_calendar.schedule( # Can make this more efficient
       start_date=timestamp.strftime("%Y-%m-%d"), 
