@@ -52,6 +52,9 @@ class Source:
       return False
   
 class YFinance(Source):
+
+  def __init__(self):
+    super().__init__()
     
   def get_tickers(self, symbol: str, start_date: datetime = (datetime.now() - timedelta(days=(365 * 100))), 
                   end_date: datetime = datetime.now(), frequency: str = "1d") -> pl.DataFrame:

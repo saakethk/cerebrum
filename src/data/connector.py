@@ -51,6 +51,7 @@ class Database(ABC):
 class DuckDB(Database):
 
   def __init__(self, path: str = "data.duckdb"):
+    super().__init__()
     self.path = self.check_path(path)
     self.conn = duckdb.connect(database=self.path)
 
@@ -69,22 +70,21 @@ class DuckDB(Database):
   def insert(self, table_name: str, data: dict) -> None:
     struct: list = []
     value: list = []
+    update_set_str: list[str] = []
     for key, item in data.items():
       # Finds structure of data
       struct.append(key)
       if type(item) not in [int, float]:
-        value.append(f"'{str(item)}'")
+        val = f"'{str(item)}'"
       else:
-        value.append(str(item))
+        val = f"{str(item)}"
+      # Excluded just means you are updating with new values rather than keeping old
+      update_set_str.append(f"{key} = EXCLUDED.{key}")
+      value.append(val)
     query: str = f"""
     INSERT INTO {table_name} ({",".join(struct)}) VALUES ({",".join(value)}) ON CONFLICT (date)
     DO UPDATE SET
-      date = EXCLUDED.date,
-      open = EXCLUDED.open,
-      high = EXCLUDED.high,
-      low = EXCLUDED.low,
-      close = EXCLUDED.close,
-      volume = EXCLUDED.volume;"""
+      {",".join(update_set_str)};"""
     self.conn.execute(query)
     
   def insert_all(self, table_name: str, all_data: list[dict]) -> None:
@@ -92,8 +92,15 @@ class DuckDB(Database):
       self.insert(table_name=table_name, data=data)
   
   def retrieve(self, table_name: str, key: str, val: str) -> pl.DataFrame:
-    query: str = f"SELECT * FROM {table_name} WHERE {key} = {val}"
-    return self.conn.sql(query).pl()
+    if type(val) == str:
+      val = f"\'{val}\'"
+    query: str = f"SELECT * FROM {table_name} WHERE {key} = {val}" # Has to be single quotes
+    try:
+      return self.conn.sql(query).pl()
+    except Exception as error:
+      print(error)
+      self.log(f"[db] {val} not found in column \"{key}\"")
+      return pl.DataFrame()
   
   def retrieve_last(self, table_name: str) -> dict:
     query: str = f"SELECT * FROM {table_name} ORDER BY date DESC LIMIT 1"
