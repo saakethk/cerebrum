@@ -7,11 +7,11 @@ import polars as pl
 class Database(ABC):
 
   def __init__(self, print_logs = True):
-    self.print_logs = print_logs
+    self.__print_logs = print_logs
 
   def log(self, msg: str):
     # for logging caching status
-    if (self.print_logs):
+    if (self.__print_logs):
       print(msg)
 
   def check_path(self, path: str):
@@ -52,20 +52,20 @@ class DuckDB(Database):
 
   def __init__(self, path: str = "data.duckdb"):
     super().__init__()
-    self.path = self.check_path(path)
-    self.conn = duckdb.connect(database=self.path)
+    self.__path = self.check_path(path)
+    self.__conn = duckdb.connect(database=self.__path)
 
   def get_tables(self) -> pl.DataFrame:
     query: str = f"SHOW TABLES"
-    return self.conn.execute(query).pl()
+    return self.__conn.execute(query).pl()
 
   def create_table(self, table_name: str, data: pl.DataFrame) -> None:
     if (table_name in self.get_tables()):
       self.log(f"[db] {table_name} already exists in cache")
       return
     query: str = f"CREATE TABLE IF NOT EXISTS {table_name} AS SELECT * from data"
-    self.conn.execute(query)
-    self.conn.execute(f"ALTER TABLE {table_name} ADD PRIMARY KEY (date)")
+    self.__conn.execute(query)
+    self.__conn.execute(f"ALTER TABLE {table_name} ADD PRIMARY KEY (date)")
 
   def insert(self, table_name: str, data: dict) -> None:
     struct: list = []
@@ -85,7 +85,7 @@ class DuckDB(Database):
     INSERT INTO {table_name} ({",".join(struct)}) VALUES ({",".join(value)}) ON CONFLICT (date)
     DO UPDATE SET
       {",".join(update_set_str)};"""
-    self.conn.execute(query)
+    self.__conn.execute(query)
     
   def insert_all(self, table_name: str, all_data: list[dict]) -> None:
     for data in all_data:
@@ -96,7 +96,7 @@ class DuckDB(Database):
       val = f"\'{val}\'"
     query: str = f"SELECT * FROM {table_name} WHERE {key} = {val}" # Has to be single quotes
     try:
-      return self.conn.sql(query).pl()
+      return self.__conn.sql(query).pl()
     except Exception as error:
       print(error)
       self.log(f"[db] {val} not found in column \"{key}\"")
@@ -104,7 +104,7 @@ class DuckDB(Database):
   
   def retrieve_last(self, table_name: str) -> dict:
     query: str = f"SELECT * FROM {table_name} ORDER BY date DESC LIMIT 1"
-    result: dict = self.conn.sql(query).fetchnumpy()
+    result: dict = self.__conn.sql(query).fetchnumpy()
     last_item: dict = {}
     for key, value in result.items():
       last_item[key] = value[-1]
@@ -112,7 +112,7 @@ class DuckDB(Database):
   
   def retrieve_first(self, table_name: str) -> dict:
     query: str = f"SELECT * FROM {table_name} ORDER BY date LIMIT 1"
-    result: dict = self.conn.sql(query).fetchnumpy()
+    result: dict = self.__conn.sql(query).fetchnumpy()
     last_item: dict = {}
     for key, value in result.items():
       last_item[key] = value[-1]
@@ -120,10 +120,10 @@ class DuckDB(Database):
   
   def retrieve_all(self, table_name: str) -> pl.DataFrame:
     query: str = f"SELECT * FROM {table_name} ORDER BY date"
-    return self.conn.sql(query).pl()
+    return self.__conn.sql(query).pl()
   
   def delete_all(self, table_name: str) -> None:
     query: str = f"DROP TABLE IF EXISTS {table_name}"
-    self.conn.execute(query)
+    self.__conn.execute(query)
 
   

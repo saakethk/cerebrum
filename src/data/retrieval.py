@@ -9,19 +9,19 @@ import pandas_market_calendars as mcal
 class Source:
 
   def __init__(self, print_logs = True):
-    self.cached_start = None
-    self.cached_end = None
-    self.cached_calendar = mcal.get_calendar('NYSE')
-    self.print_logs = print_logs
+    self.__cached_start = None
+    self.__cached_end = None
+    self.__cached_calendar = mcal.get_calendar('NYSE')
+    self.__print_logs = print_logs
 
-  def log(self, msg: str):
+  def __log(self, msg: str):
     # for logging caching status
-    if (self.print_logs):
+    if (self.__print_logs):
       print(msg)
 
-  def filter_core(self, data: pd.DataFrame):
+  def __filter_core(self, data: pl.DataFrame) -> pl.DataFrame:
     # gets columns considered core for quantitative trading
-    return data["date", "open", "high", "low", "close", "volume"]
+    return data[["date", "open", "high", "low", "close", "volume"]]
     
   def get_source_tickers(self, symbol: str, start_date: datetime, 
                       end_date: datetime, frequency: str, 
@@ -36,19 +36,24 @@ class Source:
         interval=frequency, 
         provider=source,
         actions=False)
-    return output.to_polars()
+    return self.__filter_core(output.to_polars())
   
   def check_valid_timestamp(self, timestamp: datetime) -> bool:
     # Src: https://pandas-market-calendars.readthedocs.io/en/latest/usage.html
     # for a day to be valid it must be present already and have a date object
-    schedule = self.cached_calendar.schedule( # Can make this more efficient
+    
+    if timestamp > datetime.now():
+      # Checks that date is not after today
+      return False
+    
+    schedule = self.__cached_calendar.schedule( # Can make this more efficient
       start_date=timestamp.strftime("%Y-%m-%d"), 
       end_date=timestamp.strftime("%Y-%m-%d"))
     ts = pd.Timestamp(timestamp, tz="America/New_York")
     try:
-      return self.cached_calendar.open_at_time(schedule, ts)
+      return self.__cached_calendar.open_at_time(schedule, ts)
     except Exception as error:
-      self.log("[source] day outside of available period encountered")
+      self.__log("[source] day outside of available period encountered")
       return False
   
 class YFinance(Source):
@@ -56,12 +61,13 @@ class YFinance(Source):
   def __init__(self):
     super().__init__()
     
-  def get_tickers(self, symbol: str, start_date: datetime = (datetime.now() - timedelta(days=(365 * 100))), 
+  def get_tickers(self, symbol: str, start_date: datetime = (datetime.now() - timedelta(days=365)), 
                   end_date: datetime = datetime.now(), frequency: str = "1d") -> pl.DataFrame:
+    # Gets last year of data by default with 1d frequency
     data = super().get_source_tickers(
       symbol=symbol, start_date=start_date, end_date=end_date, 
       frequency=frequency, source="yfinance")
-    return self.filter_core(data=data) #type: ignore
+    return data
   
 if __name__ == "__main__":
   test = YFinance()
