@@ -16,7 +16,7 @@ class Table {
     unsigned int max_index;
 
   public:
-    Table();
+    Table(std::vector<std::string> attributes);
 
     bool insert(std::string attribute_name, unsigned int index, double val);
     bool remove(std::string attribute_name, unsigned int index, double val);
