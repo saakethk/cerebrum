@@ -38,11 +38,11 @@ std::pair<unsigned int, std::vector<double>> LeafChunk::getValues(unsigned int i
   return {key, vals};
 }
 
-bool LeafChunk::insert(unsigned int key, std::vector<double> val) {
+bool LeafChunk::insert(unsigned int key, const std::vector<double>& val) {
   // case where space exists
   this->keys.push_back(key);
   // inserts values into respective attributes
-  for (unsigned int i = 0; i < this->MAX_DEGREE; i++) {
+  for (unsigned int i = 0; i < this->num_attributes; i++) {
     this->values[i].push_back(val[i]);
   }
   if (this->isFull()) {
@@ -63,14 +63,27 @@ std::pair<Chunk*, Chunk*> LeafChunk::split() {
   }
 
   // delete the ones from middle onward in this chunk (inclusive)
-  for (std::vector<double> val: this->values) {
+  (this->keys).erase((this->keys).begin() + middle, (this->keys).end());
+  for (std::vector<double>& val: this->values) {
     val.erase(val.begin() + middle, val.end());
   }
 
   return {this, new_chunk};
 }
 
+LeafChunk::~LeafChunk() {
+  // Not needed at moment
+}
 
-
-// InternalChunk();
-// bool isLeaf() const override; // returns false
+std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk) {
+  os << "Leaf Chunk:\n";
+  // Visualize data
+  for (unsigned int i = 0; i < chunk.keys.size(); i++) {
+    os << "Key(" << chunk.keys[i] << ") ";
+    for (unsigned int j = 0; j < chunk.num_attributes; j++) {
+      os << chunk.values[j][i] << " ";
+    }
+    os << "\n";
+  }
+  return os;
+}
