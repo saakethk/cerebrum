@@ -2,7 +2,8 @@
 
 int main() {
 
-  Table test;
+  LeafChunk test;
+
 
   return 0;
 }
