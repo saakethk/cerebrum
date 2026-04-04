@@ -22,6 +22,7 @@ class LeafChunk: public Chunk {
     unsigned int num_attributes;
 
     bool isFull() const;
+    std::pair<unsigned int, std::vector<double>> getValues(unsigned int index) const;
 
   public:
     LeafChunk(unsigned int num_attributes);
