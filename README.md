@@ -17,11 +17,15 @@ A very heavily optimized efficient library for quantitative calculations and sto
 
 # To Run C++ Core
 1. Ensure your in root directory
-2. g++ -std=c++20 -Wall -Werror -Wextra -g -o out core/*.cpp
+2. g++ -I include -I libs -std=c++20 -Wall -Werror -Wextra -g -o out core/*.cpp
 3. For debugging, lldb ./out
 
 # Cerebrum Core
 It is a B+ tree which utilizes a hybrid storage method between columnar and row-wise. Every leaf node contains the key and there is then a 2d vector with all the values. It's goal is to be very efficient for statistical estimation and forecasting.
+
+## Limitations
+- Keys: 0 <= k <= 4,294,967,295
+- Values: 0 <= v <= maximum value of double in c++
 
 ## Leaf Node Structure
 $$
