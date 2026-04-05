@@ -25,7 +25,11 @@ It is a B+ tree which utilizes a hybrid storage method between columnar and row-
 
 ## Leaf Node Structure
 $$
-\mathbf{K = key},\\
+\mathbf{keys} = \left[ 
+  \begin{array}{c|c|c}
+  k_1 & ... & k_n \\
+  \end{array} 
+\right],\\
 [
   \mathbf{attribute_1} = \left[ 
     \begin{array}{c|c|c}
@@ -39,7 +43,6 @@ $$
     \end{array} 
   \right]
 ]
-
 $$
 
 
@@ -48,6 +51,7 @@ $$
 2. Make it so that you can store data in very compressed format
 3. Make some example use cases for it
 4. Publish it to PyPi
+5. Adapative radix tree for caching
 
 
 

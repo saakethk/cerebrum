@@ -1,17 +1,19 @@
 #include <iostream>
 #include <cmath>
+#include <limits>
 
 #include "chunk.hpp"
 
 LeafChunk::LeafChunk(unsigned int num_attributes) {
   this->next = nullptr;
   this->num_attributes = num_attributes;
+  this->num_filled = 0;
   // reserve allocates space in memory (does not default construct)
-  this->keys.reserve(this->MAX_DEGREE);
+  this->keys.resize(this->MAX_DEGREE, std::numeric_limits<double>::max());
   // resize default constructs the items
   this->values.resize(num_attributes);
   for (std::vector<double>& val: this->values) {
-    val.reserve(this->MAX_DEGREE);
+    val.resize(this->MAX_DEGREE, std::numeric_limits<double>::max()); // fills with max value of double
   }
 }
 
@@ -21,7 +23,7 @@ bool LeafChunk::isLeaf() const {
 
 bool LeafChunk::isFull() const {
   // ensures that leaf can only have max_degree - 1 keys
-  if (this->keys.size() < this->MAX_DEGREE) {
+  if (this->num_filled < this->MAX_DEGREE) {
     return false;
   }
   return true;
@@ -38,13 +40,49 @@ std::pair<unsigned int, std::vector<double>> LeafChunk::getValues(unsigned int i
   return {key, vals};
 }
 
+int LeafChunk::insertKey(unsigned int key) {
+  // TODO: Insert in order
+  unsigned int i = 0;
+  while ((i < this->MAX_DEGREE) && (key > this->keys[i])) {
+    // finds correct part to insert into
+    i++;
+  }
+  std::cout << i << std::endl;
+  for (unsigned int j = this->num_filled; j > i; j--) {
+    // shifts values
+    this->keys[j] = this->keys[j - 1];
+  }
+  this->keys[i] = key; // insert value
+  // this->keys[this->num_filled] = key;
+  this->num_filled += 1;
+  return i;
+}
+
+void LeafChunk::insertAttributeValue(unsigned int index, double val, std::vector<double>& attribute_vals) {
+  // TODO: Insert value in attribute list
+  for (unsigned int j = this->num_filled; j > index; j--) {
+    // shifts values
+    attribute_vals[j] = attribute_vals[j - 1];
+  }
+  attribute_vals[index] = val; // insert value
+}
+
+void LeafChunk::insertValue(unsigned int key_index, const std::vector<double>& val) {
+  // TODO: Insert value according to key index
+  for (unsigned int i = 0; i < this->num_attributes; i++) {
+    this->insertAttributeValue(key_index, val[i], this->values[i]);
+  }
+}
+
+const std::vector<unsigned int>& LeafChunk::getKeys() const {
+  return this->keys;
+}
+
 bool LeafChunk::insert(unsigned int key, const std::vector<double>& val) {
   // case where space exists
-  this->keys.push_back(key);
+  int key_index = this->insertKey(key);
   // inserts values into respective attributes
-  for (unsigned int i = 0; i < this->num_attributes; i++) {
-    this->values[i].push_back(val[i]);
-  }
+  this->insertValue(key_index, val);
   if (this->isFull()) {
     return true; // indicates that splits needs to occur
   }
@@ -72,13 +110,21 @@ std::pair<Chunk*, Chunk*> LeafChunk::split() {
 }
 
 LeafChunk::~LeafChunk() {
-  // Not needed at moment
+  // not needed at moment
+}
+
+std::pair<unsigned int, unsigned int> LeafChunk::size() const {
+  // return dimensions (num keys x num attributes)
+  std::pair<unsigned int, unsigned int> dims;
+  dims.first = this->num_filled;
+  dims.second = this->num_attributes;
+  return dims;
 }
 
 std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk) {
   os << "Leaf Chunk:\n";
-  // Visualize data
-  for (unsigned int i = 0; i < chunk.keys.size(); i++) {
+  // visualize data
+  for (unsigned int i = 0; i < chunk.num_filled; i++) {
     os << "Key(" << chunk.keys[i] << ") ";
     for (unsigned int j = 0; j < chunk.num_attributes; j++) {
       os << chunk.values[j][i] << " ";
