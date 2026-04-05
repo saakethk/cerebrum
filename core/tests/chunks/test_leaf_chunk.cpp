@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "catch_amalgamated.hpp"
-#include "chunks/chunk.hpp"
+#include "chunks/leaf_chunk.hpp"
 
 TEST_CASE("Testing Leaf Chunk Insertion", "[leaf_chunk]") {
   LeafChunk test(5); // Should have 5 attributes

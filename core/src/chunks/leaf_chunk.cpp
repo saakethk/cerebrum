@@ -2,7 +2,7 @@
 #include <cmath>
 #include <limits>
 
-#include "chunks/chunk.hpp"
+#include "chunks/leaf_chunk.hpp"
 
 LeafChunk::LeafChunk(unsigned int num_attributes) {
   this->next = nullptr;
