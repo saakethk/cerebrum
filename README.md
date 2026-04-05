@@ -11,21 +11,21 @@ A very heavily optimized efficient library for quantitative calculations and sto
 - https://duckdb.org
 
 # To-Do
-1. Write basic chunk functionality for internal and leaf nodes
-2. Test chunk functionality and make abstract easy interface to work with it
-3. Integrate chunk with table and make basic splittign functionality
+1. splitting for leaf chunks
+2. check for duplicate keys
+3. test the leaf chunks fully
 
 # To Run C++ Core
-1. Ensure your in root directory
-2. g++ -I include -I libs -std=c++20 -Wall -Werror -Wextra -g -o out core/*.cpp
-3. For debugging, lldb ./out
+1. cd core
+2. make main
+3. make test
 
 # Cerebrum Core
 It is a B+ tree which utilizes a hybrid storage method between columnar and row-wise. Every leaf node contains the key and there is then a 2d vector with all the values. It's goal is to be very efficient for statistical estimation and forecasting.
 
 ## Limitations
-- Keys: 0 <= k <= 4,294,967,295
-- Values: 0 <= v <= maximum value of double in c++
+- Keys: 0 <= k <= 4,294,967,295 (maximum value of unsigned int in c++)
+- Values: minimum value of double in c++ <= v <= maximum value of double in c++
 
 ## Leaf Node Structure
 $$
