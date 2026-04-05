@@ -1,6 +1,6 @@
 #pragma once
 
-#include "table.hpp"
+#include <vector>
 
 class Chunk {
   public:
@@ -10,7 +10,7 @@ class Chunk {
     virtual std::pair<Chunk*, Chunk*> split() = 0;
     virtual ~Chunk() = default;
 
-    friend class Table;
+    // friend class Table;
 };
 
 class LeafChunk: public Chunk {

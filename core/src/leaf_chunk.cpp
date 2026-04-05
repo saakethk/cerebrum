@@ -2,7 +2,7 @@
 #include <cmath>
 #include <limits>
 
-#include "chunk.hpp"
+#include "chunks/chunk.hpp"
 
 LeafChunk::LeafChunk(unsigned int num_attributes) {
   this->next = nullptr;
@@ -41,25 +41,21 @@ std::pair<unsigned int, std::vector<double>> LeafChunk::getValues(unsigned int i
 }
 
 int LeafChunk::insertKey(unsigned int key) {
-  // TODO: Insert in order
   unsigned int i = 0;
   while ((i < this->MAX_DEGREE) && (key > this->keys[i])) {
     // finds correct part to insert into
     i++;
   }
-  std::cout << i << std::endl;
   for (unsigned int j = this->num_filled; j > i; j--) {
     // shifts values
     this->keys[j] = this->keys[j - 1];
   }
   this->keys[i] = key; // insert value
-  // this->keys[this->num_filled] = key;
   this->num_filled += 1;
   return i;
 }
 
 void LeafChunk::insertAttributeValue(unsigned int index, double val, std::vector<double>& attribute_vals) {
-  // TODO: Insert value in attribute list
   for (unsigned int j = this->num_filled; j > index; j--) {
     // shifts values
     attribute_vals[j] = attribute_vals[j - 1];
@@ -68,7 +64,6 @@ void LeafChunk::insertAttributeValue(unsigned int index, double val, std::vector
 }
 
 void LeafChunk::insertValue(unsigned int key_index, const std::vector<double>& val) {
-  // TODO: Insert value according to key index
   for (unsigned int i = 0; i < this->num_attributes; i++) {
     this->insertAttributeValue(key_index, val[i], this->values[i]);
   }
