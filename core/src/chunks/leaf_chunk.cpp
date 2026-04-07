@@ -51,7 +51,6 @@ int LeafChunk::insertKey(unsigned int key) {
     this->keys[j] = this->keys[j - 1];
   }
   this->keys[i] = key; // insert value
-  this->num_filled += 1;
   return i;
 }
 
@@ -78,6 +77,7 @@ bool LeafChunk::insert(unsigned int key, const std::vector<double>& val) {
   int key_index = this->insertKey(key);
   // inserts values into respective attributes
   this->insertValue(key_index, val);
+  this->num_filled += 1;
   if (this->isFull()) {
     return true; // indicates that splits needs to occur
   }
@@ -86,13 +86,15 @@ bool LeafChunk::insert(unsigned int key, const std::vector<double>& val) {
 
 std::pair<Chunk*, Chunk*> LeafChunk::split() {
   // splits chunk across middle and returns pointers
-  const unsigned int middle = std::floor(this->MAX_DEGREE / 2);
+  const unsigned int num_full = this->num_filled;
+  const unsigned int middle = std::floor(this->num_filled / 2.0f);
   LeafChunk* new_chunk = new LeafChunk(this->num_attributes);
 
-  for (unsigned int i = middle; i < this->MAX_DEGREE; i++) {
+  for (unsigned int i = middle; i < num_full; i++) {
     // insert the middle and all to right to new chunk
     std::pair<unsigned int, std::vector<double>> value = this->getValues(i);
     new_chunk->insert(value.first, value.second);
+    this->num_filled -= 1;
   }
 
   // delete the ones from middle onward in this chunk (inclusive)
