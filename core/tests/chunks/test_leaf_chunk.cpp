@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 
 #include "catch_amalgamated.hpp"
 #include "chunks/leaf_chunk.hpp"
@@ -34,13 +35,26 @@ TEST_CASE("Testing Leaf Chunk Order After Insertion", "[leaf_chunk]") {
   delete test;
 }
 
-// TEST_CASE("Testing Leaf Chunk Insertion Duplicate Key", "[leaf_chunk]") {
+TEST_CASE("Testing Leaf Chunk Insertion Duplicate Key", "[leaf_chunk]") {
+  // Inserting a duplicate key should fail
+  LeafChunk* test = new LeafChunk(1); // Should have 5 attributes
+  test->insert(1, {12});
+  bool result = test->insert(1, {10});
+  REQUIRE(result == false);
+  REQUIRE(test->size().first == 1);
+}
 
-// }
+TEST_CASE("Testing Leaf Chunk Insertion Constraints", "[leaf_chunk]") {
+  // Insertion of more datapoints than max chunk size should cause error
+  LeafChunk* test = new LeafChunk(5);
 
-// TEST_CASE("Testing Leaf Chunk Insertion Constraints", "[leaf_chunk]") {
+  for (unsigned int j = 0; j < Chunk::MAX_DEGREE; j++) {
+    test->insert(j, {static_cast<double>(j)}); // Fills the chunk
+  }
 
-// }
+  bool should_fail = test->insert(Chunk::MAX_DEGREE, {static_cast<double>(0)}); 
+  REQUIRE(should_fail == false);
+}
 
 TEST_CASE("Testing Leaf Chunk After Split", "[leaf_chunk]") {
   LeafChunk* test = new LeafChunk(5);

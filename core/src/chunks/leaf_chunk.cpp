@@ -55,11 +55,22 @@ unsigned int LeafChunk::searchKey(unsigned int key) const {
 }
 
 unsigned int LeafChunk::insertKey(unsigned int key) {
+  
+  if (this->isFull()) {
+    // Return maximum value of unsigned int if max size reached
+    return std::numeric_limits<unsigned int>::max();
+  }
+
   unsigned int i = 0;
-  while ((i < this->MAX_DEGREE) && (key > this->keys[i])) {
+  while ((i < this->MAX_DEGREE) && (key >= this->keys[i])) {
     // finds correct part to insert into
     i++;
   }
+  if ((i > 0) && (this->keys[i - 1] == key)) {
+    // Return maximum value of unsigned int if key already exists
+    return std::numeric_limits<unsigned int>::max();
+  }
+
   for (unsigned int j = this->num_filled; j > i; j--) {
     // shifts values
     this->keys[j] = this->keys[j - 1];
@@ -88,14 +99,14 @@ const std::vector<unsigned int>& LeafChunk::getKeys() const {
 
 bool LeafChunk::insert(unsigned int key, const std::vector<double>& val) {
   // case where space exists
-  int key_index = this->insertKey(key);
+  unsigned int key_index = this->insertKey(key);
+  if (key_index == std::numeric_limits<unsigned int>::max()) {
+    return false; // indicates that insert failed. Either full or key exists
+  }
   // inserts values into respective attributes
   this->insertValue(key_index, val);
   this->num_filled += 1;
-  if (this->isFull()) {
-    return true; // indicates that splits needs to occur
-  }
-  return false;
+  return true;
 }
 
 std::pair<Chunk*, Chunk*> LeafChunk::split() {
