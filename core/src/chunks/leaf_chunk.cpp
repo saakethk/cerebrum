@@ -9,11 +9,11 @@ LeafChunk::LeafChunk(unsigned int num_attributes) {
   this->num_attributes = num_attributes;
   this->num_filled = 0;
   // reserve allocates space in memory (does not default construct)
-  this->keys.resize(this->MAX_DEGREE, std::numeric_limits<double>::max());
+  this->keys.resize(Chunk::MAX_DEGREE, std::numeric_limits<double>::max());
   // resize default constructs the items
   this->values.resize(num_attributes);
   for (std::vector<double>& val: this->values) {
-    val.resize(this->MAX_DEGREE, std::numeric_limits<double>::max()); // fills with max value of double
+    val.resize(Chunk::MAX_DEGREE, std::numeric_limits<double>::max()); // fills with max value of double
   }
 }
 
@@ -23,7 +23,7 @@ bool LeafChunk::isLeaf() const {
 
 bool LeafChunk::isFull() const {
   // ensures that leaf can only have max_degree - 1 keys
-  if (this->num_filled < this->MAX_DEGREE) {
+  if (this->num_filled < Chunk::MAX_DEGREE) {
     return false;
   }
   return true;
@@ -62,7 +62,7 @@ unsigned int LeafChunk::insertKey(unsigned int key) {
   }
 
   unsigned int i = 0;
-  while ((i < this->MAX_DEGREE) && (key >= this->keys[i])) {
+  while ((i < Chunk::MAX_DEGREE) && (key >= this->keys[i])) {
     // finds correct part to insert into
     i++;
   }
@@ -126,8 +126,13 @@ std::pair<Chunk*, Chunk*> LeafChunk::split() {
   for (std::vector<double>& val: this->values) {
     val.erase(val.begin() + middle, val.end());
   }
+  this->next = new_chunk;
 
   return {this, new_chunk};
+}
+
+LeafChunk* LeafChunk::getNext() {
+  return this->next;
 }
 
 LeafChunk::~LeafChunk() {

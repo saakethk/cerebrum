@@ -64,7 +64,9 @@ TEST_CASE("Testing Leaf Chunk After Split", "[leaf_chunk]") {
   }
 
   std::pair<Chunk*, Chunk*> result = test->split();
+  REQUIRE(static_cast<LeafChunk*>(result.second)->getNext() == nullptr);
   REQUIRE(static_cast<LeafChunk*>(result.second)->size().first == (Chunk::MAX_DEGREE - std::floor(Chunk::MAX_DEGREE / 2)));
+  REQUIRE(static_cast<LeafChunk*>(result.first)->getNext()->size().first == (Chunk::MAX_DEGREE - std::floor(Chunk::MAX_DEGREE / 2)));
   REQUIRE(static_cast<LeafChunk*>(result.first)->size().first == std::floor(Chunk::MAX_DEGREE / 2));
 
   delete result.first;

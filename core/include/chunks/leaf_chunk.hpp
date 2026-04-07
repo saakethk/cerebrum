@@ -35,6 +35,7 @@ class LeafChunk: public Chunk {
     bool isLeaf() const override; // returns true
     const std::vector<unsigned int>& getKeys() const;
     std::vector<double> getRow(unsigned int index) const; // gets whole row of values
+    LeafChunk* getNext();
 
     friend std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk); // for debugging
     ~LeafChunk() override;
