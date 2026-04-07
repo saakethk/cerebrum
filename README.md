@@ -25,6 +25,7 @@ It is a B+ tree which utilizes a hybrid storage method between columnar and row-
 
 ## Limitations
 - Keys: 0 <= k <= 4,294,967,295 (maximum value of unsigned int in c++)
+  - keys must also be <b>unique</b>
 - Values: minimum value of double in c++ <= v <= maximum value of double in c++
 
 ## Leaf Node Structure

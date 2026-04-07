@@ -14,9 +14,20 @@ TEST_CASE("Testing Leaf Chunk Insertion", "[leaf_chunk]") {
   REQUIRE(dims.second == 5);
 }
 
-// TEST_CASE("Testing Leaf Chunk Order After Insertion", "[leaf_chunk]") {
-  
-// }
+TEST_CASE("Testing Leaf Chunk Order After Insertion", "[leaf_chunk]") {
+  LeafChunk* test = new LeafChunk(1);
+  test->insert(5, {5});
+  test->insert(4, {4});
+  test->insert(3, {3});
+  test->insert(2, {2});
+  test->insert(1, {1});
+  test->getValue(0, 0);
+  REQUIRE(test->getValue(0, 0) == 1);
+  REQUIRE(test->getValue(1, 0) == 2);
+  REQUIRE(test->getValue(2, 0) == 3);
+  REQUIRE(test->getValue(3, 0) == 4);
+  REQUIRE(test->getValue(4, 0) == 5);
+}
 
 // TEST_CASE("Testing Leaf Chunk Insertion Duplicate Key", "[leaf_chunk]") {
 

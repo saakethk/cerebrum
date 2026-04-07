@@ -29,18 +29,32 @@ bool LeafChunk::isFull() const {
   return true;
 }
 
+double LeafChunk::getValue(unsigned int index, unsigned int attribute_index) const {
+  return this->values[attribute_index][index];
+}
+
 std::pair<unsigned int, std::vector<double>> LeafChunk::getValues(unsigned int index) const {
   // gets all values associated with a index
   unsigned int key = this->keys[index];
   std::vector<double> vals;
   vals.reserve(this->num_attributes);
-  for (const std::vector<double>& val: this->values) {
-    vals.push_back(val[index]);
+  for (unsigned int attribute_index = 0; attribute_index < this->num_attributes; attribute_index++) {
+    vals.push_back(this->getValue(index, attribute_index));
   }
   return {key, vals};
 }
 
-int LeafChunk::insertKey(unsigned int key) {
+unsigned int LeafChunk::searchKey(unsigned int key) const {
+  // TODO: optimize this with binary search; currently basic linear search
+  for (unsigned int i = 0; i < this->num_filled; i++) {
+    if (this->keys[i] == key) {
+      return i;
+    }
+  }
+  return std::numeric_limits<unsigned int>::max(); // Return maximum value of unsigned int if not found
+}
+
+unsigned int LeafChunk::insertKey(unsigned int key) {
   unsigned int i = 0;
   while ((i < this->MAX_DEGREE) && (key > this->keys[i])) {
     // finds correct part to insert into
