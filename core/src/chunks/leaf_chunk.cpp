@@ -29,19 +29,19 @@ bool LeafChunk::isFull() const {
   return true;
 }
 
-double LeafChunk::getValue(unsigned int index, unsigned int attribute_index) const {
+double LeafChunk::get(unsigned int index, unsigned int attribute_index) const {
+  // returns a specific attribute
   return this->values[attribute_index][index];
 }
 
-std::pair<unsigned int, std::vector<double>> LeafChunk::getValues(unsigned int index) const {
+std::vector<double> LeafChunk::getRow(unsigned int index) const {
   // gets all values associated with a index
-  unsigned int key = this->keys[index];
   std::vector<double> vals;
   vals.reserve(this->num_attributes);
   for (unsigned int attribute_index = 0; attribute_index < this->num_attributes; attribute_index++) {
-    vals.push_back(this->getValue(index, attribute_index));
+    vals.push_back(this->get(index, attribute_index));
   }
-  return {key, vals};
+  return vals;
 }
 
 unsigned int LeafChunk::searchKey(unsigned int key) const {
@@ -106,8 +106,7 @@ std::pair<Chunk*, Chunk*> LeafChunk::split() {
 
   for (unsigned int i = middle; i < num_full; i++) {
     // insert the middle and all to right to new chunk
-    std::pair<unsigned int, std::vector<double>> value = this->getValues(i);
-    new_chunk->insert(value.first, value.second);
+    new_chunk->insert(this->keys[i], this->getRow(i));
     this->num_filled -= 1;
   }
 

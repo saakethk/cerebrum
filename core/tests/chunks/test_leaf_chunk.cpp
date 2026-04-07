@@ -4,29 +4,34 @@
 #include "chunks/leaf_chunk.hpp"
 
 TEST_CASE("Testing Leaf Chunk Insertion", "[leaf_chunk]") {
-  LeafChunk test(5); // Should have 5 attributes
-  test.insert(1, {1, 2, 3, 4, 5});
-  test.insert(2, {3, 2, 3, 4, 5});
-  test.insert(3, {7, 2, 3, 4, 5});
-  test.insert(4, {7, 2, 3, 4, 5}); // Cannot insert more than MAX DEGREE of chunk
-  auto dims = test.size();
-  REQUIRE(dims.first == 4);
+  LeafChunk* test = new LeafChunk(5); // Should have 5 attributes
+
+  for (unsigned int j = 0; j < Chunk::MAX_DEGREE; j++) {
+    // Cannot insert more than MAX DEGREE of chunk (TODO: Make error message)
+    test->insert(j, {static_cast<double>(j)});
+  }
+ 
+  auto dims = test->size();
+  REQUIRE(dims.first == Chunk::MAX_DEGREE);
   REQUIRE(dims.second == 5);
+
+  delete test;
 }
 
 TEST_CASE("Testing Leaf Chunk Order After Insertion", "[leaf_chunk]") {
   LeafChunk* test = new LeafChunk(1);
-  test->insert(5, {5});
-  test->insert(4, {4});
-  test->insert(3, {3});
-  test->insert(2, {2});
-  test->insert(1, {1});
-  test->getValue(0, 0);
-  REQUIRE(test->getValue(0, 0) == 1);
-  REQUIRE(test->getValue(1, 0) == 2);
-  REQUIRE(test->getValue(2, 0) == 3);
-  REQUIRE(test->getValue(3, 0) == 4);
-  REQUIRE(test->getValue(4, 0) == 5);
+
+  for (unsigned int j = Chunk::MAX_DEGREE; j > 0; j--) {
+    // insert in rows with index and val same
+    test->insert(j, {static_cast<double>(j - 1)});
+  }
+
+  for (unsigned int i = 0; i < Chunk::MAX_DEGREE; i++) {
+    // checks values are sorted
+    REQUIRE(test->get(i, 0) == i);
+  }
+
+  delete test;
 }
 
 // TEST_CASE("Testing Leaf Chunk Insertion Duplicate Key", "[leaf_chunk]") {
@@ -35,12 +40,15 @@ TEST_CASE("Testing Leaf Chunk Order After Insertion", "[leaf_chunk]") {
 
 TEST_CASE("Testing Leaf Chunk After Split", "[leaf_chunk]") {
   LeafChunk* test = new LeafChunk(5);
-  test->insert(1, {1, 2, 3, 4, 5});
-  test->insert(2, {3, 2, 3, 4, 5});
-  test->insert(3, {1, 2, 3, 4, 5});
-  test->insert(4, {3, 2, 3, 4, 5});
-  test->insert(5, {1, 2, 3, 4, 5});
+  
+  for (unsigned int j = 0; j < Chunk::MAX_DEGREE; j++) {
+    test->insert(j, {static_cast<double>(j)});
+  }
+
   std::pair<Chunk*, Chunk*> result = test->split();
-  REQUIRE(static_cast<LeafChunk*>(result.first)->size().first == 2);
-  REQUIRE(static_cast<LeafChunk*>(result.second)->size().first == 3);
+  REQUIRE(static_cast<LeafChunk*>(result.second)->size().first == (Chunk::MAX_DEGREE - std::floor(Chunk::MAX_DEGREE / 2)));
+  REQUIRE(static_cast<LeafChunk*>(result.first)->size().first == std::floor(Chunk::MAX_DEGREE / 2));
+
+  delete result.first;
+  delete result.second;
 }

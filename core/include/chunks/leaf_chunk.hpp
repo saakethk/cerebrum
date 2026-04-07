@@ -15,7 +15,7 @@ class LeafChunk: public Chunk {
     LeafChunk* next;
 
     // helper methods
-    unsigned int searchKey(unsigned int key) const; // return local index
+    unsigned int searchKey(unsigned int key) const; // return local index or max val of int if not found
     unsigned int insertKey(unsigned int key); // ensures ascending order is preserved
     void insertValue(unsigned int key_index, const std::vector<double>& val);
     void insertAttributeValue(unsigned int index, double val, std::vector<double>& attribute_vals);
@@ -29,11 +29,12 @@ class LeafChunk: public Chunk {
     std::pair<Chunk*, Chunk*> split() override;
 
     // accessors
-    bool isLeaf() const override; // returns true
     std::pair<unsigned int, unsigned int> size() const; // returns num_keys x num_attributes
+    double get(unsigned int index, unsigned int attribute_index) const; // gets single attribute
+
+    bool isLeaf() const override; // returns true
     const std::vector<unsigned int>& getKeys() const;
-    double getValue(unsigned int index, unsigned int attribute_index) const;
-    std::pair<unsigned int, std::vector<double>> getValues(unsigned int index) const;
+    std::vector<double> getRow(unsigned int index) const; // gets whole row of values
 
     friend std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk); // for debugging
     ~LeafChunk() override;
