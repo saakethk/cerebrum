@@ -39,8 +39,8 @@ TEST_CASE("Testing Leaf Chunk Insertion Duplicate Key", "[leaf_chunk]") {
   // Inserting a duplicate key should fail
   LeafChunk* test = new LeafChunk(1); // Should have 5 attributes
   test->insert(1, {12});
-  bool result = test->insert(1, {10});
-  REQUIRE(result == false);
+  std::pair<bool, bool> result = test->insert(1, {10});
+  REQUIRE(result.second == true);
   REQUIRE(test->size().first == 1);
 }
 
@@ -52,8 +52,8 @@ TEST_CASE("Testing Leaf Chunk Insertion Constraints", "[leaf_chunk]") {
     test->insert(j, {static_cast<double>(j)}); // Fills the chunk
   }
 
-  bool should_fail = test->insert(Chunk::MAX_DEGREE, {static_cast<double>(0)}); 
-  REQUIRE(should_fail == false);
+  std::pair<bool, bool> should_fail = test->insert(Chunk::MAX_DEGREE, {static_cast<double>(0)}); 
+  REQUIRE(should_fail.first == true);
 }
 
 TEST_CASE("Testing Leaf Chunk After Split", "[leaf_chunk]") {
@@ -72,3 +72,5 @@ TEST_CASE("Testing Leaf Chunk After Split", "[leaf_chunk]") {
   delete result.first;
   delete result.second;
 }
+
+// Check edge case where after split you add duplicate

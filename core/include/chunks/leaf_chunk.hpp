@@ -25,7 +25,7 @@ class LeafChunk: public Chunk {
     LeafChunk(unsigned int num_attributes);
 
     // actions
-    bool insert(unsigned int key, const std::vector<double>& val) override; // returns true if success, false otherwise
+    std::pair<bool, bool> insert(unsigned int key, const std::vector<double>& val); // returns {true, false} if full, {false, true} if key already in, {false, false} if successful
     std::pair<Chunk*, Chunk*> split() override;
 
     // accessors
