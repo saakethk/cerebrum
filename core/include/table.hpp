@@ -1,31 +1,27 @@
-// #pragma once
+#pragma once
 
-// #include <string>
-// #include <vector>
+#include <string>
+#include <vector>
 
-// #include "chunk.hpp"
+#include "chunk.hpp"
 
-// class Table {
-//   private:
+class Table {
+  private:
+  
+    std::vector<std::string> attributes;
+    Chunk* root;
+    
+  public:
+    Table(std::vector<std::string> attributes);
 
-//     unsigned int num_attributes;
-//     std::vector<std::string> attributes;
-//     Chunk* root;
+    bool insert(unsigned int index, std::vector<double>& row);
+    // bool remove(std::string attribute_name, unsigned int index, double val);
 
-//     unsigned int min_index;
-//     unsigned int max_index;
+    // bool addAttribute(std::string name);
+    // bool removeAttribute(std::string name);
 
-//   public:
-//     Table(std::vector<std::string> attributes);
+    // void save(std::string path);
+    // void load(std::string path);
 
-//     bool insert(std::string attribute_name, unsigned int index, double val);
-//     bool remove(std::string attribute_name, unsigned int index, double val);
-
-//     bool addAttribute(std::string name);
-//     bool removeAttribute(std::string name);
-
-//     void save(std::string path);
-//     void load(std::string path);
-
-//     bool apply(std::string attribute_name, std::string equation);
-// };
+    // bool apply(std::string attribute_name, std::string equation);
+};
