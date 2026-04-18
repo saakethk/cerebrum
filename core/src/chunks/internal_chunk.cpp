@@ -24,8 +24,13 @@ std::vector<double> InternalChunk::get(unsigned int key) {
   return static_cast<LeafChunk*>(curr)->getRow(key);
 } 
 
-bool insert(unsigned int key, Chunk* children) {
-  // TODO
+bool InternalChunk::insert(unsigned int key, Chunk* children) {
+  if (this->keys.size() < Chunk::MAX_DEGREE && this->children.size() < Chunk::MAX_DEGREE + 1) {
+    this->keys.push_back(key);
+    this->children.push_back(children);
+    return true;
+  }
+  return false;
 }
 
 bool isLeaf() {
