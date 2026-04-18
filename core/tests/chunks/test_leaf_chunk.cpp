@@ -72,5 +72,3 @@ TEST_CASE("Testing Leaf Chunk After Split", "[leaf_chunk]") {
   delete result.first;
   delete result.second;
 }
-
-// Check edge case where after split you add duplicate

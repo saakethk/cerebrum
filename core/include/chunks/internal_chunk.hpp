@@ -8,11 +8,12 @@ class InternalChunk: public Chunk {
     std::vector<Chunk*> children; // chunk size + 1
 
   public:
-    InternalChunk(Chunk* left_chunk);
+    InternalChunk(Chunk* left_chunk); // initialize with left_most chunk
 
     // actions
     std::vector<double> get(unsigned int key); // traverses the children till leaf node reached
-    bool insert(unsigned int key, std::vector<Chunk*> children);
+    bool insert(unsigned int key, Chunk* children);
+    Chunk* findNextChunk(unsigned int key);
 
     // accessors
     bool isLeaf() const override; // returns false
