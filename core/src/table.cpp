@@ -10,16 +10,40 @@ Table::Table(std::vector<std::string> attributes) {
   this->root = new LeafChunk(attributes.size());
 }
 
-
-bool Table::insert(unsigned int index, std::vector<double>& row) {
-  Chunk* curr = this->root;
+bool Table::insert(Key key, std::vector<Value>& row) {
 
   std::deque<Chunk*> path;
-  path.push_back()
+  path.push_back(this->root);
 
-  while (curr->isLeaf() == false) {
-    // Chunk is a InternalChunk
-    // curr = internal->findNextChunk(index);
+  while ((path.back())->isLeaf() == false) {
+    // push back till leaf is reached
+    path.push_back(
+      (path.back())->getNextChunk(key)
+    );
+  }
+
+  InsertStatus cur = (path.back())->insert(key, row);
+  while (cur != Success) {
+    // find node to insert into
+    if (cur == Invalid) {
+      return false;
+    } else if (cur == Full) {
+      // splits when full
+      std::pair<Chunk*, Chunk*> split_chunk = (path.back())->split();
+
+      if (path.size() == 0) {
+        // if theres no parent node
+        this->root = new InternalChunk();
+        this->root->children.push_back()
+      } else {
+        // if there is a parent node
+
+      }
+      path.push_back(split_chunk.first);
+      path.push_back(split_chunk.second);
+    }
+    // push back till leaf is reached
+    path.pop_back();
   }
 
   // TODO check existence here
