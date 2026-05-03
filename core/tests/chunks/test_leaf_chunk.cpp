@@ -39,8 +39,8 @@ TEST_CASE("Testing Leaf Chunk Insertion Duplicate Key", "[leaf_chunk]") {
   // Inserting a duplicate key should fail
   LeafChunk* test = new LeafChunk(1); // Should have 5 attributes
   test->insert(1, {12});
-  std::pair<bool, bool> result = test->insert(1, {10});
-  REQUIRE(result.second == true);
+  InsertStatus result = test->insert(1, {10});
+  REQUIRE(result == Invalid);
   REQUIRE(test->size().first == 1);
 }
 
@@ -52,8 +52,8 @@ TEST_CASE("Testing Leaf Chunk Insertion Constraints", "[leaf_chunk]") {
     test->insert(j, {static_cast<double>(j)}); // Fills the chunk
   }
 
-  std::pair<bool, bool> should_fail = test->insert(Chunk::MAX_DEGREE, {static_cast<double>(0)}); 
-  REQUIRE(should_fail.first == true);
+  InsertStatus should_fail = test->insert(Chunk::MAX_DEGREE, {static_cast<double>(0)}); 
+  REQUIRE(should_fail == Full);
 }
 
 TEST_CASE("Testing Leaf Chunk After Split", "[leaf_chunk]") {
@@ -63,12 +63,12 @@ TEST_CASE("Testing Leaf Chunk After Split", "[leaf_chunk]") {
     test->insert(j, {static_cast<double>(j)});
   }
 
-  std::pair<Chunk*, Chunk*> result = test->split();
-  REQUIRE(static_cast<LeafChunk*>(result.second)->getNext() == nullptr);
-  REQUIRE(static_cast<LeafChunk*>(result.second)->size().first == (Chunk::MAX_DEGREE - std::floor(Chunk::MAX_DEGREE / 2)));
-  REQUIRE(static_cast<LeafChunk*>(result.first)->getNext()->size().first == (Chunk::MAX_DEGREE - std::floor(Chunk::MAX_DEGREE / 2)));
-  REQUIRE(static_cast<LeafChunk*>(result.first)->size().first == std::floor(Chunk::MAX_DEGREE / 2));
+  SplitChunk result = test->split();
+  REQUIRE(static_cast<LeafChunk*>(result.right)->getNext() == nullptr);
+  REQUIRE(static_cast<LeafChunk*>(result.right)->size().first == (Chunk::MAX_DEGREE - std::floor(Chunk::MAX_DEGREE / 2)));
+  REQUIRE(static_cast<LeafChunk*>(result.left)->getNext()->size().first == (Chunk::MAX_DEGREE - std::floor(Chunk::MAX_DEGREE / 2)));
+  REQUIRE(static_cast<LeafChunk*>(result.left)->size().first == std::floor(Chunk::MAX_DEGREE / 2));
 
-  delete result.first;
-  delete result.second;
+  delete result.right;
+  delete result.left;
 }

@@ -5,6 +5,7 @@ class InternalChunk: public Chunk {
   public:
 
     // actions
+    InsertStatus insert(Key key, const std::vector<Value>& val) override;
     InsertStatus insertChild(Chunk* chunk);
     SplitChunk split() override;
 

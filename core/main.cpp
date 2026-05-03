@@ -16,9 +16,9 @@ int main() {
   // std::cout << should_split << std::endl;
   // std::cout << test->size().first << std::endl;
   std::cout << *test << std::endl;
-  std::pair<Chunk*, Chunk*> result = test->split();
-  std::cout << (*(static_cast<LeafChunk*>(result.first))) << std::endl;
-  std::cout << (*(static_cast<LeafChunk*>(result.second))) << std::endl;
+  SplitChunk result = test->split();
+  std::cout << (*(static_cast<LeafChunk*>(result.left))) << std::endl;
+  std::cout << (*(static_cast<LeafChunk*>(result.right))) << std::endl;
   return 0;
 
 }

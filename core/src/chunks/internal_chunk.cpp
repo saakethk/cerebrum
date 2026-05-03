@@ -5,6 +5,10 @@
 
 // actions
 
+InsertStatus InternalChunk::insert(Key key, const std::vector<Value>& val) {
+  return this->insertKey(key).status;
+}
+
 InsertStatus InternalChunk::insertChild(Chunk* chunk) {
   this->children.push_back(chunk);
 }
