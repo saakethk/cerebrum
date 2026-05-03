@@ -5,11 +5,11 @@
 
 // actions
 
-InsertStatus InternalChunk::insert(Key key, const std::vector<Value>& val) {
-  return this->insertKey(key).status;
+InsertStatus InternalChunk::insertChild(Chunk* chunk) {
+  this->children.push_back(chunk);
 }
 
-std::pair<Chunk*, Chunk*> InternalChunk::split() {
+SplitChunk InternalChunk::split() {
   // splits chunk across middle and returns pointers
   const unsigned int num_full = this->num_filled;
   const unsigned int middle = std::floor(this->num_filled / 2.0f);
@@ -24,7 +24,9 @@ std::pair<Chunk*, Chunk*> InternalChunk::split() {
 
   // delete the ones from middle onward in this chunk (inclusive)
   (this->keys).erase((this->keys).begin() + middle, (this->keys).end());
-  return {this, new_chunk};
+  return {
+    this->keys[middle], 
+    this, new_chunk};
 }
 
 // accessors

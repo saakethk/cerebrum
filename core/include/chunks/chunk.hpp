@@ -16,6 +16,12 @@ struct InsertKeyStatus {
   Key key;
 };
 
+struct SplitChunk {
+  Key key;
+  Chunk* left;
+  Chunk* right;
+};
+
 class Chunk {
 
   protected:
@@ -25,15 +31,13 @@ class Chunk {
     std::vector<Key> keys; // chunk size
     std::vector<Chunk*> children; // chunk size + 1
 
-    // modifiers
-    InsertKeyStatus insertKey(unsigned int key);
-
   public:
     static constexpr unsigned int MAX_DEGREE = 5;
 
     // modifiers
-    virtual InsertStatus insert(Key key, const std::vector<Value>& val) = 0;
-    virtual std::pair<Chunk*, Chunk*> split() = 0;
+    InsertKeyStatus insertKey(Key key);
+    virtual InsertStatus insert(Key key, const std::vector<Value>& val);
+    virtual SplitChunk split() = 0;
 
     // accessors
     virtual bool isLeaf() const = 0;

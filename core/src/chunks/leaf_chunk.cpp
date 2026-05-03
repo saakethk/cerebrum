@@ -47,7 +47,7 @@ InsertStatus LeafChunk::insert(unsigned int key, const std::vector<double>& val)
   return key_insert.status;
 }
 
-std::pair<Chunk*, Chunk*> LeafChunk::split() {
+SplitChunk LeafChunk::split() {
   // splits chunk across middle and returns pointers
   const unsigned int num_full = this->num_filled;
   const unsigned int middle = std::floor(this->num_filled / 2.0f);
@@ -65,7 +65,9 @@ std::pair<Chunk*, Chunk*> LeafChunk::split() {
     val.erase(val.begin() + middle, val.end());
   }
   this->next = new_chunk;
-  return {this, new_chunk};
+  return {
+    this->keys[middle], 
+    this, new_chunk};
 }
 
 // accessors

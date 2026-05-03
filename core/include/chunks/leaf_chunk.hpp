@@ -20,7 +20,7 @@ class LeafChunk: public Chunk {
 
     // actions
     InsertStatus insert(unsigned int key, const std::vector<double>& val);
-    std::pair<Chunk*, Chunk*> split();
+    SplitChunk split() override;
 
     // accessors
     std::pair<unsigned int, unsigned int> size() const; // returns num_keys x num_attributes

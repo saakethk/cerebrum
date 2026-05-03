@@ -3,10 +3,10 @@
 
 class InternalChunk: public Chunk {
   public:
-  
+
     // actions
-    InsertStatus insert(Key key, const std::vector<Value>& val) override;
-    std::pair<Chunk*, Chunk*> split() override;
+    InsertStatus insertChild(Chunk* chunk);
+    SplitChunk split() override;
 
     // accessors
     bool isLeaf() const override; // returns false
