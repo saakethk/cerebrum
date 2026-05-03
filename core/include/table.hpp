@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "chunk.hpp"
+#include "chunks/chunk.hpp"
 
 class Table {
   private:
@@ -15,7 +15,7 @@ class Table {
     Table(std::vector<std::string> attributes);
 
     bool insert(Key key, std::vector<Value>& row);
-    // bool remove(std::string attribute_name, unsigned int index, double val);
+    // bool remove(Key key);
 
     // bool addAttribute(std::string name);
     // bool removeAttribute(std::string name);
@@ -24,4 +24,7 @@ class Table {
     // void load(std::string path);
 
     // bool apply(std::string attribute_name, std::string equation);
+
+    friend std::ostream& operator<<(std::ostream& os, const Table& table); // for debugging
+    ~Table();
 };

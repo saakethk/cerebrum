@@ -6,7 +6,7 @@ class InternalChunk: public Chunk {
 
     // actions
     InsertStatus insert(Key key, const std::vector<Value>& val) override;
-    InsertStatus insertChild(Chunk* chunk);
+    void insertChild(Chunk* chunk);
     SplitChunk split() override;
 
     // accessors
@@ -14,5 +14,5 @@ class InternalChunk: public Chunk {
     std::vector<double> get(Key key); // traverses the children till leaf node reached
 
     friend std::ostream& operator<<(std::ostream& os, const InternalChunk& chunk); // for debugging
-    ~InternalChunk();
+    ~InternalChunk() override;
 };

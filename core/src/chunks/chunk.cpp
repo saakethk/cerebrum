@@ -1,4 +1,4 @@
-#include "chunk.hpp"
+#include "chunks/chunk.hpp"
 
 bool Chunk::isFull() const {
   // ensures that leaf can only have max_degree - 1 keys

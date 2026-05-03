@@ -19,7 +19,7 @@ class LeafChunk: public Chunk {
     LeafChunk(unsigned int num_attributes);
 
     // actions
-    InsertStatus insert(unsigned int key, const std::vector<double>& val);
+    InsertStatus insert(Key key, const std::vector<Value>& val) override;
     SplitChunk split() override;
 
     // accessors
@@ -27,9 +27,7 @@ class LeafChunk: public Chunk {
     bool isLeaf() const override; // returns true
 
     double get(unsigned int index, unsigned int attribute_index) const; // gets single attribute
-    const std::vector<unsigned int>& getKeys() const;
     std::vector<double> getRow(unsigned int index) const; // gets whole row of values
-    LeafChunk* getNext();
 
     friend std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk); // for debugging
     ~LeafChunk() override;

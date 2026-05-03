@@ -16,6 +16,8 @@ struct InsertKeyStatus {
   Key key;
 };
 
+class Chunk; // forward declaration
+
 struct SplitChunk {
   Key key;
   Chunk* left;
@@ -36,7 +38,7 @@ class Chunk {
 
     // modifiers
     InsertKeyStatus insertKey(Key key);
-    virtual InsertStatus insert(Key key, const std::vector<Value>& val);
+    virtual InsertStatus insert(Key key, const std::vector<Value>& val) = 0;
     virtual SplitChunk split() = 0;
 
     // accessors

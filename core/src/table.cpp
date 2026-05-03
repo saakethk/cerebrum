@@ -1,4 +1,5 @@
 #include <deque>
+#include <iostream>
 
 #include "table.hpp"
 #include "chunks/internal_chunk.hpp"
@@ -9,6 +10,8 @@ Table::Table(std::vector<std::string> attributes) {
   this->attributes = attributes;
   this->root = new LeafChunk(attributes.size());
 }
+
+// modifiers
 
 bool Table::insert(Key key, std::vector<Value>& row) {
 
@@ -23,58 +26,55 @@ bool Table::insert(Key key, std::vector<Value>& row) {
   }
 
   InsertStatus cur = (path.back())->insert(key, row);
-  while (cur != Success) {
+  while ((cur != Success) && (path.size() > 0)) {
     // find node to insert into
     if (cur == Invalid) {
       return false;
-    } else if (cur == Full) {
-      // splits when full
-      std::pair<Chunk*, Chunk*> split_chunk = (path.back())->split();
-
-      if (path.size() == 0) {
-        // if theres no parent node
-        this->root = new InternalChunk();
-        this->root->children.push_back()
-      } else {
-        // if there is a parent node
-
-      }
-      path.push_back(split_chunk.first);
-      path.push_back(split_chunk.second);
     }
-    // push back till leaf is reached
+
+    // splits when full
+    SplitChunk split_chunk = (path.back())->split();
+    Chunk* top = path.back();
     path.pop_back();
+
+    if (path.size() == 0) {
+      // if theres no parent node
+      InternalChunk* new_root = new InternalChunk();
+      new_root->insertKey(split_chunk.key);
+      new_root->insertChild(split_chunk.left);
+      new_root->insertChild(split_chunk.right);
+      this->root = new_root;
+    } else {
+      // if there is a parent node
+      InternalChunk* parent = static_cast<InternalChunk*>(top);
+      parent->insertKey(split_chunk.key);
+      parent->insertChild(split_chunk.left);
+      parent->insertChild(split_chunk.right);
+    }
+
+    // push back till leaf is reached
+    cur = (path.back())->insert(key, row);
   }
-
-  // TODO check existence here
-  
-  // Chunk is a LeafChunk
-  // LeafChunk* leaf = static_cast<LeafChunk*>(curr);
-  // std::pair<bool, bool> status = leaf->insert(index, row);
-
-  // if (status.first == true) {
-  //   // full - needs to split
-
-  //   std::pair<Chunk*, Chunk*> split_leaf = leaf->split();
-  //   if (path.empty()) {
-  //     // leaf chunk is root node
-  //     InternalChunk* parent = new InternalChunk(split_leaf.first);
-  //     unsigned int split_key = static_cast<LeafChunk*>(split_leaf.second)->getKeys()[0];
-  //     parent->insert(split_key, split_leaf.second);
-  //     this->root = parent;
-  //     return true; // inserted
-  //   }
-
-    // TODO: Case where there are already Internal Chunks
-    
-
-    
-  // } else if (status.second == true) {
-  //   // duplicate - key already exists
-  //   return false;
-
-  // } else {
-  //   // no problems encountered
-  //   // nothing needs to happen
-  // }
+  return true;
 }
+
+// accessors
+
+Table::~Table() {
+  // not needed at moment
+}
+
+std::ostream& operator<<(std::ostream& os, const Table& table) {
+  os << "Leaf Chunk:\n";
+  // visualize data
+  for (unsigned int i = 0; i < chunk.num_filled; i++) {
+    os << "Key(" << chunk.keys[i] << ") ";
+    for (unsigned int j = 0; j < chunk.num_attributes; j++) {
+      os << chunk.values[j][i] << " ";
+    }
+    os << "\n";
+  }
+  return os;
+}
+
+
