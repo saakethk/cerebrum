@@ -39,6 +39,12 @@ bool Table::insert(unsigned int index, std::vector<double>& row) {
     }
 
     // TODO: Case where there are already Internal Chunks
+    std::pair<bool, bool> = ->insert(index, row)
+    while (
+      (.first == false)
+      & (leaf->i) {
+      
+    }
 
     
   } else if (status.second == true) {

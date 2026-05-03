@@ -103,18 +103,18 @@ const std::vector<unsigned int>& LeafChunk::getKeys() const {
   return this->keys;
 }
 
-std::pair<bool, bool> LeafChunk::insert(unsigned int key, const std::vector<double>& val) {
+InsertStatus LeafChunk::insert(unsigned int key, const std::vector<double>& val) {
   // case where space exists
   unsigned int key_index = this->insertKey(key);
   if (key_index == std::numeric_limits<unsigned int>::max()) {
-    return {true, false}; // indicates that chunk is full
+    return Full;
   } else if (key_index == std::numeric_limits<unsigned int>::max() - 1) {
-    return {false, true}; // indicates that key is already in chunk
+    return Invalid;
   }
   // inserts values into respective attributes
   this->insertValue(key_index, val);
   this->num_filled += 1;
-  return {false, false};
+  return Success;
 }
 
 std::pair<Chunk*, Chunk*> LeafChunk::split() {
