@@ -5,85 +5,23 @@
 #include "chunks/leaf_chunk.hpp"
 
 LeafChunk::LeafChunk(unsigned int num_attributes) {
+  
   this->next = nullptr;
   this->num_attributes = num_attributes;
   this->num_filled = 0;
+
   // reserve allocates space in memory (does not default construct)
   this->keys.resize(Chunk::MAX_DEGREE, std::numeric_limits<double>::max());
+
   // resize default constructs the items
   this->values.resize(num_attributes);
   for (std::vector<double>& val: this->values) {
     val.resize(Chunk::MAX_DEGREE, std::numeric_limits<double>::max()); // fills with max value of double
   }
+
 }
 
-bool LeafChunk::isLeaf() const {
-  return true;
-}
-
-bool LeafChunk::isFull() const {
-  // ensures that leaf can only have max_degree - 1 keys
-  if (this->num_filled < Chunk::MAX_DEGREE) {
-    return false;
-  }
-  return true;
-}
-
-double LeafChunk::get(unsigned int index, unsigned int attribute_index) const {
-  // returns a specific attribute
-  return this->values[attribute_index][index];
-}
-
-std::vector<double> LeafChunk::getRow(unsigned int index) const {
-  // gets all values associated with a index
-  std::vector<double> vals;
-  vals.reserve(this->num_attributes);
-  for (unsigned int attribute_index = 0; attribute_index < this->num_attributes; attribute_index++) {
-    vals.push_back(this->get(index, attribute_index));
-  }
-  return vals;
-}
-
-unsigned int LeafChunk::searchKey(unsigned int key) const {
-  // TODO: optimize this with binary search; currently basic linear search
-  for (unsigned int i = 0; i < this->num_filled; i++) {
-    if (this->keys[i] == key) {
-      return i;
-    }
-  }
-  return std::numeric_limits<unsigned int>::max(); // Return maximum value of unsigned int if not found
-}
-
-unsigned int LeafChunk::insertKey(unsigned int key) {
-  
-  if (this->isFull()) {
-    // return maximum value of unsigned int if max size reached
-    return std::numeric_limits<unsigned int>::max();
-  }
-
-  unsigned int i = 0;
-  while ((i < Chunk::MAX_DEGREE) && (key >= this->keys[i])) {
-    // finds correct part to insert into
-    i++;
-  }
-
-  if ((i > 0) && (this->keys[i - 1] == key)) {
-    // return maximum value of unsigned int minus one if key already exists
-    return std::numeric_limits<unsigned int>::max() - 1;
-  }
-
-  if (this->next != nullptr && this->next->getKeys()[0] == key) {
-    // checks edge case where the duplicate could be in next chunk
-    return std::numeric_limits<unsigned int>::max() - 1;
-  }
-
-  for (unsigned int j = this->num_filled; j > i; j--) {
-    // shifts values
-    this->keys[j] = this->keys[j - 1];
-  }
-  this->keys[i] = key; // insert value
-  return i;
-}
+// actions
 
 void LeafChunk::insertAttributeValue(unsigned int index, double val, std::vector<double>& attribute_vals) {
   for (unsigned int j = this->num_filled; j > index; j--) {
@@ -99,22 +37,14 @@ void LeafChunk::insertValue(unsigned int key_index, const std::vector<double>& v
   }
 }
 
-const std::vector<unsigned int>& LeafChunk::getKeys() const {
-  return this->keys;
-}
-
 InsertStatus LeafChunk::insert(unsigned int key, const std::vector<double>& val) {
-  // case where space exists
-  unsigned int key_index = this->insertKey(key);
-  if (key_index == std::numeric_limits<unsigned int>::max()) {
-    return Full;
-  } else if (key_index == std::numeric_limits<unsigned int>::max() - 1) {
-    return Invalid;
+  InsertKeyStatus key_insert = this->insertKey(key);
+
+  if (key_insert.status == Success) {
+    this->insertValue(key_insert.key, val);
   }
-  // inserts values into respective attributes
-  this->insertValue(key_index, val);
-  this->num_filled += 1;
-  return Success;
+  
+  return key_insert.status;
 }
 
 std::pair<Chunk*, Chunk*> LeafChunk::split() {
@@ -135,16 +65,13 @@ std::pair<Chunk*, Chunk*> LeafChunk::split() {
     val.erase(val.begin() + middle, val.end());
   }
   this->next = new_chunk;
-
   return {this, new_chunk};
 }
 
-LeafChunk* LeafChunk::getNext() {
-  return this->next;
-}
+// accessors
 
-LeafChunk::~LeafChunk() {
-  // not needed at moment
+bool LeafChunk::isLeaf() const {
+  return true;
 }
 
 std::pair<unsigned int, unsigned int> LeafChunk::size() const {
@@ -153,6 +80,25 @@ std::pair<unsigned int, unsigned int> LeafChunk::size() const {
   dims.first = this->num_filled;
   dims.second = this->num_attributes;
   return dims;
+}
+
+double LeafChunk::get(unsigned int index, unsigned int attribute_index) const {
+  // returns a specific attribute
+  return this->values[attribute_index][index];
+}
+
+std::vector<double> LeafChunk::getRow(unsigned int index) const {
+  // gets all values associated with a index
+  std::vector<double> vals;
+  vals.reserve(this->num_attributes);
+  for (unsigned int attribute_index = 0; attribute_index < this->num_attributes; attribute_index++) {
+    vals.push_back(this->get(index, attribute_index));
+  }
+  return vals;
+}
+
+LeafChunk::~LeafChunk() {
+  // not needed at moment
 }
 
 std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk) {

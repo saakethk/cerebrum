@@ -1,44 +1,32 @@
 
 #include "chunk.hpp"
 
-enum InsertStatus {
-  Full,
-  Invalid,
-  Success
-};
-
 class LeafChunk: public Chunk {
 
   private:
 
     // vars
     unsigned int num_attributes;
-    unsigned int num_filled;
-
-    std::vector<unsigned int> keys; // chunk size
     std::vector<std::vector<double>> values; // chunk size * num attributes
 
     LeafChunk* next;
 
     // helper methods
-    unsigned int searchKey(unsigned int key) const; // return local index or max val of int if not found
-    unsigned int insertKey(unsigned int key); // ensures ascending order is preserved
     void insertValue(unsigned int key_index, const std::vector<double>& val);
     void insertAttributeValue(unsigned int index, double val, std::vector<double>& attribute_vals);
-    bool isFull() const;
 
   public:
     LeafChunk(unsigned int num_attributes);
 
     // actions
-    InsertStatus insert(unsigned int key, const std::vector<double>& val); // returns {true, false} if full, {false, true} if key already in, {false, false} if successful
+    InsertStatus insert(unsigned int key, const std::vector<double>& val);
     std::pair<Chunk*, Chunk*> split();
 
     // accessors
     std::pair<unsigned int, unsigned int> size() const; // returns num_keys x num_attributes
-    double get(unsigned int index, unsigned int attribute_index) const; // gets single attribute
-
     bool isLeaf() const override; // returns true
+
+    double get(unsigned int index, unsigned int attribute_index) const; // gets single attribute
     const std::vector<unsigned int>& getKeys() const;
     std::vector<double> getRow(unsigned int index) const; // gets whole row of values
     LeafChunk* getNext();

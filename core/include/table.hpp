@@ -14,7 +14,7 @@ class Table {
   public:
     Table(std::vector<std::string> attributes);
 
-    bool insert(unsigned int index, std::vector<double>& row);
+    bool insert(unsigned int index, std::vector<Value>& row);
     // bool remove(std::string attribute_name, unsigned int index, double val);
 
     // bool addAttribute(std::string name);

@@ -3,40 +3,44 @@
 #include "chunks/internal_chunk.hpp"
 #include "chunks/leaf_chunk.hpp"
 
-InternalChunk::InternalChunk(Chunk* left_chunk) {
-  this->children.push_back(left_chunk);
+// actions
+
+InsertStatus InternalChunk::insert(Key key, const std::vector<Value>& val) {
+  return this->insertKey(key).status;
 }
 
-Chunk* InternalChunk::findNextChunk(unsigned int key) {
-  unsigned int i = 0;
-  while (key > this->keys[i] && i < this->children.size()) {
-    i++;
+std::pair<Chunk*, Chunk*> InternalChunk::split() {
+  // splits chunk across middle and returns pointers
+  const unsigned int num_full = this->num_filled;
+  const unsigned int middle = std::floor(this->num_filled / 2.0f);
+  InternalChunk* new_chunk = new InternalChunk();
+  new_chunk->children.push_back(new_chunk);
+
+  for (unsigned int i = middle; i < num_full; i++) {
+    // insert the middle and all to right to new chunk
+    new_chunk->insertKey(this->keys[i]);
+    this->num_filled -= 1;
   }
-  return this->children[i];
+
+  // delete the ones from middle onward in this chunk (inclusive)
+  (this->keys).erase((this->keys).begin() + middle, (this->keys).end());
+  return {this, new_chunk};
 }
 
-std::vector<double> InternalChunk::get(unsigned int key) {
+// accessors
+
+bool InternalChunk::isLeaf() const {
+  return false;
+}
+
+std::vector<Value> InternalChunk::get(Key key) {
   Chunk* curr = this;
   while (curr->isLeaf() == false) {
     // traverses the children till leaf node reached
-    curr = static_cast<InternalChunk*>(curr)->findNextChunk(key);
+    curr = curr->getNextChunk(key);
   }
   return static_cast<LeafChunk*>(curr)->getRow(key);
 } 
-
-bool InternalChunk::insert(unsigned int key, Chunk* children) {
-  if (this->keys.size() < Chunk::MAX_DEGREE && this->children.size() < Chunk::MAX_DEGREE + 1) {
-    this->keys.push_back(key);
-    this->children.push_back(children);
-    return true;
-  }
-  return false;
-}
-
-bool isLeaf() {
-  // returns false
-  return false;
-}
 
 std::ostream& operator<<(std::ostream& os, const InternalChunk& chunk) {
   os << "Internal Chunk: ";

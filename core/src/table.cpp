@@ -1,4 +1,4 @@
-#include <stack>
+#include <deque>
 
 #include "table.hpp"
 #include "chunks/internal_chunk.hpp"
@@ -14,45 +14,43 @@ Table::Table(std::vector<std::string> attributes) {
 bool Table::insert(unsigned int index, std::vector<double>& row) {
   Chunk* curr = this->root;
 
-  std::stack<Chunk*> path;
-  InternalChunk* internal = static_cast<InternalChunk*>(curr);
+  std::deque<Chunk*> path;
+  path.push_back()
+
   while (curr->isLeaf() == false) {
     // Chunk is a InternalChunk
-    curr = internal->findNextChunk(index);
+    // curr = internal->findNextChunk(index);
   }
+
+  // TODO check existence here
   
   // Chunk is a LeafChunk
-  LeafChunk* leaf = static_cast<LeafChunk*>(curr);
-  std::pair<bool, bool> status = leaf->insert(index, row);
+  // LeafChunk* leaf = static_cast<LeafChunk*>(curr);
+  // std::pair<bool, bool> status = leaf->insert(index, row);
 
-  if (status.first == true) {
-    // full - needs to split
+  // if (status.first == true) {
+  //   // full - needs to split
 
-    std::pair<Chunk*, Chunk*> split_leaf = leaf->split();
-    if (path.empty()) {
-      // leaf chunk is root node
-      InternalChunk* parent = new InternalChunk(split_leaf.first);
-      unsigned int split_key = static_cast<LeafChunk*>(split_leaf.second)->getKeys()[0];
-      parent->insert(split_key, split_leaf.second);
-      this->root = parent;
-      return true; // inserted
-    }
+  //   std::pair<Chunk*, Chunk*> split_leaf = leaf->split();
+  //   if (path.empty()) {
+  //     // leaf chunk is root node
+  //     InternalChunk* parent = new InternalChunk(split_leaf.first);
+  //     unsigned int split_key = static_cast<LeafChunk*>(split_leaf.second)->getKeys()[0];
+  //     parent->insert(split_key, split_leaf.second);
+  //     this->root = parent;
+  //     return true; // inserted
+  //   }
 
     // TODO: Case where there are already Internal Chunks
-    std::pair<bool, bool> = ->insert(index, row)
-    while (
-      (.first == false)
-      & (leaf->i) {
-      
-    }
+    
 
     
-  } else if (status.second == true) {
-    // duplicate - key already exists
-    return false;
+  // } else if (status.second == true) {
+  //   // duplicate - key already exists
+  //   return false;
 
-  } else {
-    // no problems encountered
-    // nothing needs to happen
-  }
+  // } else {
+  //   // no problems encountered
+  //   // nothing needs to happen
+  // }
 }
