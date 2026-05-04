@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "chunks/leaf_chunk.hpp"
+#include "table.hpp"
 
 int main() {
 
@@ -19,7 +20,16 @@ int main() {
   // SplitChunk result = test->split();
   // std::cout << (*(static_cast<LeafChunk*>(result.left))) << std::endl;
   // std::cout << (*(static_cast<LeafChunk*>(result.right))) << std::endl;
-  
+
+  Table table = Table({"stuff"});
+
+  std::vector<Value> row = {1};
+  for (unsigned int i = 0; i < 1000; i++) {
+    table.insert(i, row);
+  }
+
+  std::cout << table << std::endl;
+
   return 0;
 
 }

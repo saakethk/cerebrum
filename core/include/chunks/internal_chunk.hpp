@@ -1,12 +1,15 @@
+#pragma once
 
 #include "chunk.hpp"
 
 class InternalChunk: public Chunk {
   public:
+    InternalChunk();
 
     // actions
     InsertStatus insert(Key key, const std::vector<Value>& val) override;
     void insertChild(Chunk* chunk);
+    InsertStatus insertChild(Key key, Chunk* right_child);
     SplitChunk split() override;
 
     // accessors

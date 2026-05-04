@@ -21,7 +21,7 @@ bool Table::insert(Key key, std::vector<Value>& row) {
   while ((path.back())->isLeaf() == false) {
     // push back till leaf is reached
     path.push_back(
-      (path.back())->getNextChunk(key)
+      (path.back())->getChildChunk(key)
     );
   }
 
@@ -34,7 +34,6 @@ bool Table::insert(Key key, std::vector<Value>& row) {
 
     // splits when full
     SplitChunk split_chunk = (path.back())->split();
-    Chunk* top = path.back();
     path.pop_back();
 
     if (path.size() == 0) {
@@ -44,17 +43,18 @@ bool Table::insert(Key key, std::vector<Value>& row) {
       new_root->insertChild(split_chunk.left);
       new_root->insertChild(split_chunk.right);
       this->root = new_root;
+      return this->insert(key, row);
     } else {
       // if there is a parent node
-      InternalChunk* parent = static_cast<InternalChunk*>(top);
-      parent->insertKey(split_chunk.key);
-      parent->insertChild(split_chunk.left);
-      parent->insertChild(split_chunk.right);
+      InternalChunk* parent = static_cast<InternalChunk*>(path.back());
+      cur = parent->insertChild(split_chunk.key, split_chunk.right);
     }
 
-    // push back till leaf is reached
-    cur = (path.back())->insert(key, row);
+    if (cur == Success) {
+      return this->insert(key, row);
+    }
   }
+
   return true;
 }
 
@@ -65,16 +65,18 @@ Table::~Table() {
 }
 
 std::ostream& operator<<(std::ostream& os, const Table& table) {
-  os << "Leaf Chunk:\n";
+  os << "Table:\n";
   // visualize data
-  for (unsigned int i = 0; i < chunk.num_filled; i++) {
-    os << "Key(" << chunk.keys[i] << ") ";
-    for (unsigned int j = 0; j < chunk.num_attributes; j++) {
-      os << chunk.values[j][i] << " ";
-    }
-    os << "\n";
+  Chunk* cur = table.root;
+  while (cur->isLeaf() == false) {
+    cur = cur->getFirstChild();
   }
+
+  LeafChunk* first = static_cast<LeafChunk*>(cur);
+  while (first != nullptr) {
+    os << *first << std::endl;
+    first = first->getNext();
+  }
+
   return os;
 }
-
-

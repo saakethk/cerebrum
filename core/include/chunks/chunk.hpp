@@ -46,7 +46,8 @@ class Chunk {
     bool isFull() const;
 
     Key searchKey(Key key) const; // returns max int size if failed
-    Chunk* getNextChunk(Key key);
+    Chunk* getChildChunk(Key key); // traverses down tree
+    Chunk* getFirstChild(); // get the first child of the node
     
     virtual ~Chunk() = default;
 };

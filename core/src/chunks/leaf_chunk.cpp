@@ -11,12 +11,12 @@ LeafChunk::LeafChunk(unsigned int num_attributes) {
   this->num_filled = 0;
 
   // reserve allocates space in memory (does not default construct)
-  this->keys.resize(Chunk::MAX_DEGREE, std::numeric_limits<double>::max());
+  this->keys.resize(Chunk::MAX_DEGREE + 1, std::numeric_limits<Key>::max());
 
   // resize default constructs the items
   this->values.resize(num_attributes);
   for (std::vector<double>& val: this->values) {
-    val.resize(Chunk::MAX_DEGREE, std::numeric_limits<double>::max()); // fills with max value of double
+    val.resize(Chunk::MAX_DEGREE + 1, std::numeric_limits<Value>::max()); // fills with max value of double
   }
 
 }
@@ -52,6 +52,7 @@ SplitChunk LeafChunk::split() {
   const unsigned int num_full = this->num_filled;
   const unsigned int middle = std::floor(this->num_filled / 2.0f);
   LeafChunk* new_chunk = new LeafChunk(this->num_attributes);
+  const Key split_key = this->keys[middle];
 
   for (unsigned int i = middle; i < num_full; i++) {
     // insert the middle and all to right to new chunk
@@ -61,12 +62,15 @@ SplitChunk LeafChunk::split() {
 
   // delete the ones from middle onward in this chunk (inclusive)
   (this->keys).erase((this->keys).begin() + middle, (this->keys).end());
+  this->keys.resize(Chunk::MAX_DEGREE + 1, std::numeric_limits<Key>::max());
   for (std::vector<double>& val: this->values) {
     val.erase(val.begin() + middle, val.end());
+    val.resize(Chunk::MAX_DEGREE + 1, std::numeric_limits<Value>::max());
   }
+  new_chunk->next = this->next;
   this->next = new_chunk;
   return {
-    this->keys[middle], 
+    split_key,
     this, new_chunk};
 }
 
@@ -74,6 +78,10 @@ SplitChunk LeafChunk::split() {
 
 bool LeafChunk::isLeaf() const {
   return true;
+}
+
+LeafChunk* LeafChunk::getNext() {
+  return this->next;
 }
 
 std::pair<unsigned int, unsigned int> LeafChunk::size() const {

@@ -20,10 +20,14 @@ unsigned int Chunk::searchKey(unsigned int key) const {
   return std::numeric_limits<unsigned int>::max();
 }
 
-Chunk* Chunk::getNextChunk(unsigned int key) {
+Chunk* Chunk::getFirstChild() {
+  return this->children[0];
+}
+
+Chunk* Chunk::getChildChunk(Key key) {
   // TODO: potentially implement binary search here
   unsigned int i = 0;
-  while (key > this->keys[i] && i < this->children.size()) {
+  while ((i < this->num_filled) && (key >= this->keys[i])) {
     i++;
   }
   return this->children[i];
@@ -36,7 +40,7 @@ InsertKeyStatus Chunk::insertKey(unsigned int key) {
   }
 
   unsigned int i = 0;
-  while ((i < Chunk::MAX_DEGREE) && (key >= this->keys[i])) {
+  while ((i < this->num_filled) && (key >= this->keys[i])) {
     // finds correct part to insert into
     i++;
   }
