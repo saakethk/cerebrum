@@ -13,7 +13,7 @@ InternalChunk::InternalChunk() {
 // actions
 
 InsertStatus InternalChunk::insert(Key key, [[maybe_unused]] const std::vector<Value>& val) {
-  return this->insertKey(key).status;
+  return this->insertKey(key);
 }
 
 void InternalChunk::insertChild(Chunk* chunk) {

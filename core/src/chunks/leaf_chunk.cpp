@@ -37,14 +37,21 @@ void LeafChunk::insertValue(unsigned int key_index, const std::vector<double>& v
   }
 }
 
-InsertStatus LeafChunk::insert(unsigned int key, const std::vector<double>& val) {
-  InsertKeyStatus key_insert = this->insertKey(key);
+InsertStatus LeafChunk::insert(Key key, const std::vector<double>& val) {
 
-  if (key_insert.status == Success) {
-    this->insertValue(key_insert.key, val);
+  // find insertion loc
+  KeyLoc loc = this->searchKey(key);
+  if (loc.valid == false) {
+    return Invalid;
+  }
+
+  // find status of insert
+  InsertStatus key_insert = this->insertKey(loc.index, key);
+  if (key_insert == Success) {
+    this->insertValue(key, val);
   }
   
-  return key_insert.status;
+  return key_insert;
 }
 
 SplitChunk LeafChunk::split() {

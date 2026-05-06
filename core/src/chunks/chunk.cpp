@@ -44,28 +44,19 @@ Chunk* Chunk::getChildChunk(Key key) {
   return this->children[i];
 }
 
-InsertKeyStatus Chunk::insertKey(unsigned int key) {
+InsertStatus Chunk::insertKey(unsigned int index, Key key) {
   
   if (this->isFull()) {
-    return {Full, 0};
+    return Full;
   }
 
-  unsigned int i = 0;
-  while ((i < this->num_filled) && (key >= this->keys[i])) {
-    // finds correct part to insert into
-    i++;
-  }
-
-  if ((i > 0) && (this->keys[i - 1] == key)) {
-    // key already exists
-    return {Invalid, 0};
-  }
-
-  for (unsigned int j = this->num_filled; j > i; j--) {
+  for (unsigned int j = this->num_filled; j > index; j--) {
     // shifts values
     this->keys[j] = this->keys[j - 1];
   }
-  this->keys[i] = key; // insert value
+
+  // insert value
+  this->keys[index] = key;
   this->num_filled += 1;
-  return {Success, i};
+  return Success;
 }

@@ -11,11 +11,6 @@ enum InsertStatus {
 using Key = unsigned int;
 using Value = double;
 
-struct InsertKeyStatus {
-  InsertStatus status;
-  Key key;
-};
-
 class Chunk; // forward declaration
 
 struct SplitChunk {
@@ -42,7 +37,7 @@ class Chunk {
     static constexpr unsigned int MAX_DEGREE = 5;
 
     // modifiers
-    InsertKeyStatus insertKey(Key key);
+    InsertStatus insertKey(unsigned int index, Key key);
     virtual InsertStatus insert(Key key, const std::vector<Value>& val) = 0;
     virtual SplitChunk split() = 0;
 
