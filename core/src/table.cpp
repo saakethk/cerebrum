@@ -57,7 +57,6 @@ bool Table::insert(Key key, std::vector<Value>& row) {
 
   }
 
-  // cur is Success or Invalid here
   if (cur == Invalid) {
     return false;
   }

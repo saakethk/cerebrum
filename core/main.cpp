@@ -28,6 +28,11 @@ int main() {
     table.insert(i, row);
   }
 
+  row = {6, 2, 3, 4, 5};
+  for (unsigned int i = 0; i < 1000; i++) {
+    table.insert(i, row);
+  }
+
   std::cout << table << std::endl;
 
   return 0;

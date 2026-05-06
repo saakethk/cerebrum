@@ -8,16 +8,30 @@ bool Chunk::isFull() const {
   return true;
 }
 
-unsigned int Chunk::searchKey(unsigned int key) const {
+int Chunk::searchKey(Key key) const {
   // TODO: optimize this with binary search; currently basic linear search
-  for (unsigned int i = 0; i < this->num_filled; i++) {
-    if (this->keys[i] == key) {
-      return i;
+  // for (unsigned int i = 0; i < this->num_filled; i++) {
+  //   if (this->keys[i] == key) {
+  //     return true;
+  //   }
+  // }
+
+  // binary search to find key loc
+  unsigned int start = 0;
+  unsigned int end = this->num_filled;
+  unsigned int middle = (start + end) / 2;
+  while (start < end) {
+    if (key > this->keys[middle]) {
+      start = middle + 1;
+    } else if (key < this->keys[middle]) {
+      end = middle;
+    } else if (key == this->keys[middle]) {
+      return -1;
     }
   }
 
-  // Return maximum value of unsigned int if not found
-  return std::numeric_limits<unsigned int>::max();
+  // Returns index to insert key into
+  return middle;
 }
 
 Chunk* Chunk::getFirstChild() {
