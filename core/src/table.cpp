@@ -1,4 +1,4 @@
-#include <deque>
+#include <stack>
 #include <iostream>
 
 #include "table.hpp"
@@ -15,46 +15,52 @@ Table::Table(std::vector<std::string> attributes) {
 
 bool Table::insert(Key key, std::vector<Value>& row) {
 
-  std::deque<Chunk*> path;
-  path.push_back(this->root);
+  // find leaf
+  std::stack<Chunk*> path;
+  path.push(this->root);
 
-  while ((path.back())->isLeaf() == false) {
-    // push back till leaf is reached
-    path.push_back(
-      (path.back())->getChildChunk(key)
-    );
-  }
+  while (!path.top()->isLeaf())
+    path.push(path.top()->getChildChunk(key));
 
-  InsertStatus cur = (path.back())->insert(key, row);
-  while ((cur != Success) && (path.size() > 0)) {
-    // find node to insert into
-    if (cur == Invalid) {
-      return false;
-    }
+  // insert into leaf
+  Chunk* current = path.top();
+  path.pop();
 
-    // splits when full
-    SplitChunk split_chunk = (path.back())->split();
-    path.pop_back();
+  InsertStatus cur = current->insert(key, row);
 
-    if (path.size() == 0) {
-      // if theres no parent node
+  if (cur == Invalid) return false;  // duplicate or bad key
+  if (cur == Success) return true;   // no split needed
+
+  // split internal nodes when full
+  while (cur == Full) {
+    SplitChunk split = current->split();
+
+    if (path.empty()) {
+      // no root
       InternalChunk* new_root = new InternalChunk();
-      new_root->insertKey(split_chunk.key);
-      new_root->insertChild(split_chunk.left);
-      new_root->insertChild(split_chunk.right);
+      new_root->insertKey(split.key);
+      new_root->insertChild(split.left);
+      new_root->insertChild(split.right);
       this->root = new_root;
       return this->insert(key, row);
-    } else {
-      // if there is a parent node
-      InternalChunk* parent = static_cast<InternalChunk*>(path.back());
-      cur = parent->insertChild(split_chunk.key, split_chunk.right);
     }
+
+    // when parent internal node exists
+    InternalChunk* parent = static_cast<InternalChunk*>(path.top());
+    path.pop();
+    cur = parent->insertChild(split.key, split.right);
+    current = parent;
 
     if (cur == Success) {
       return this->insert(key, row);
     }
+
   }
 
+  // cur is Success or Invalid here
+  if (cur == Invalid) {
+    return false;
+  }
   return true;
 }
 
@@ -74,7 +80,7 @@ std::ostream& operator<<(std::ostream& os, const Table& table) {
 
   LeafChunk* first = static_cast<LeafChunk*>(cur);
   while (first != nullptr) {
-    os << *first << std::endl;
+    os << *first;
     first = first->getNext();
   }
 

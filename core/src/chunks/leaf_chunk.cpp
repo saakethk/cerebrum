@@ -57,7 +57,6 @@ SplitChunk LeafChunk::split() {
   for (unsigned int i = middle; i < num_full; i++) {
     // insert the middle and all to right to new chunk
     new_chunk->insert(this->keys[i], this->getRow(i));
-    this->num_filled -= 1;
   }
 
   // delete the ones from middle onward in this chunk (inclusive)
@@ -68,6 +67,7 @@ SplitChunk LeafChunk::split() {
     val.resize(Chunk::MAX_DEGREE + 1, std::numeric_limits<Value>::max());
   }
   new_chunk->next = this->next;
+  this->num_filled = middle;
   this->next = new_chunk;
   return {
     split_key,
@@ -112,7 +112,6 @@ LeafChunk::~LeafChunk() {
 }
 
 std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk) {
-  os << "Leaf Chunk:\n";
   // visualize data
   for (unsigned int i = 0; i < chunk.num_filled; i++) {
     os << "Key(" << chunk.keys[i] << ") ";

@@ -21,10 +21,7 @@ void InternalChunk::insertChild(Chunk* chunk) {
 }
 
 InsertStatus InternalChunk::insertChild(Key key, Chunk* right_child) {
-  if (this->num_filled >= this->keys.size()) {
-    return Full;
-  }
-
+  // inserts child in correct sorted place in chunk
   unsigned int i = 0;
   while ((i < this->num_filled) && (key >= this->keys[i])) {
     i++;
