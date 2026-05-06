@@ -8,30 +8,27 @@ bool Chunk::isFull() const {
   return true;
 }
 
-int Chunk::searchKey(Key key) const {
-  // TODO: optimize this with binary search; currently basic linear search
-  // for (unsigned int i = 0; i < this->num_filled; i++) {
-  //   if (this->keys[i] == key) {
-  //     return true;
-  //   }
-  // }
-
+KeyLoc Chunk::searchKey(Key key) const {
   // binary search to find key loc
   unsigned int start = 0;
   unsigned int end = this->num_filled;
-  unsigned int middle = (start + end) / 2;
+  unsigned int middle;
   while (start < end) {
+
+    middle = (start + end) / 2;
+
     if (key > this->keys[middle]) {
       start = middle + 1;
     } else if (key < this->keys[middle]) {
       end = middle;
     } else if (key == this->keys[middle]) {
-      return -1;
+      // if key already exists
+      return {false, middle};
     }
   }
 
   // Returns index to insert key into
-  return middle;
+  return {true, start};
 }
 
 Chunk* Chunk::getFirstChild() {

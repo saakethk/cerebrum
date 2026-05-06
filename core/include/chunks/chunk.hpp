@@ -24,6 +24,11 @@ struct SplitChunk {
   Chunk* right;
 };
 
+struct KeyLoc {
+  bool valid;
+  unsigned int index;
+};
+
 class Chunk {
 
   protected:
@@ -45,7 +50,7 @@ class Chunk {
     virtual bool isLeaf() const = 0;
     bool isFull() const;
 
-    int searchKey(Key key) const; // return true if exists
+    KeyLoc searchKey(Key key) const; // return true if exists
     Chunk* getChildChunk(Key key); // traverses down tree
     Chunk* getFirstChild(); // get the first child of the node
     
