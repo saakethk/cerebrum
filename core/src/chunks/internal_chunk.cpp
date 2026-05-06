@@ -13,7 +13,8 @@ InternalChunk::InternalChunk() {
 // actions
 
 InsertStatus InternalChunk::insert(Key key, [[maybe_unused]] const std::vector<Value>& val) {
-  return this->insertKey(key);
+  KeyLoc loc = this->searchKey(key);
+  return this->insertKey(loc.index, key);
 }
 
 void InternalChunk::insertChild(Chunk* chunk) {
@@ -46,7 +47,7 @@ SplitChunk InternalChunk::split() {
 
   for (unsigned int i = middle + 1; i < num_full; i++) {
     // insert keys to right of the promoted key into the new chunk
-    new_chunk->insertKey(this->keys[i]);
+    new_chunk->insertKey(new_chunk->num_filled, this->keys[i]);
   }
 
   new_chunk->children.insert(

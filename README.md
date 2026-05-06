@@ -51,6 +51,9 @@ $$
 ]
 $$
 
+# TODO:
+- Make searching the chunk binary search
+- Make minor efficiency improvements for rows
 
 # Future Plans
 1. Make it so that you can calculate markov chain probailities

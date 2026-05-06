@@ -45,6 +45,7 @@ Chunk* Chunk::getChildChunk(Key key) {
 }
 
 InsertStatus Chunk::insertKey(unsigned int index, Key key) {
+  // inserts key at provided index
   
   if (this->isFull()) {
     return Full;

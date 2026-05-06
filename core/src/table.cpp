@@ -38,10 +38,15 @@ bool Table::insert(Key key, std::vector<Value>& row) {
     if (path.empty()) {
       // no root
       InternalChunk* new_root = new InternalChunk();
-      new_root->insertKey(split.key);
+
+      KeyLoc loc = new_root->searchKey(key);
+      new_root->insertKey(loc.index, split.key);
+
       new_root->insertChild(split.left);
       new_root->insertChild(split.right);
+
       this->root = new_root;
+      
       return this->insert(key, row);
     }
 
