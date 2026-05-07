@@ -10,7 +10,7 @@ InternalChunk::InternalChunk() {
 Chunk* InternalChunk::getNext(Key key) {
   // gets next chunk in tree
   unsigned int i = 0;
-  while ((i < this->num_filled) && (key > this->keys[i])) {
+  while ((i < this->num_filled) && (key >= this->keys[i])) {
     i++;
   }
   return this->children[i];
@@ -22,15 +22,15 @@ Chunk* InternalChunk::getFirst() const {
 }
 
 InsertStatus InternalChunk::insert(Key key) {
+  KeyLoc loc = this->searchKey(key);
+  if (loc.valid == true) {
+    // key already exists
+    return Invalid;
+  }
+
   if (this->isFull() == true) {
     // checks if full
     return Full;
-  }
-
-  KeyLoc loc = this->searchKey(key);
-  if (loc.valid == false) {
-    // key already exists
-    return Invalid;
   }
 
   // insertion successful
@@ -43,15 +43,15 @@ void InternalChunk::insertChild(Chunk* chunk) {
 }
 
 InsertStatus InternalChunk::insertChild(Key key, Chunk* chunk) {
+  KeyLoc loc = this->searchKey(key);
+  if (loc.valid == true) {
+    // key already exists
+    return Invalid;
+  }
+
   if (this->isFull() == true) {
     // checks if full
     return Full;
-  }
-
-  KeyLoc loc = this->searchKey(key);
-  if (loc.valid == false) {
-    // key already exists
-    return Invalid;
   }
 
   this->insertKey(loc.index, key);

@@ -50,16 +50,16 @@ void LeafChunk::removeValue(unsigned int key_index) {
 }
 
 InsertStatus LeafChunk::insert(Key key, std::vector<Value>& row) {
-  if (this->isFull() == true) {
-    // checks if full
-    return Full;
-  }
-
-  // finds loc to insert
+  // find key before checking fullness so duplicate keys are rejected even in a full chunk
   KeyLoc loc = this->searchKey(key);
   if (loc.valid == true) {
     // key already exists
     return Invalid;
+  }
+
+  if (this->isFull() == true) {
+    // checks if full
+    return Full;
   }
 
   // insertion successful
