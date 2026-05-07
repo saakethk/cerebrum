@@ -26,5 +26,4 @@ class Table {
     // bool apply(std::string attribute_name, std::string equation);
 
     friend std::ostream& operator<<(std::ostream& os, const Table& table); // for debugging
-    ~Table();
 };

@@ -69,16 +69,3 @@ std::vector<Key>& Chunk::getKeys() {
 unsigned int Chunk::getNumItems() const {
   return this->num_filled;
 }
-
-// Chunk* Chunk::getFirstChild() {
-//   return this->children[0];
-// }
-
-// Chunk* Chunk::getChildChunk(Key key) {
-//   // TODO: potentially implement binary search here
-//   unsigned int i = 0;
-//   while ((i < this->num_filled) && (key >= this->keys[i])) {
-//     i++;
-//   }
-//   return this->children[i];
-// }

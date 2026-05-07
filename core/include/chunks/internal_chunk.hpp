@@ -18,10 +18,11 @@ class InternalChunk: public Chunk {
     InternalChunk();
 
     ChunkRes getNext(Key key);
+    Chunk* getFirst() const;
 
     InsertStatus insert(Key key);
     void insertChild(Chunk* chunk);
-    void insertChild(Key key, Chunk* chunk);
+    InsertStatus insertChild(Key key, Chunk* chunk);
 
     bool remove(Key key) override;
     SplitChunk split() override;

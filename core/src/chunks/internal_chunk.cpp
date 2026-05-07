@@ -19,6 +19,11 @@ ChunkRes InternalChunk::getNext(Key key) {
   return {true, this->children[loc.index]};
 }
 
+Chunk* InternalChunk::getFirst() const {
+  // return left-most child
+  return this->children[0];
+}
+
 InsertStatus InternalChunk::insert(Key key) {
   if (this->isFull() == true) {
     // checks if full
@@ -40,10 +45,20 @@ void InternalChunk::insertChild(Chunk* chunk) {
   this->children.push_back(chunk);
 }
 
-void InternalChunk::insertChild(Key key, Chunk* chunk) {
-  // assumes key exists
+InsertStatus InternalChunk::insertChild(Key key, Chunk* chunk) {
+  if (this->isFull() == true) {
+    // checks if full
+    return Full;
+  }
+
   KeyLoc loc = this->searchKey(key);
+  if (loc.valid == true) {
+    // key already exists
+    return Invalid;
+  }
+
   this->children[loc.index] = chunk;
+  return Success;
 }
 
 bool InternalChunk::remove(Key key) {

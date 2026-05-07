@@ -11,67 +11,66 @@ Table::Table(std::vector<std::string> attributes) {
   this->root = new LeafChunk(attributes.size());
 }
 
-// modifiers
-
 bool Table::insert(Key key, std::vector<Value>& row) {
 
   // find leaf
   std::stack<Chunk*> path;
   path.push(this->root);
 
-  while (!path.top()->isLeaf())
-    path.push(path.top()->getChildChunk(key));
+  while (path.top()->isLeaf() == false) {
+    // traverse down tree and find leaf
+    InternalChunk* top = static_cast<InternalChunk*>(path.top());
+    ChunkRes res = top->getNext(key);
+    
+    if (res.valid == false) {
+      // duplicate key
+      return false;
+    }
+
+    path.push(res.chunk);
+  }
 
   // insert into leaf
   Chunk* current = path.top();
+  LeafChunk* leaf = static_cast<LeafChunk*>(current);
+  InsertStatus status = leaf->insert(key, row);
   path.pop();
 
-  InsertStatus cur = current->insert(key, row);
-
-  if (cur == Invalid) return false;  // duplicate or bad key
-  if (cur == Success) return true;   // no split needed
+  if (status == Invalid) 
+    return false; // duplicate
+  if (status == Success) 
+    return true; // no split needed
 
   // split internal nodes when full
-  while (cur == Full) {
+  while (status == Full) {
     SplitChunk split = current->split();
 
     if (path.empty()) {
       // no root
       InternalChunk* new_root = new InternalChunk();
-
-      KeyLoc loc = new_root->searchKey(key);
-      new_root->insertKey(loc.index, split.key);
-
-      new_root->insertChild(split.left);
-      new_root->insertChild(split.right);
-
+      new_root->insert(key);
+      new_root->insertChild(current);
+      new_root->insertChild(split.chunk);
       this->root = new_root;
-      
       return this->insert(key, row);
     }
 
     // when parent internal node exists
     InternalChunk* parent = static_cast<InternalChunk*>(path.top());
     path.pop();
-    cur = parent->insertChild(split.key, split.right);
+    status = parent->insertChild(split.key, split.chunk);
     current = parent;
 
-    if (cur == Success) {
+    if (status == Success) {
       return this->insert(key, row);
     }
 
   }
 
-  if (cur == Invalid) {
+  if (status == Invalid) {
     return false;
   }
   return true;
-}
-
-// accessors
-
-Table::~Table() {
-  // not needed at moment
 }
 
 std::ostream& operator<<(std::ostream& os, const Table& table) {
@@ -79,7 +78,7 @@ std::ostream& operator<<(std::ostream& os, const Table& table) {
   // visualize data
   Chunk* cur = table.root;
   while (cur->isLeaf() == false) {
-    cur = cur->getFirstChild();
+    cur = static_cast<InternalChunk*>(cur)->getFirst();
   }
 
   LeafChunk* first = static_cast<LeafChunk*>(cur);
