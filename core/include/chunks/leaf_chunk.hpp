@@ -21,12 +21,10 @@ class LeafChunk: public Chunk {
     LeafChunk(unsigned int num_attributes);
 
     InsertStatus insert(Key key, std::vector<Value>& row);
-
     bool remove(Key key) override;
     SplitChunk split() override;
 
     bool isLeaf() const override;
-    bool isFull() const override;
 
     unsigned int getNumAttributes() const;
     LeafChunk* getNext();
@@ -36,5 +34,4 @@ class LeafChunk: public Chunk {
     std::vector<Value>& getRow(Key key) const;
     
     friend std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk); // for debugging
-    ~LeafChunk() override;
 };

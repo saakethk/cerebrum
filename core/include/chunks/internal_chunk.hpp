@@ -2,6 +2,11 @@
 
 #include "chunk.hpp"
 
+struct ChunkRes {
+  bool valid;
+  Chunk* chunk;
+};
+
 class InternalChunk: public Chunk {
 
   private:
@@ -12,7 +17,7 @@ class InternalChunk: public Chunk {
 
     InternalChunk();
 
-    InternalChunk* getNext(Key key);
+    ChunkRes getNext(Key key);
 
     InsertStatus insert(Key key);
     void insertChild(Chunk* chunk);
@@ -22,8 +27,6 @@ class InternalChunk: public Chunk {
     SplitChunk split() override;
 
     bool isLeaf() const override;
-    bool isFull() const override;
 
     friend std::ostream& operator<<(std::ostream& os, const InternalChunk& chunk); // for debugging
-    ~InternalChunk() override;
 };

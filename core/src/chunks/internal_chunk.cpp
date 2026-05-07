@@ -4,38 +4,59 @@
 #include "chunks/leaf_chunk.hpp"
 
 InternalChunk::InternalChunk() {
-  this->num_filled = 0;
-
-  // reserve allocates space in memory (does not default construct)
-  this->keys.resize(Chunk::MAX_DEGREE + 1, std::numeric_limits<Key>::max());
+  this->children.resize(CHUNK_SIZE, 0);
 }
 
-// actions
-
-InsertStatus InternalChunk::insert(Key key, [[maybe_unused]] const std::vector<Value>& val) {
+ChunkRes InternalChunk::getNext(Key key) {
+  // gets next chunk in tree
   KeyLoc loc = this->searchKey(key);
-  return this->insertKey(loc.index, key);
+
+  if (loc.valid == false) {
+    // key not found
+    return {false, this};
+  }
+
+  return {true, this->children[loc.index]};
+}
+
+InsertStatus InternalChunk::insert(Key key) {
+  if (this->isFull() == true) {
+    // checks if full
+    return Full;
+  }
+
+  KeyLoc loc = this->searchKey(key);
+  if (loc.valid == true) {
+    // key already exists
+    return Invalid;
+  }
+
+  // insertion successful
+  this->insertKey(loc.index, key);
+  return Success;
 }
 
 void InternalChunk::insertChild(Chunk* chunk) {
   this->children.push_back(chunk);
 }
 
-InsertStatus InternalChunk::insertChild(Key key, Chunk* right_child) {
-  // inserts child in correct sorted place in chunk
-  unsigned int i = 0;
-  while ((i < this->num_filled) && (key >= this->keys[i])) {
-    i++;
+void InternalChunk::insertChild(Key key, Chunk* chunk) {
+  // assumes key exists
+  KeyLoc loc = this->searchKey(key);
+  this->children[loc.index] = chunk;
+}
+
+bool InternalChunk::remove(Key key) {
+
+  // finds key
+  KeyLoc loc = this->searchKey(key);
+  if (loc.valid == false) {
+    // key not found
+    return false;
   }
 
-  for (unsigned int j = this->num_filled; j > i; j--) {
-    this->keys[j] = this->keys[j - 1];
-  }
-  this->keys[i] = key;
-  this->num_filled += 1;
-
-  this->children.insert(this->children.begin() + i + 1, right_child);
-  return this->num_filled > Chunk::MAX_DEGREE ? Full : Success;
+  this->removeKey(key);
+  return true;
 }
 
 SplitChunk InternalChunk::split() {
@@ -58,39 +79,23 @@ SplitChunk InternalChunk::split() {
 
   this->num_filled = middle;
   (this->keys).erase((this->keys).begin() + middle, (this->keys).end());
-  this->keys.resize(Chunk::MAX_DEGREE + 1, std::numeric_limits<Key>::max());
+  this->keys.resize(CHUNK_SIZE, 0);
   this->children.erase(this->children.begin() + middle + 1, this->children.end());
 
-  return {
-    split_key,
-    this, new_chunk};
+  return {split_key, new_chunk};
 }
 
-// accessors
-
 bool InternalChunk::isLeaf() const {
+  // internal chunk
   return false;
 }
 
-std::vector<Value> InternalChunk::get(Key key) {
-  Chunk* curr = this;
-  while (curr->isLeaf() == false) {
-    // traverses the children till leaf node reached
-    curr = curr->getChildChunk(key);
-  }
-  return static_cast<LeafChunk*>(curr)->getRow(key);
-}
-
 std::ostream& operator<<(std::ostream& os, const InternalChunk& chunk) {
+  // debug function
   os << "Internal Chunk: ";
-  // visualize data
   for (unsigned int key: chunk.keys) {
     os << "Key(" << key << ") ";
   }
   os << "\n";
   return os;
-}
-
-InternalChunk::~InternalChunk() {
-  // not needed at moment
 }
