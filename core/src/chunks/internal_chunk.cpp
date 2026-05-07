@@ -4,19 +4,16 @@
 #include "chunks/leaf_chunk.hpp"
 
 InternalChunk::InternalChunk() {
-  this->children.resize(CHUNK_SIZE, 0);
+  this->children.reserve(CHUNK_SIZE + 1);
 }
 
-ChunkRes InternalChunk::getNext(Key key) {
+Chunk* InternalChunk::getNext(Key key) {
   // gets next chunk in tree
-  KeyLoc loc = this->searchKey(key);
-
-  if (loc.valid == false) {
-    // key not found
-    return {false, this};
+  unsigned int i = 0;
+  while ((i < this->num_filled) && (key > this->keys[i])) {
+    i++;
   }
-
-  return {true, this->children[loc.index]};
+  return this->children[i];
 }
 
 Chunk* InternalChunk::getFirst() const {
@@ -31,7 +28,7 @@ InsertStatus InternalChunk::insert(Key key) {
   }
 
   KeyLoc loc = this->searchKey(key);
-  if (loc.valid == true) {
+  if (loc.valid == false) {
     // key already exists
     return Invalid;
   }
@@ -52,12 +49,13 @@ InsertStatus InternalChunk::insertChild(Key key, Chunk* chunk) {
   }
 
   KeyLoc loc = this->searchKey(key);
-  if (loc.valid == true) {
+  if (loc.valid == false) {
     // key already exists
     return Invalid;
   }
 
-  this->children[loc.index] = chunk;
+  this->insertKey(loc.index, key);
+  this->children.insert(this->children.begin() + loc.index + 1, chunk);
   return Success;
 }
 

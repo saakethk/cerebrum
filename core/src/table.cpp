@@ -20,14 +20,8 @@ bool Table::insert(Key key, std::vector<Value>& row) {
   while (path.top()->isLeaf() == false) {
     // traverse down tree and find leaf
     InternalChunk* top = static_cast<InternalChunk*>(path.top());
-    ChunkRes res = top->getNext(key);
-    
-    if (res.valid == false) {
-      // duplicate key
-      return false;
-    }
-
-    path.push(res.chunk);
+    Chunk* res = top->getNext(key);
+    path.push(res);
   }
 
   // insert into leaf
@@ -48,7 +42,7 @@ bool Table::insert(Key key, std::vector<Value>& row) {
     if (path.empty()) {
       // no root
       InternalChunk* new_root = new InternalChunk();
-      new_root->insert(key);
+      new_root->insert(split.key);
       new_root->insertChild(current);
       new_root->insertChild(split.chunk);
       this->root = new_root;

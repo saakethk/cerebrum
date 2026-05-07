@@ -36,7 +36,7 @@ void LeafChunk::insertValue(unsigned int key_index,
 
 void LeafChunk::removeAttributeValue(unsigned int index, unsigned int attr_index) {
   // insert value into attribute vector
-  for (unsigned int j = index; j < this->keys.size(); j++) {
+  for (unsigned int j = index; j < this->num_filled; j++) {
     // shifts values
     this->values[attr_index][j] = this->values[attr_index][j + 1];
   }
@@ -72,7 +72,7 @@ bool LeafChunk::remove(Key key) {
   // finds key
   KeyLoc loc = this->searchKey(key);
   if (loc.valid == false) {
-    // key not found
+    // key is not found
     return false;
   }
 
@@ -91,7 +91,8 @@ SplitChunk LeafChunk::split() {
 
   for (unsigned int i = middle; i < num_full; i++) {
     // insert the middle and all to right to new chunk
-    new_chunk->insert(this->keys[i], this->getRowByIndex(i));
+    std::vector<Value> res = this->getRowByIndex(i);
+    new_chunk->insert(this->keys[i], res);
   }
 
   // delete the ones from middle onward in this chunk (inclusive)
@@ -106,6 +107,10 @@ SplitChunk LeafChunk::split() {
 
   // set links between split nodes
   this->num_filled = middle;
+  new_chunk->next = this->next;
+  if (this->next != nullptr) {
+      this->next->previous = new_chunk;
+  }
   this->next = new_chunk;
   new_chunk->previous = this;
 
@@ -129,7 +134,7 @@ LeafChunk* LeafChunk::getPrevious() {
   return this->previous;
 }
 
-std::vector<Value>& LeafChunk::getRowByIndex(unsigned int index) {
+std::vector<Value> LeafChunk::getRowByIndex(unsigned int index) {
   // gets row of values
   std::vector<Value> row;
   for (unsigned int i = 0; i < this->num_attributes; i++) {

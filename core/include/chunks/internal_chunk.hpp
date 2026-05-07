@@ -17,7 +17,7 @@ class InternalChunk: public Chunk {
 
     InternalChunk();
 
-    ChunkRes getNext(Key key);
+    Chunk* getNext(Key key);
     Chunk* getFirst() const;
 
     InsertStatus insert(Key key);

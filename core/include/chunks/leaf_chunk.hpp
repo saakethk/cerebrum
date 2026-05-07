@@ -2,8 +2,6 @@
 
 #include "chunk.hpp"
 
-using Value = double;
-
 struct RowResult {
   bool valid;
   std::vector<Value> value;
@@ -24,7 +22,7 @@ class LeafChunk: public Chunk {
     void removeValue(unsigned int key_index);
     void removeAttributeValue(unsigned int index, unsigned int attr_index);
 
-    std::vector<Value>& getRowByIndex(unsigned int index);
+    std::vector<Value> getRowByIndex(unsigned int index);
     Value getRowVal(unsigned int index, unsigned int attr_index);
 
   public:

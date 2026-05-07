@@ -20,12 +20,12 @@ KeyLoc Chunk::searchKey(Key key) const {
       end = middle;
     } else if (key == this->keys[middle]) {
       // if key already exists
-      return {false, middle};
+      return {true, middle};
     }
   }
 
   // Returns index to insert key into
-  return {true, start};
+  return {false, start};
 }
 
 bool Chunk::insertKey(unsigned int index, Key key) {
@@ -42,12 +42,12 @@ bool Chunk::insertKey(unsigned int index, Key key) {
   // insert value
   this->keys[index] = key;
   this->num_filled += 1;
-  return Success;
+  return true;
 }
 
 void Chunk::removeKey(unsigned int index) {
   // removes key at provided index
-  for (unsigned int j = index; j < this->keys.size(); j++) {
+  for (unsigned int j = index; j < this->num_filled; j++) {
     // shifts values
     this->keys[j] = this->keys[j + 1];
   }

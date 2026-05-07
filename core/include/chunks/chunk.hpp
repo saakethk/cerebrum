@@ -5,6 +5,7 @@
 constexpr unsigned int CHUNK_SIZE = 5;
 
 using Key = unsigned int;
+using Value = double;
 
 class Chunk; // forward declaration
 
