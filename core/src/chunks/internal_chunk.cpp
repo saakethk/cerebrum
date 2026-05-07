@@ -55,7 +55,7 @@ bool InternalChunk::remove(Key key) {
     return false;
   }
 
-  this->removeKey(key);
+  this->removeKey(loc.index);
   return true;
 }
 

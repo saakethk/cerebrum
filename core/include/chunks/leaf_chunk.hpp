@@ -4,6 +4,11 @@
 
 using Value = double;
 
+struct RowResult {
+  bool valid;
+  std::vector<Value> value;
+};
+
 class LeafChunk: public Chunk {
 
   private:
@@ -13,8 +18,14 @@ class LeafChunk: public Chunk {
     LeafChunk* next;
     LeafChunk* previous;
 
-    void insertValue(unsigned int key_index, const std::vector<double>& val);
-    void insertAttributeValue(unsigned int index, double val, std::vector<double>& attribute_vals);
+    void insertValue(unsigned int key_index, const std::vector<Value>& row);
+    void insertAttributeValue(unsigned int index, unsigned int attr_index, Value val);
+
+    void removeValue(unsigned int key_index);
+    void removeAttributeValue(unsigned int index, unsigned int attr_index);
+
+    std::vector<Value>& getRowByIndex(unsigned int index);
+    Value getRowVal(unsigned int index, unsigned int attr_index);
 
   public:
 
@@ -29,9 +40,7 @@ class LeafChunk: public Chunk {
     unsigned int getNumAttributes() const;
     LeafChunk* getNext();
     LeafChunk* getPrevious();
-
-    Value getRowVal(unsigned int index, unsigned int attribute_index);
-    std::vector<Value>& getRow(Key key) const;
+    RowResult getRow(Key key);
     
     friend std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk); // for debugging
 };

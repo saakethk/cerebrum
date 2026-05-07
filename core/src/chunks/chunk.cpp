@@ -47,7 +47,7 @@ bool Chunk::insertKey(unsigned int index, Key key) {
 
 void Chunk::removeKey(unsigned int index) {
   // removes key at provided index
-  for (unsigned int j = index; j < this->keys.size(); j--) {
+  for (unsigned int j = index; j < this->keys.size(); j++) {
     // shifts values
     this->keys[j] = this->keys[j + 1];
   }
