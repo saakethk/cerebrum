@@ -2,35 +2,39 @@
 
 #include "chunk.hpp"
 
+using Value = double;
+
 class LeafChunk: public Chunk {
 
   private:
 
-    // vars
     unsigned int num_attributes;
-    std::vector<std::vector<double>> values; // chunk size * num attributes
-
+    std::vector<std::vector<Value>> values; // chunk size x num attributes
     LeafChunk* next;
+    LeafChunk* previous;
 
-    // helper methods
     void insertValue(unsigned int key_index, const std::vector<double>& val);
     void insertAttributeValue(unsigned int index, double val, std::vector<double>& attribute_vals);
 
   public:
+
     LeafChunk(unsigned int num_attributes);
 
-    // actions
-    InsertStatus insert(Key key, const std::vector<Value>& val) override;
+    InsertStatus insert(Key key, std::vector<Value>& row);
+
+    bool remove(Key key) override;
     SplitChunk split() override;
 
-    // accessors
-    std::pair<unsigned int, unsigned int> size() const; // returns num_keys x num_attributes
-    bool isLeaf() const override; // returns true
+    bool isLeaf() const override;
+    bool isFull() const override;
 
-    double get(unsigned int index, unsigned int attribute_index) const; // gets single attribute
-    std::vector<double> getRow(unsigned int index) const; // gets whole row of values
+    unsigned int getNumAttributes() const;
     LeafChunk* getNext();
+    LeafChunk* getPrevious();
 
+    Value getRowVal(unsigned int index, unsigned int attribute_index);
+    std::vector<Value>& getRow(Key key) const;
+    
     friend std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk); // for debugging
     ~LeafChunk() override;
 };

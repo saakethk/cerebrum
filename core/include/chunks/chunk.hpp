@@ -2,52 +2,51 @@
 
 #include <vector>
 
-enum InsertStatus {
-  Full,
-  Invalid,
-  Success
-};
+constexpr unsigned int CHUNK_SIZE = 5;
 
 using Key = unsigned int;
-using Value = double;
 
 class Chunk; // forward declaration
-
-struct SplitChunk {
-  Key key;
-  Chunk* left;
-  Chunk* right;
-};
 
 struct KeyLoc {
   bool valid;
   unsigned int index;
 };
 
+struct SplitChunk {
+  Key key;
+  Chunk* chunk;
+};
+
+enum InsertStatus {
+  Full,
+  Invalid,
+  Success
+};
+
 class Chunk {
 
   protected:
 
-    // vars
     unsigned int num_filled;
     std::vector<Key> keys; // chunk size
-    std::vector<Chunk*> children; // chunk size + 1
+
+    KeyLoc searchKey() const;
+    bool insertKey();
 
   public:
-    static constexpr unsigned int MAX_DEGREE = 5;
 
-    // modifiers
-    InsertStatus insertKey(unsigned int index, Key key);
-    virtual InsertStatus insert(Key key, const std::vector<Value>& val) = 0;
+    Chunk();
+
+    virtual bool remove(Key key) = 0;
     virtual SplitChunk split() = 0;
 
-    // accessors
     virtual bool isLeaf() const = 0;
-    bool isFull() const;
+    virtual bool isFull() const = 0;
 
-    KeyLoc searchKey(Key key) const; // return true if exists
-    Chunk* getChildChunk(Key key); // traverses down tree
-    Chunk* getFirstChild(); // get the first child of the node
+    InternalChunk* getNext(Key key);
+    std::vector<Key>& getKeys() const;
+    unsigned int getNumItems() const;
     
     virtual ~Chunk() = default;
 };
