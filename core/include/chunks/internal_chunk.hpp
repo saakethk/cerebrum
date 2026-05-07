@@ -12,6 +12,8 @@ class InternalChunk: public Chunk {
 
     InternalChunk();
 
+    InternalChunk* getNext(Key key);
+
     InsertStatus insert(Key key);
     void insertChild(Chunk* chunk);
     void insertChild(Key key, Chunk* chunk);

@@ -31,8 +31,9 @@ class Chunk {
     unsigned int num_filled;
     std::vector<Key> keys; // chunk size
 
-    KeyLoc searchKey() const;
-    bool insertKey();
+    KeyLoc searchKey(Key key) const;
+    bool insertKey(unsigned int index, Key key);
+    void removeKey(unsigned int index);
 
   public:
 
@@ -42,10 +43,9 @@ class Chunk {
     virtual SplitChunk split() = 0;
 
     virtual bool isLeaf() const = 0;
-    virtual bool isFull() const = 0;
+    bool isFull() const;
 
-    InternalChunk* getNext(Key key);
-    std::vector<Key>& getKeys() const;
+    std::vector<Key>& getKeys();
     unsigned int getNumItems() const;
     
     virtual ~Chunk() = default;
