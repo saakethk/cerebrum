@@ -15,8 +15,7 @@ LeafChunk::LeafChunk(unsigned int num_attributes) {
   }
 }
 
-void LeafChunk::insertAttributeValue(
-  unsigned int index, unsigned int attr_index, Value val) {
+void LeafChunk::insertAttributeValue(Index index, Index attr_index, Value val) {
   // insert value into attribute vector
   for (unsigned int j = this->num_filled; j > index; j--) {
     // shifts values
@@ -26,15 +25,14 @@ void LeafChunk::insertAttributeValue(
   this->values[attr_index][index] = val; // insert value
 }
 
-void LeafChunk::insertValue(unsigned int key_index, 
-  const std::vector<Value>& row) {
+void LeafChunk::insertValue(Index key_index, const std::vector<Value>& row) {
   // inserts value into all attribute vectors
   for (unsigned int i = 0; i < this->num_attributes; i++) {
     this->insertAttributeValue(key_index, i, row[i]);
   }
 }
 
-void LeafChunk::removeAttributeValue(unsigned int index, unsigned int attr_index) {
+void LeafChunk::removeAttributeValue(Index index, Index attr_index) {
   // insert value into attribute vector
   for (unsigned int j = index; j < this->num_filled; j++) {
     // shifts values
@@ -42,7 +40,7 @@ void LeafChunk::removeAttributeValue(unsigned int index, unsigned int attr_index
   }
 }
 
-void LeafChunk::removeValue(unsigned int key_index) {
+void LeafChunk::removeValue(Index key_index) {
   // inserts value into all attribute vectors
   for (unsigned int i = 0; i < this->num_attributes; i++) {
     this->removeAttributeValue(key_index, i);
@@ -134,7 +132,7 @@ LeafChunk* LeafChunk::getPrevious() {
   return this->previous;
 }
 
-std::vector<Value> LeafChunk::getRowByIndex(unsigned int index) {
+std::vector<Value> LeafChunk::getRowByIndex(Index index) {
   // gets row of values
   std::vector<Value> row;
   for (unsigned int i = 0; i < this->num_attributes; i++) {
@@ -143,21 +141,14 @@ std::vector<Value> LeafChunk::getRowByIndex(unsigned int index) {
   return row;
 }
 
-Value LeafChunk::getRowVal(unsigned int index, unsigned int attr_index) {
+Value LeafChunk::getRowVal(Index index, Index attr_index) {
   // gets singular value in row
   return this->values[attr_index][index];
 }
 
-RowResult LeafChunk::getRow(Key key) {
-  // finds key
-  KeyLoc loc = this->searchKey(key);
-  if (loc.valid == false) {
-    // key not found
-    return {false, {}};
-  }
-
+std::vector<Value> LeafChunk::getRow(Index index) {
   // gets row of values
-  return {true, this->getRowByIndex(loc.index)};
+  return this->getRowByIndex(index);
 }
 
 std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk) {

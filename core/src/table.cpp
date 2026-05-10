@@ -38,6 +38,17 @@ LeafChunk* Table::getLast() const {
   return static_cast<LeafChunk*>(cur);
 }
 
+LeafChunk* Table::getLeaf(Key key) const {
+  Chunk* cur = this->root;
+
+  while (cur->isLeaf() == false) {
+    // find specified key
+    InternalChunk* i_cur = static_cast<InternalChunk*>(i_cur);
+    cur = i_cur->getNext(key);
+  }
+  return static_cast<LeafChunk*>(cur);
+}
+
 ValResult Table::getVal(Key key, Attribute attribute) const {
 
   // check if attribute exists
@@ -45,16 +56,8 @@ ValResult Table::getVal(Key key, Attribute attribute) const {
     return {false, 0};
   }
 
-  // gets a specific value in a row
-  Chunk* cur = this->root;
-  while (cur->isLeaf() == false) {
-    // traverse down leaf node
-    InternalChunk* i_cur = static_cast<InternalChunk*>(i_cur);
-    cur = i_cur->getNext(key);
-  }
-
   // search leaf chunk
-  LeafChunk* leaf = static_cast<LeafChunk*>(cur);
+  LeafChunk* leaf = this->getLeaf(key);
   KeyLoc loc = leaf->searchKey(key);
 
   if (loc.valid == false) {
@@ -66,13 +69,19 @@ ValResult Table::getVal(Key key, Attribute attribute) const {
   return {true, val};
 }
 
-std::vector<Value> Table::getRow(Key key) const {
-  // gets entire row
-  // std::array<Value> row;
-  // for (Attribute attribute: this->attributes) {
-  //   row.push_back(this->getVal(key, attribute));
-  // }
-  // return row;
+RowResult Table::getRow(Key key) const {
+
+  // search leaf chunk
+  LeafChunk* leaf = this->getLeaf(key);
+  KeyLoc loc = leaf->searchKey(key);
+
+  if (loc.valid == false) {
+    // if key not found
+    return {false, {}};
+  }
+
+  std::vector<Value> val = leaf->getRow(loc.index);
+  return {true, val};
 }
 
 bool Table::insert(Key key, std::vector<Value>& row) {

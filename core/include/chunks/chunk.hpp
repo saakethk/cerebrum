@@ -6,6 +6,7 @@ constexpr unsigned int CHUNK_SIZE = 5;
 
 using Key = unsigned int;
 using Value = double;
+using Index = unsigned int;
 
 class Chunk; // forward declaration
 
@@ -33,8 +34,8 @@ class Chunk {
     std::vector<Key> keys; // chunk size
 
     KeyLoc searchKey(Key key) const;
-    bool insertKey(unsigned int index, Key key);
-    void removeKey(unsigned int index);
+    bool insertKey(Index index, Key key);
+    void removeKey(Index index);
 
   public:
 

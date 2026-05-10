@@ -8,11 +8,15 @@
 #include "chunks/leaf_chunk.hpp"
 
 using Attribute = std::string;
-using Index = unsigned int;
 
 struct ValResult {
   bool valid;
   Value val;
+};
+
+struct RowResult {
+  bool valid;
+  std::vector<Value> row;
 };
 
 class Table {
@@ -24,6 +28,7 @@ class Table {
 
     LeafChunk* getFirst() const;
     LeafChunk* getLast() const;
+    LeafChunk* getLeaf(Key key) const;
     
   public:
     Table(std::vector<Attribute> attributes);
@@ -32,7 +37,7 @@ class Table {
     // bool remove(Key key);
     
     ValResult getVal(Key key, Attribute attribute) const;
-    std::vector<Value> getRow(Key key) const;
+    RowResult getRow(Key key) const;
 
 
     // bool addAttribute(std::string name);
