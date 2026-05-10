@@ -1,5 +1,6 @@
 #include <stack>
 #include <iostream>
+#include <array>
 
 #include "table.hpp"
 #include "chunks/internal_chunk.hpp"
@@ -40,7 +41,9 @@ LeafChunk* Table::getLast() const {
 ValResult Table::getVal(Key key, Attribute attribute) const {
 
   // check if attribute exists
-  
+  if ((this->attr_map).find(attribute) == this->attr_map.end()) {
+    return {false, 0};
+  }
 
   // gets a specific value in a row
   Chunk* cur = this->root;
@@ -59,16 +62,17 @@ ValResult Table::getVal(Key key, Attribute attribute) const {
     return {false, 0};
   }
 
-  leaf->getRowVal(loc.index, this->attr_map[attribute]);
+  Value val = leaf->getRowVal(loc.index, this->attr_map.at(attribute));
+  return {true, val};
 }
 
 std::vector<Value> Table::getRow(Key key) const {
   // gets entire row
-  std::vector<Value> row;
-  for (Attribute attribute: this->attributes) {
-    row.push_back(this->getVal(key, attribute));
-  }
-  return row;
+  // std::array<Value> row;
+  // for (Attribute attribute: this->attributes) {
+  //   row.push_back(this->getVal(key, attribute));
+  // }
+  // return row;
 }
 
 bool Table::insert(Key key, std::vector<Value>& row) {

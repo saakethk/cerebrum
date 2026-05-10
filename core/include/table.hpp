@@ -19,7 +19,7 @@ class Table {
   private:
   
     unsigned int num_rows;
-    std::unordered_map<Attribute, Index> attr_map;
+    std::unordered_map<std::string, unsigned int> attr_map;
     Chunk* root;
 
     LeafChunk* getFirst() const;
@@ -31,7 +31,7 @@ class Table {
     bool insert(Key key, std::vector<Value>& row);
     // bool remove(Key key);
     
-    Value getVal(Key key, Attribute attribute) const;
+    ValResult getVal(Key key, Attribute attribute) const;
     std::vector<Value> getRow(Key key) const;
 
 
