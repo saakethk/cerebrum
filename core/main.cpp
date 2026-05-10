@@ -30,7 +30,9 @@ int main() {
 
   row = {6, 2, 3, 4, 5};
   for (unsigned int i = 0; i < 1000; i++) {
-    table.insert(i, row);
+    if (table.insert(i, row) == true) {
+      std::cout << "failed" << std::endl;
+    }
   }
 
   std::cout << table << std::endl;

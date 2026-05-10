@@ -41,4 +41,5 @@ class LeafChunk: public Chunk {
     RowResult getRow(Key key);
     
     friend std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk); // for debugging
+    friend class Table;
 };

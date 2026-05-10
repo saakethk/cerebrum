@@ -50,4 +50,5 @@ class Chunk {
     unsigned int getNumItems() const;
     
     virtual ~Chunk() = default;
+    friend class Table;
 };

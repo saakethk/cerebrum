@@ -21,6 +21,11 @@ Chunk* InternalChunk::getFirst() const {
   return this->children[0];
 }
 
+Chunk* InternalChunk::getLast() const {
+  // return right-most child: internal nodes hold num_filled+1 children
+  return this->children[this->num_filled];
+}
+
 InsertStatus InternalChunk::insert(Key key) {
   KeyLoc loc = this->searchKey(key);
   if (loc.valid == true) {

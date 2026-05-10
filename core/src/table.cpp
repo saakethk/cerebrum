@@ -5,10 +5,70 @@
 #include "chunks/internal_chunk.hpp"
 #include "chunks/leaf_chunk.hpp"
 
-Table::Table(std::vector<std::string> attributes) {
+Table::Table(std::vector<Attribute> attributes) {
   // attribute size has to be known at initalization time
-  this->attributes = attributes;
   this->root = new LeafChunk(attributes.size());
+
+  unsigned int i = 0;
+  for (Attribute attr: attributes) {
+    // initalizes mapping from attribute to index
+    this->attr_map[attr] = 0;
+    i += 1;
+  }
+}
+
+LeafChunk* Table::getFirst() const {
+  Chunk* cur = this->root;
+
+  while (cur->isLeaf() == false) {
+    // find smallest key leaf
+    cur = static_cast<InternalChunk*>(cur)->getFirst();
+  }
+  return static_cast<LeafChunk*>(cur);
+}
+
+LeafChunk* Table::getLast() const {
+  Chunk* cur = this->root;
+  
+  while (cur->isLeaf() == false) {
+    // find largest key leaf
+    cur = static_cast<InternalChunk*>(cur)->getLast();
+  }
+  return static_cast<LeafChunk*>(cur);
+}
+
+ValResult Table::getVal(Key key, Attribute attribute) const {
+
+  // check if attribute exists
+  
+
+  // gets a specific value in a row
+  Chunk* cur = this->root;
+  while (cur->isLeaf() == false) {
+    // traverse down leaf node
+    InternalChunk* i_cur = static_cast<InternalChunk*>(i_cur);
+    cur = i_cur->getNext(key);
+  }
+
+  // search leaf chunk
+  LeafChunk* leaf = static_cast<LeafChunk*>(cur);
+  KeyLoc loc = leaf->searchKey(key);
+
+  if (loc.valid == false) {
+    // if key not found
+    return {false, 0};
+  }
+
+  leaf->getRowVal(loc.index, this->attr_map[attribute]);
+}
+
+std::vector<Value> Table::getRow(Key key) const {
+  // gets entire row
+  std::vector<Value> row;
+  for (Attribute attribute: this->attributes) {
+    row.push_back(this->getVal(key, attribute));
+  }
+  return row;
 }
 
 bool Table::insert(Key key, std::vector<Value>& row) {
@@ -16,7 +76,7 @@ bool Table::insert(Key key, std::vector<Value>& row) {
   // traverse down to find leaf
   std::stack<InternalChunk*> path;
   Chunk* current = this->root;
-  while (!current->isLeaf()) {
+  while (current->isLeaf() == false) {
     path.push(static_cast<InternalChunk*>(current));
     current = static_cast<InternalChunk*>(current)->getNext(key);
   }
@@ -72,17 +132,11 @@ bool Table::insert(Key key, std::vector<Value>& row) {
 std::ostream& operator<<(std::ostream& os, const Table& table) {
   os << "Table:\n";
 
-  Chunk* cur = table.root;
-  while (cur->isLeaf() == false) {
-    // find smallest key leaf
-    cur = static_cast<InternalChunk*>(cur)->getFirst();
-  }
-
-  LeafChunk* first = static_cast<LeafChunk*>(cur);
+  LeafChunk* first = table.getLast();
   while (first != nullptr) {
     // starting from first and iterates through
     os << *first;
-    first = first->getNext();
+    first = first->getPrevious();
   }
 
   return os;

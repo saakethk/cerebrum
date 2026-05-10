@@ -13,12 +13,13 @@ class InternalChunk: public Chunk {
 
     std::vector<Chunk*> children; // chunk size + 1
 
+    Chunk* getNext(Key key);
+    Chunk* getFirst() const;
+    Chunk* getLast() const;
+
   public:
 
     InternalChunk();
-
-    Chunk* getNext(Key key);
-    Chunk* getFirst() const;
 
     InsertStatus insert(Key key);
     void insertChild(Chunk* chunk);
@@ -26,8 +27,8 @@ class InternalChunk: public Chunk {
 
     bool remove(Key key) override;
     SplitChunk split() override;
-
     bool isLeaf() const override;
 
     friend std::ostream& operator<<(std::ostream& os, const InternalChunk& chunk); // for debugging
+    friend class Table;
 };
