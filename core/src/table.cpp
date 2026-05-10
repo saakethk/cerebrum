@@ -142,6 +142,35 @@ bool Table::insert(Key key, std::vector<Value>& row) {
   }
 }
 
+bool Table::remove(Key key) {
+
+  std::stack<InternalChunk*> path;
+  Chunk* current = this->root;
+
+  while (current->isLeaf() == false) {
+    // traverse down to find leaf
+    InternalChunk* i_cur = static_cast<InternalChunk*>(current);
+    path.push(i_cur);
+    current = i_cur->getNext(key);
+  }
+
+  // remove from leaf 
+  LeafChunk* leaf = static_cast<LeafChunk*>(current);
+  bool valid = leaf->remove(key);
+
+  if (valid == false) {
+    // remove failed
+    return valid;
+  }
+  
+  while (path.empty() == false) {
+    // remove from all internal chunks
+    (path.top())->remove(key);
+    path.pop();
+  }
+  return valid;
+}
+
 std::ostream& operator<<(std::ostream& os, const Table& table) {
   os << "Table:\n";
 

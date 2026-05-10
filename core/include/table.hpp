@@ -34,11 +34,10 @@ class Table {
     Table(std::vector<Attribute> attributes);
 
     bool insert(Key key, std::vector<Value>& row);
-    // bool remove(Key key);
+    bool remove(Key key);
     
     ValResult getVal(Key key, Attribute attribute) const;
     RowResult getRow(Key key) const;
-
 
     // bool addAttribute(std::string name);
     // bool removeAttribute(std::string name);
