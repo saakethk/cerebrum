@@ -18,7 +18,7 @@ class LeafChunk: public Chunk {
     void removeAttributeValue(Index index, Index attr_index);
 
     std::vector<Value> getRowByIndex(Index index);
-    Value getRowVal(Index index, Index attr_index);
+    Value getRowValByIndex(Index index, Index attr_index);
 
   public:
 
@@ -30,6 +30,7 @@ class LeafChunk: public Chunk {
 
     bool isLeaf() const override;
     unsigned int getNumAttributes() const;
+    unsigned int getNumVals() const;
     LeafChunk* getNext();
     LeafChunk* getPrevious();
     std::vector<Value> getRow(Key key);

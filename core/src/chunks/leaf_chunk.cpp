@@ -124,6 +124,10 @@ unsigned int LeafChunk::getNumAttributes() const {
   return this->num_attributes;
 }
 
+unsigned int LeafChunk::getNumVals() const {
+  return this->num_filled;
+}
+
 LeafChunk* LeafChunk::getNext() {
   return this->next;
 }
@@ -136,12 +140,12 @@ std::vector<Value> LeafChunk::getRowByIndex(Index index) {
   // gets row of values
   std::vector<Value> row;
   for (unsigned int i = 0; i < this->num_attributes; i++) {
-    row.push_back(this->getRowVal(index, i));
+    row.push_back(this->getRowValByIndex(index, i));
   }
   return row;
 }
 
-Value LeafChunk::getRowVal(Index index, Index attr_index) {
+Value LeafChunk::getRowValByIndex(Index index, Index attr_index) {
   // gets singular value in row
   return this->values[attr_index][index];
 }

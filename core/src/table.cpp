@@ -84,6 +84,27 @@ RowResult Table::getRow(Key key) const {
   return {true, val};
 }
 
+ValResult Table::getValIndex(Index index, Attribute attribute) const {
+  // gets value at a index starting from first
+  LeafChunk* cur = this->getFirst();
+
+  unsigned int i = 0; // counts for all indices
+  unsigned int j = 0; // counts for valid indices
+  while (j < index) {
+    unsigned int offset = (i % CHUNK_SIZE);
+    if (offset < cur->getNumVals()) {
+      cur->getRowValByIndex(index, this->attr_map.at(attribute));
+    }
+
+    i++;
+  }
+
+}
+
+RowResult Table::getRowIndex(Index key) const {
+
+}
+
 bool Table::insert(Key key, std::vector<Value>& row) {
 
   // traverse down to find leaf
@@ -97,8 +118,12 @@ bool Table::insert(Key key, std::vector<Value>& row) {
   // insert into leaf
   LeafChunk* leaf = static_cast<LeafChunk*>(current);
   InsertStatus status = leaf->insert(key, row);
-  if (status != Full) 
-    return (status == Success);
+  if (status == Invalid) {
+    return false;
+  } else if (status == Success) {
+    this->num_rows += 1;
+    return true;
+  }
 
   // when leaf is full
   SplitChunk split = leaf->split();
@@ -168,6 +193,7 @@ bool Table::remove(Key key) {
     (path.top())->remove(key);
     path.pop();
   }
+  this->num_rows -= 1;
   return valid;
 }
 
