@@ -221,7 +221,7 @@ bool Table::remove(Key key) {
 }
 
 void Table::print() const {
-  // gets value at a index starting from first
+  // for debugging
   LeafChunk* cur = this->getFirst();
   
   while (cur != nullptr) {

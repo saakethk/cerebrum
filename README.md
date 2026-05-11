@@ -52,8 +52,13 @@ $$
 $$
 
 # TODO:
-- Make searching the chunk binary search
-- Make minor efficiency improvements for rows
+- Add creating virtual columns
+  - 4 Basic Operations
+    - Add
+    - Subtract
+    - Divide
+    - Multiply
+- Create tests for all basic table functions
 
 # Future Plans
 1. Make it so that you can calculate markov chain probailities
