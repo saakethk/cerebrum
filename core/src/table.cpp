@@ -65,7 +65,7 @@ ValResult Table::getVal(Key key, Attribute attribute) const {
     return {false, 0};
   }
 
-  Value val = leaf->getRowVal(loc.index, this->attr_map.at(attribute));
+  Value val = leaf->getRowValByIndex(loc.index, this->attr_map.at(attribute));
   return {true, val};
 }
 
@@ -87,17 +87,33 @@ RowResult Table::getRow(Key key) const {
 ValResult Table::getValIndex(Index index, Attribute attribute) const {
   // gets value at a index starting from first
   LeafChunk* cur = this->getFirst();
+  Value val = 0;
 
   unsigned int i = 0; // counts for all indices
   unsigned int j = 0; // counts for valid indices
-  while (j < index) {
+  while (j <= index) {
     unsigned int offset = (i % CHUNK_SIZE);
-    if (offset < cur->getNumVals()) {
-      cur->getRowValByIndex(index, this->attr_map.at(attribute));
+
+    if (j >= this->num_rows) {
+      // out-of-bounds check
+      return {false, 0};
+    } else if (j == index) {
+      // value found
+      val = cur->getRowValByIndex(offset, this->attr_map.at(attribute));
+      continue;
+    }
+
+    if (offset == cur->getNumVals()) {
+      // moves to next chunk
+      cur = cur->getNext();
+    } else if (offset < cur->getNumVals()) {
+      // get value within chunk
+      j++;
     }
 
     i++;
   }
+  return {true, val};
 
 }
 
