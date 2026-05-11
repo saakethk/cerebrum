@@ -37,10 +37,11 @@ class Table {
     bool remove(Key key);
 
     ValResult getValIndex(Index index, Attribute attribute) const;
-    RowResult getRowIndex(Index index) const;
-    
     ValResult getVal(Key key, Attribute attribute) const;
+    RowResult getRowIndex(Index index) const;
     RowResult getRow(Key key) const;
+
+    void print() const;
 
     // bool addAttribute(std::string name);
     // bool removeAttribute(std::string name);

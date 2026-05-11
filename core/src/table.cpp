@@ -220,6 +220,25 @@ bool Table::remove(Key key) {
   return valid;
 }
 
+void Table::print() const {
+  // gets value at a index starting from first
+  LeafChunk* cur = this->getFirst();
+  
+  while (cur != nullptr) {
+    unsigned int num_vals = cur->getNumVals();
+    
+    for (unsigned int i = 0; i < num_vals; i++) {
+      std::vector<Value> val = cur->getRowByIndex(i);
+      for (Value val: val) {
+        std::cout << val << " ";
+      }
+      std::cout << std::endl;
+    }
+    
+    cur = cur->getNext();
+  }
+}
+
 std::ostream& operator<<(std::ostream& os, const Table& table) {
   os << "Table:\n";
 

@@ -57,6 +57,8 @@ int main() {
     std::cout << std::endl;
   }
 
+  table.print();
+
   // std::cout << table << std::endl;
 
   return 0;
