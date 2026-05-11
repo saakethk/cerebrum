@@ -13,7 +13,7 @@ Table::Table(std::vector<Attribute> attributes) {
   unsigned int i = 0;
   for (Attribute attr: attributes) {
     // initalizes mapping from attribute to index
-    this->attr_map[attr] = 0;
+    this->attr_map[attr] = i;
     i += 1;
   }
 }
@@ -43,7 +43,7 @@ LeafChunk* Table::getLeaf(Key key) const {
 
   while (cur->isLeaf() == false) {
     // find specified key
-    InternalChunk* i_cur = static_cast<InternalChunk*>(i_cur);
+    InternalChunk* i_cur = static_cast<InternalChunk*>(cur);
     cur = i_cur->getNext(key);
   }
   return static_cast<LeafChunk*>(cur);
@@ -87,38 +87,45 @@ RowResult Table::getRow(Key key) const {
 ValResult Table::getValIndex(Index index, Attribute attribute) const {
   // gets value at a index starting from first
   LeafChunk* cur = this->getFirst();
-  Value val = 0;
-
-  unsigned int i = 0; // counts for all indices
+  
   unsigned int j = 0; // counts for valid indices
-  while (j <= index) {
-    unsigned int offset = (i % CHUNK_SIZE);
-
-    if (j >= this->num_rows) {
-      // out-of-bounds check
-      return {false, 0};
-    } else if (j == index) {
-      // value found
-      val = cur->getRowValByIndex(offset, this->attr_map.at(attribute));
-      continue;
-    }
-
-    if (offset == cur->getNumVals()) {
-      // moves to next chunk
-      cur = cur->getNext();
-    } else if (offset < cur->getNumVals()) {
-      // get value within chunk
+  while (cur != nullptr) {
+    unsigned int num_vals = cur->getNumVals();
+    
+    for (unsigned int i = 0; i < num_vals; i++) {
+      if (j == index) {
+        Value val = cur->getRowValByIndex(i, this->attr_map.at(attribute));
+        return {true, val};
+      }
       j++;
     }
-
-    i++;
+    
+    cur = cur->getNext();
   }
-  return {true, val};
-
+  
+  return {false, 0};
 }
 
-RowResult Table::getRowIndex(Index key) const {
-
+RowResult Table::getRowIndex(Index index) const {
+  // gets row at a index starting from first
+  LeafChunk* cur = this->getFirst();
+  
+  unsigned int j = 0; // counts for valid indices
+  while (cur != nullptr) {
+    unsigned int num_vals = cur->getNumVals();
+    
+    for (unsigned int i = 0; i < num_vals; i++) {
+      if (j == index) {
+        std::vector<Value> val = cur->getRowByIndex(i);
+        return {true, val};
+      }
+      j++;
+    }
+    
+    cur = cur->getNext();
+  }
+  
+  return {false, {}};
 }
 
 bool Table::insert(Key key, std::vector<Value>& row) {

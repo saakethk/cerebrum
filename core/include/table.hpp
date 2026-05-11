@@ -37,7 +37,7 @@ class Table {
     bool remove(Key key);
 
     ValResult getValIndex(Index index, Attribute attribute) const;
-    RowResult getRowIndex(Index key) const;
+    RowResult getRowIndex(Index index) const;
     
     ValResult getVal(Key key, Attribute attribute) const;
     RowResult getRow(Key key) const;

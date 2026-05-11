@@ -35,7 +35,29 @@ int main() {
     }
   }
 
-  std::cout << table << std::endl;
+  for (unsigned int k = 0; k < 1000; k++) {
+    for (Value val: table.getRow(k).row) {
+      std::cout << val << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  for (unsigned int k = 0; k < 1000; k++) {
+    std::cout << table.getVal(k, "stuff").val << std::endl;
+  }
+
+  for (unsigned int k = 0; k < 1000; k++) {
+    std::cout << table.getValIndex(k, "stuff").val << std::endl;
+  }
+
+  for (unsigned int k = 0; k < 1000; k++) {
+    for (Value val: table.getRowIndex(k).row) {
+      std::cout << val << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  // std::cout << table << std::endl;
 
   return 0;
 
