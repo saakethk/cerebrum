@@ -14,7 +14,8 @@ enum Operation {
   ADD,
   SUBTRACT,
   MULTIPLY,
-  DIVIDE
+  DIVIDE,
+  EXPONENT
 };
 
 struct ValResult {

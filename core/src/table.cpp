@@ -143,10 +143,21 @@ ValResult Table::parseOperation(std::string attribute_1, Operation op, std::stri
   Value second = row[this->attr_map[attribute_2]];
 
   // performs operation
+  switch (op) {
+    case ADD:
+      return {true, first + second};
+    case MULTIPLY:
+      return {true, first * second};
+    case DIVIDE:
+      return {true, first / second};
+    case EXPONENT:
+      // TODO: write exponent function
+      return {false, 0};
+    case SUBTRACT:
+      return {true, first - second};
+  }
 
-
-
-  return 1;
+  return {false, 0};
 }
 
 Value parseEquation(std::string equation, std::vector<Value> &row) {
