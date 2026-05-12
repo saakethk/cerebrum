@@ -10,11 +10,10 @@ Table::Table(std::vector<Attribute> attributes) {
   // attribute size has to be known at initalization time
   this->root = new LeafChunk(attributes.size());
 
-  unsigned int i = 0;
   for (Attribute attr: attributes) {
     // initalizes mapping from attribute to index
-    this->attr_map[attr] = i;
-    i += 1;
+    this->attr_map[attr] = this->num_attributes;
+    this->num_attributes += 1;
   }
 }
 
@@ -126,6 +125,44 @@ RowResult Table::getRowIndex(Index index) const {
   }
   
   return {false, {}};
+}
+
+ValResult Table::parseOperation(std::string attribute_1, Operation op, std::string attribute_2, std::vector<Value> &row) {
+
+  if (this->attr_map.find(attribute_1) == this->attr_map.end()) {
+    // attribute 1 doesn't exist
+    return {false, 0};
+  } 
+  
+  if (this->attr_map.find(attribute_2) == this->attr_map.end()) {
+    // attribute 2 doesn't exist
+    return {false, 0};
+  }
+
+  Value first = row[this->attr_map[attribute_1]];
+  Value second = row[this->attr_map[attribute_2]];
+
+  // performs operation
+
+
+
+  return 1;
+}
+
+Value parseEquation(std::string equation, std::vector<Value> &row) {
+  // parses whole equation according to PEMDAS
+
+  // checks attribute exists
+}
+
+bool Table::addAttribute(std::string name, std::string equation) {
+
+  // adds the attribute to attr_map
+  this->attr_map[name] = this->num_attributes;
+
+  // adds the attribute to virtual_attr_map
+  this->virtual_attr_map[name] = equation;
+
 }
 
 bool Table::insert(Key key, std::vector<Value>& row) {
