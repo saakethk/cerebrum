@@ -161,6 +161,7 @@ ValResult Table::parseOperation(std::string attribute_1, Operation op, std::stri
 }
 
 Value parseEquation(std::string equation, std::vector<Value> &row) {
+  // TODO: implement this
   // parses whole equation according to PEMDAS
 
   // checks attribute exists
