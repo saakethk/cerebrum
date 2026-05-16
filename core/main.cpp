@@ -30,7 +30,7 @@ int main() {
 
   table.addAttribute("test", "( stuff + stuff1 ) + ( stuff2 * stuff3 )");
   for (unsigned int j = 0; j < 1000; j++) {
-    std::cout << table.getVal(j, "test").val << std::endl;
+    std::cout << table.getValIndex(j, "test").val << std::endl;
   }
 
   // row = {6, 2, 3, 4, 5};

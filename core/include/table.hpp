@@ -50,7 +50,7 @@ class Table {
     bool insert(Key key, std::vector<Value>& row);
     bool remove(Key key);
 
-    ValResult getValIndex(Index index, Attribute attribute) const; // TODO: store the index last accessed and go form there
+    ValResult getValIndex(Index index, Attribute attribute); // TODO: store the index last accessed and go form there
     ValResult getVal(Key key, Attribute attribute);
     RowResult getRowIndex(Index index) const; // same as ValIndex
     RowResult getRow(Key key) const;

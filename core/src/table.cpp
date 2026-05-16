@@ -96,9 +96,21 @@ RowResult Table::getRow(Key key) const {
   return {true, val};
 }
 
-ValResult Table::getValIndex(Index index, Attribute attribute) const {
+ValResult Table::getValIndex(Index index, Attribute attribute) {
   // gets value at a index starting from first
-  // TODO: add virtual attribute
+
+  bool exists_attr = this->attr_map.find(attribute) != this->attr_map.end();
+  bool exists_virtual = this->virtual_attr_map.find(attribute) != this->virtual_attr_map.end();
+  if ((exists_attr == false) && (exists_virtual == false)) {
+    // attribute doesn't exist
+    return {false, 0};
+  }
+
+  if (index >= this->num_rows) {
+    // index is out of bounds
+    return {false, 0};
+  }
+
   LeafChunk* cur = this->getFirst();
   
   unsigned int j = 0; // counts for valid indices
@@ -107,8 +119,19 @@ ValResult Table::getValIndex(Index index, Attribute attribute) const {
     
     for (unsigned int i = 0; i < num_vals; i++) {
       if (j == index) {
-        Value val = cur->getRowValByIndex(i, this->attr_map.at(attribute));
+        // correct index found
+
+        Value val;
+        if (exists_virtual == true) {
+          // attribute exists in virtual map
+          std::vector<Value> row = cur->getRowByIndex(i);
+          val = this->parseEquation(this->virtual_attr_map[attribute], row);
+        } else {
+          // attribute exists in normal map
+          val = cur->getRowValByIndex(i, this->attr_map[attribute]);
+        }
         return {true, val};
+        
       }
       j++;
     }
