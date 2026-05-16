@@ -354,6 +354,7 @@ void Table::printValues() {
 }
 
 void Table::print() {
+  // TODO: make uniform spacing
   this->printHeaders();
   this->printValues();
 }
