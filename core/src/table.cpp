@@ -52,7 +52,9 @@ LeafChunk* Table::getLeaf(Key key) const {
 
 ValResult Table::getVal(Key key, Attribute attribute) {
 
-  if (this->attr_map.find(attribute) == this->attr_map.end()) {
+  bool exists_attr = this->attr_map.find(attribute) != this->attr_map.end();
+  bool exists_virtual = this->virtual_attr_map.find(attribute) != this->virtual_attr_map.end();
+  if ((exists_attr == false) && (exists_virtual == false)) {
     // attribute doesn't exist
     return {false, 0};
   }
@@ -66,13 +68,16 @@ ValResult Table::getVal(Key key, Attribute attribute) {
     return {false, 0};
   }
 
-  if (this->virtual_attr_map.find(attribute) != this->virtual_attr_map.end()) {
+  Value val;
+  if (exists_virtual == true) {
     // attribute exists in virtual map
     std::vector<Value> row = leaf->getRow(loc.index);
-    return this->parseEquation(this->virtual_attr_map[attribute], row);
+    val = this->parseEquation(this->virtual_attr_map[attribute], row);
+  } else {
+    // attribute exists in normal map
+    val = leaf->getRowValByIndex(loc.index, this->attr_map[attribute]);
   }
 
-  Value val = leaf->getRowValByIndex(loc.index, this->attr_map[attribute]);
   return {true, val};
 }
 
@@ -93,6 +98,7 @@ RowResult Table::getRow(Key key) const {
 
 ValResult Table::getValIndex(Index index, Attribute attribute) const {
   // gets value at a index starting from first
+  // TODO: add virtual attribute
   LeafChunk* cur = this->getFirst();
   
   unsigned int j = 0; // counts for valid indices
@@ -135,16 +141,16 @@ RowResult Table::getRowIndex(Index index) const {
   return {false, {}};
 }
 
-ValResult Table::parseOperation(std::string attribute_1, Operation op, std::string attribute_2, std::vector<Value> &row) {
+Value Table::parseOperation(std::string attribute_1, Operation op, std::string attribute_2, std::vector<Value> &row) {
 
   if (this->attr_map.find(attribute_1) == this->attr_map.end()) {
     // attribute 1 doesn't exist
-    return {false, 0};
+    return -1;
   } 
   
   if (this->attr_map.find(attribute_2) == this->attr_map.end()) {
     // attribute 2 doesn't exist
-    return {false, 0};
+    return -1;
   }
 
   Value first = row[this->attr_map[attribute_1]];
@@ -153,22 +159,23 @@ ValResult Table::parseOperation(std::string attribute_1, Operation op, std::stri
   // performs operation
   switch (op) {
     case ADD:
-      return {true, first + second};
+      return first + second;
     case MULTIPLY:
-      return {true, first * second};
+      return first * second;
     case DIVIDE:
-      return {true, first / second};
+      return first / second;
     case EXPONENT:
       // TODO: write exponent function
-      return {false, 0};
+      return 0;
     case SUBTRACT:
-      return {true, first - second};
+      return first - second;
   }
 
-  return {false, 0};
+  // operation not found
+  return -1;
 }
 
-Value parseEquation(std::string equation, std::vector<Value> &row) {
+Value Table::parseEquation(std::string equation, std::vector<Value> &row) {
   // TODO: implement this
   // parses whole equation according to PEMDAS
   // example
@@ -190,6 +197,8 @@ bool Table::addAttribute(std::string name, std::string equation) {
     // name exists in virtual attributes
     return false;
   }
+
+  // TODO: validate equation
 
   // adds the attribute to virtual_attr_map
   this->virtual_attr_map[name] = equation;

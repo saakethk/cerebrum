@@ -41,8 +41,8 @@ class Table {
     LeafChunk* getLast() const;
     LeafChunk* getLeaf(Key key) const;
 
-    ValResult parseOperation(std::string attribute_1, Operation op, std::string attribute_2, std::vector<Value> &row);
-    ValResult parseEquation(std::string equation, std::vector<Value> &row);
+    Value parseOperation(std::string attribute_1, Operation op, std::string attribute_2, std::vector<Value> &row);
+    Value parseEquation(std::string equation, std::vector<Value> &row);
     
   public:
     Table(std::vector<Attribute> attributes);

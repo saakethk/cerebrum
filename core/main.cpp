@@ -28,6 +28,11 @@ int main() {
     table.insert(i, row);
   }
 
+  table.addAttribute("test", "( stuff + stuff1 ) + ( stuff2 * stuff3 )");
+  for (unsigned int j = 0; j < 1000; j++) {
+    std::cout << table.getVal(j, "test").val << std::endl;
+  }
+
   // row = {6, 2, 3, 4, 5};
   // for (unsigned int i = 0; i < 1000; i++) {
   //   if (table.insert(i, row) == true) {
@@ -57,11 +62,11 @@ int main() {
   //   std::cout << std::endl;
   // }
 
-  for (unsigned int i = 0; i < 1000; i++) {
-    std::cout << table.remove(i) << std::endl;
-  }
+  // for (unsigned int i = 0; i < 1000; i++) {
+  //   std::cout << table.remove(i) << std::endl;
+  // }
 
-  table.print();
+  // table.print();
 
   // std::cout << table << std::endl;
 
