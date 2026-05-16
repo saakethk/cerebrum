@@ -28,33 +28,37 @@ int main() {
     table.insert(i, row);
   }
 
-  row = {6, 2, 3, 4, 5};
+  // row = {6, 2, 3, 4, 5};
+  // for (unsigned int i = 0; i < 1000; i++) {
+  //   if (table.insert(i, row) == true) {
+  //     std::cout << "failed" << std::endl;
+  //   }
+  // }
+
+  // for (unsigned int k = 0; k < 1000; k++) {
+  //   for (Value val: table.getRow(k).row) {
+  //     std::cout << val << " ";
+  //   }
+  //   std::cout << std::endl;
+  // }
+
+  // for (unsigned int k = 0; k < 1000; k++) {
+  //   std::cout << table.getVal(k, "stuff").val << std::endl;
+  // }
+
+  // for (unsigned int k = 0; k < 1000; k++) {
+  //   std::cout << table.getValIndex(k, "stuff").val << std::endl;
+  // }
+
+  // for (unsigned int k = 0; k < 1000; k++) {
+  //   for (Value val: table.getRowIndex(k).row) {
+  //     std::cout << val << " ";
+  //   }
+  //   std::cout << std::endl;
+  // }
+
   for (unsigned int i = 0; i < 1000; i++) {
-    if (table.insert(i, row) == true) {
-      std::cout << "failed" << std::endl;
-    }
-  }
-
-  for (unsigned int k = 0; k < 1000; k++) {
-    for (Value val: table.getRow(k).row) {
-      std::cout << val << " ";
-    }
-    std::cout << std::endl;
-  }
-
-  for (unsigned int k = 0; k < 1000; k++) {
-    std::cout << table.getVal(k, "stuff").val << std::endl;
-  }
-
-  for (unsigned int k = 0; k < 1000; k++) {
-    std::cout << table.getValIndex(k, "stuff").val << std::endl;
-  }
-
-  for (unsigned int k = 0; k < 1000; k++) {
-    for (Value val: table.getRowIndex(k).row) {
-      std::cout << val << " ";
-    }
-    std::cout << std::endl;
+    std::cout << table.remove(i) << std::endl;
   }
 
   table.print();

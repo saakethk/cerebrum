@@ -24,7 +24,7 @@ KeyLoc Chunk::searchKey(Key key) const {
     }
   }
 
-  // Returns index to insert key into
+  // key doesnt exist; Returns index to insert key into
   return {false, start};
 }
 
@@ -47,7 +47,7 @@ bool Chunk::insertKey(unsigned int index, Key key) {
 
 void Chunk::removeKey(unsigned int index) {
   // removes key at provided index
-  for (unsigned int j = index; j < this->num_filled; j++) {
+  for (unsigned int j = index; j + 1 < this->num_filled; j++) {
     // shifts values
     this->keys[j] = this->keys[j + 1];
   }

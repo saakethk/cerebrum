@@ -34,7 +34,7 @@ void LeafChunk::insertValue(Index key_index, const std::vector<Value>& row) {
 
 void LeafChunk::removeAttributeValue(Index index, Index attr_index) {
   // insert value into attribute vector
-  for (unsigned int j = index; j < this->num_filled; j++) {
+  for (unsigned int j = index; j + 1 < this->num_filled; j++) {
     // shifts values
     this->values[attr_index][j] = this->values[attr_index][j + 1];
   }
@@ -75,8 +75,8 @@ bool LeafChunk::remove(Key key) {
   }
 
   // remove successful
-  this->removeKey(loc.index);
   this->removeValue(loc.index);
+  this->removeKey(loc.index);
   return true;
 }
 

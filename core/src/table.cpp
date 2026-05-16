@@ -8,6 +8,8 @@
 
 Table::Table(std::vector<Attribute> attributes) {
   // attribute size has to be known at initalization time
+  this->num_rows = 0;
+  this->num_attributes = 0;
   this->root = new LeafChunk(attributes.size());
 
   for (Attribute attr: attributes) {
@@ -163,11 +165,20 @@ ValResult Table::parseOperation(std::string attribute_1, Operation op, std::stri
 Value parseEquation(std::string equation, std::vector<Value> &row) {
   // TODO: implement this
   // parses whole equation according to PEMDAS
-
+  std::cout << equation << std::endl;
+  for (Value val: row) {
+    std::cout << val << std::endl;
+  }
   // checks attribute exists
+  return -1.0f;
 }
 
 bool Table::addAttribute(std::string name, std::string equation) {
+
+  if (this->attr_map.find(name) != this->attr_map.end()) {
+    // attribute already exists
+    return false;
+  }
 
   // adds the attribute to attr_map
   this->attr_map[name] = this->num_attributes;
@@ -175,6 +186,7 @@ bool Table::addAttribute(std::string name, std::string equation) {
   // adds the attribute to virtual_attr_map
   this->virtual_attr_map[name] = equation;
 
+  return true;
 }
 
 bool Table::insert(Key key, std::vector<Value>& row) {
@@ -241,13 +253,11 @@ bool Table::insert(Key key, std::vector<Value>& row) {
 
 bool Table::remove(Key key) {
 
-  std::stack<InternalChunk*> path;
   Chunk* current = this->root;
 
   while (current->isLeaf() == false) {
     // traverse down to find leaf
     InternalChunk* i_cur = static_cast<InternalChunk*>(current);
-    path.push(i_cur);
     current = i_cur->getNext(key);
   }
 
@@ -260,11 +270,6 @@ bool Table::remove(Key key) {
     return valid;
   }
   
-  while (path.empty() == false) {
-    // remove from all internal chunks
-    (path.top())->remove(key);
-    path.pop();
-  }
   this->num_rows -= 1;
   return valid;
 }
