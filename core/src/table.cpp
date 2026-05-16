@@ -81,7 +81,7 @@ ValResult Table::getVal(Key key, Attribute attribute) {
   return {true, val};
 }
 
-RowResult Table::getRow(Key key) const {
+RowResult Table::getRow(Key key) {
 
   // search leaf chunk
   LeafChunk* leaf = this->getLeaf(key);
@@ -92,8 +92,13 @@ RowResult Table::getRow(Key key) const {
     return {false, {}};
   }
 
-  std::vector<Value> val = leaf->getRow(loc.index);
-  return {true, val};
+  std::vector<Value> row = leaf->getRow(loc.index);
+
+  for (auto& pair: this->virtual_attr_map) {
+    // add virtual vals
+    row.push_back(this->parseEquation(pair.second, row));
+  }
+  return {true, row};
 }
 
 ValResult Table::getValIndex(Index index, Attribute attribute) {
@@ -131,7 +136,7 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
           val = cur->getRowValByIndex(i, this->attr_map[attribute]);
         }
         return {true, val};
-        
+
       }
       j++;
     }
@@ -142,7 +147,7 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
   return {false, 0};
 }
 
-RowResult Table::getRowIndex(Index index) const {
+RowResult Table::getRowIndex(Index index) {
   // gets row at a index starting from first
   LeafChunk* cur = this->getFirst();
   
@@ -152,8 +157,13 @@ RowResult Table::getRowIndex(Index index) const {
     
     for (unsigned int i = 0; i < num_vals; i++) {
       if (j == index) {
-        std::vector<Value> val = cur->getRowByIndex(i);
-        return {true, val};
+        std::vector<Value> row = cur->getRowByIndex(i);
+
+        for (auto& pair: this->virtual_attr_map) {
+          // add virtual vals
+          row.push_back(this->parseEquation(pair.second, row));
+        }
+        return {true, row};
       }
       j++;
     }
@@ -203,10 +213,9 @@ Value Table::parseEquation(std::string equation, std::vector<Value> &row) {
   // parses whole equation according to PEMDAS
   // example
   // std::stack<std::string> vals;
-  std::cout << row[0] << std::endl;
-  std::cout << equation << std::endl;
+  std::string test = equation;
   // checks attribute exists
-  return -1.0f;
+  return row[0];
 }
 
 bool Table::addAttribute(std::string name, std::string equation) {
@@ -314,23 +323,39 @@ bool Table::remove(Key key) {
   return valid;
 }
 
-void Table::print() const {
-  // for debugging
-  LeafChunk* cur = this->getFirst();
-  
-  while (cur != nullptr) {
-    unsigned int num_vals = cur->getNumVals();
-    
-    for (unsigned int i = 0; i < num_vals; i++) {
-      std::vector<Value> val = cur->getRowByIndex(i);
-      for (Value val: val) {
-        std::cout << val << " ";
-      }
-      std::cout << std::endl;
-    }
-    
-    cur = cur->getNext();
+void Table::printHeaders() {
+  // headers in order
+  std::vector<Attribute> headers(this->num_attributes);
+  for (auto& pair: this->attr_map) {
+    headers[pair.second] = pair.first;
   }
+
+  for (Attribute attr: headers) {
+    // print normal attributes
+    std::cout << attr << " ";
+  }
+
+  for (auto& pair: this->virtual_attr_map) {
+    // print virtual attributes
+    std::cout << pair.first << " ";
+  }
+
+  std::cout << std::endl;
+}
+
+void Table::printValues() {
+  // values in order
+  for (unsigned int i = 0; i < this->num_rows; i++) {
+    for (Value res: this->getRowIndex(i).row) {
+      std::cout << res << " ";
+    }
+    std::cout << std::endl;
+  }
+}
+
+void Table::print() {
+  this->printHeaders();
+  this->printValues();
 }
 
 std::ostream& operator<<(std::ostream& os, const Table& table) {

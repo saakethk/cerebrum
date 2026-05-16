@@ -43,6 +43,9 @@ class Table {
 
     Value parseOperation(std::string attribute_1, Operation op, std::string attribute_2, std::vector<Value> &row);
     Value parseEquation(std::string equation, std::vector<Value> &row);
+
+    void printHeaders();
+    void printValues();
     
   public:
     Table(std::vector<Attribute> attributes);
@@ -52,8 +55,8 @@ class Table {
 
     ValResult getValIndex(Index index, Attribute attribute); // TODO: store the index last accessed and go form there
     ValResult getVal(Key key, Attribute attribute);
-    RowResult getRowIndex(Index index) const; // same as ValIndex
-    RowResult getRow(Key key) const;
+    RowResult getRowIndex(Index index); // same as ValIndex
+    RowResult getRow(Key key);
 
     bool addAttribute(std::string name, std::string equation);
     // bool removeAttribute(std::string name);
@@ -63,6 +66,6 @@ class Table {
 
     // bool apply(std::string attribute_name, std::string equation);
 
-    void print() const;
+    void print();
     friend std::ostream& operator<<(std::ostream& os, const Table& table); // for debugging
 };
