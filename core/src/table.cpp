@@ -50,10 +50,10 @@ LeafChunk* Table::getLeaf(Key key) const {
   return static_cast<LeafChunk*>(cur);
 }
 
-ValResult Table::getVal(Key key, Attribute attribute) const {
+ValResult Table::getVal(Key key, Attribute attribute) {
 
-  // check if attribute exists
-  if ((this->attr_map).find(attribute) == this->attr_map.end()) {
+  if (this->attr_map.find(attribute) == this->attr_map.end()) {
+    // attribute doesn't exist
     return {false, 0};
   }
 
@@ -66,7 +66,13 @@ ValResult Table::getVal(Key key, Attribute attribute) const {
     return {false, 0};
   }
 
-  Value val = leaf->getRowValByIndex(loc.index, this->attr_map.at(attribute));
+  if (this->virtual_attr_map.find(attribute) != this->virtual_attr_map.end()) {
+    // attribute exists in virtual map
+    std::vector<Value> row = leaf->getRow(loc.index);
+    return this->parseEquation(this->virtual_attr_map[attribute], row);
+  }
+
+  Value val = leaf->getRowValByIndex(loc.index, this->attr_map[attribute]);
   return {true, val};
 }
 
@@ -165,10 +171,10 @@ ValResult Table::parseOperation(std::string attribute_1, Operation op, std::stri
 Value parseEquation(std::string equation, std::vector<Value> &row) {
   // TODO: implement this
   // parses whole equation according to PEMDAS
+  // example
+  // std::stack<std::string> vals;
+  std::cout << row[0] << std::endl;
   std::cout << equation << std::endl;
-  for (Value val: row) {
-    std::cout << val << std::endl;
-  }
   // checks attribute exists
   return -1.0f;
 }
@@ -176,12 +182,14 @@ Value parseEquation(std::string equation, std::vector<Value> &row) {
 bool Table::addAttribute(std::string name, std::string equation) {
 
   if (this->attr_map.find(name) != this->attr_map.end()) {
-    // attribute already exists
+    // name exists in attributes
     return false;
   }
 
-  // adds the attribute to attr_map
-  this->attr_map[name] = this->num_attributes;
+  if (this->virtual_attr_map.find(name) != this->virtual_attr_map.end()) {
+    // name exists in virtual attributes
+    return false;
+  }
 
   // adds the attribute to virtual_attr_map
   this->virtual_attr_map[name] = equation;
