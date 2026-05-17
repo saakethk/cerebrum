@@ -2,11 +2,19 @@
 
 #include <string>
 #include <vector>
+#include <stack>
+#include <queue>
 #include <unordered_map>
 #include <functional>
+#include <iostream>
+#include <sstream>
+
+#include "table/table_helpers.hpp"
+#include "table/table_ops.hpp"
 
 #include "chunks/chunk.hpp"
 #include "chunks/leaf_chunk.hpp"
+#include "chunks/internal_chunk.hpp"
 
 using Attribute = std::string;
 
@@ -33,6 +41,7 @@ class Table {
     LeafChunk* getLast() const;
     LeafChunk* getLeaf(Key key) const;
     
+    std::unordered_map<std::string, OpFunc> ops;
     Value evalEquation(Key key, std::string equation);
 
     void printHeaders();

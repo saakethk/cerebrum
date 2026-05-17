@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_set>
 
-#include "table/table.hpp"
+#include "chunks/chunk.hpp"
 
 void add(Value& res, Value val);
 

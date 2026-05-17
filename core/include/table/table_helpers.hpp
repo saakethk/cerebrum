@@ -4,7 +4,7 @@
 #include <unordered_set>
 #include <regex>
 
-#include "table/table.hpp"
+#include "chunks/chunk.hpp"
 
 enum Operation {
   ADD,
