@@ -267,11 +267,8 @@ bool Table::isVirtualAttribute(std::string val) {
 }
 
 Value Table::evalEquation(Key key, std::string equation) {
-  // TODO: implement this
-  // parses whole equation according to PEMDAS
-  // example
+
   // assumes equation is validated
-  // std::stack<std::string> vals;
   std::stringstream e(equation);
   std::queue<std::string> vals;
 
@@ -341,9 +338,6 @@ Value Table::evalEquation(Key key, std::string equation) {
       vals.pop();
     }
   }
-
-  // std::string test = equation;
-  // checks attribute exists
   return res;
 }
 bool Table::addAttribute(std::string name, std::string equation) {

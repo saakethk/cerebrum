@@ -30,6 +30,8 @@ int main() {
 
   table.addAttribute("test", "( ( stuff + stuff1 ) + ( stuff2 * stuff3 ) ) / stuff4");
   table.addAttribute("test1", "test * 50.4");
+  // TODO: add previous and future
+  // TODO: validate equation
   // for (unsigned int j = 0; j < 1000; j++) {
   //   std::cout << table.getValByIndex(j, "test").val << std::endl;
   // }
