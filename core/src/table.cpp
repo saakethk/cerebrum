@@ -290,19 +290,25 @@ Value Table::evalEquation(Key key, std::string equation) {
       // find value of paranthesis
       vals.pop();
 
+      unsigned int depth = 1;
       std::string sub_equation;
-      while (vals.front() != ")") {
-        // go till end paranthesis found
+      while ((vals.empty() == false) && (depth > 0)) {
+        std::string token = vals.front();
+        vals.pop();
 
-        if (sub_equation.empty() == false) {
-          // adds space between vals
-          sub_equation += " ";
+        if (token == "(") {
+          depth++;
+        } else if (token == ")") {
+          depth--;
         }
 
-        sub_equation += vals.front();
-        vals.pop();
+        if (depth > 0) {
+          if (sub_equation.empty() == false) {
+            sub_equation += " ";
+          }
+          sub_equation += token;
+        }
       }
-      vals.pop();
 
       // evaluate the sub equation
       Value sub_res = this->evalEquation(key, sub_equation);
@@ -331,18 +337,15 @@ Value Table::evalEquation(Key key, std::string equation) {
       res = this->evalOperation(res, op, attr_val);
       vals.pop();
 
-    } else {
-      return -1;
+    } else if (vals.front() == ")") {
+      vals.pop();
     }
   }
-
-
 
   // std::string test = equation;
   // checks attribute exists
   return res;
 }
-
 bool Table::addAttribute(std::string name, std::string equation) {
 
   if (this->attr_map.find(name) != this->attr_map.end()) {

@@ -61,8 +61,8 @@ InsertStatus LeafChunk::insert(Key key, std::vector<Value>& row) {
   }
 
   // insertion successful
-  this->insertKey(loc.index, key);
   this->insertValue(loc.index, row);
+  this->insertKey(loc.index, key);
   return Success;
 }
 

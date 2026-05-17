@@ -28,7 +28,8 @@ int main() {
     table.insert(i, row);
   }
 
-  table.addAttribute("test", "( stuff + stuff1 ) + ( stuff2 * stuff3 )");
+  table.addAttribute("test", "( ( stuff + stuff1 ) + ( stuff2 * stuff3 ) ) / stuff4");
+  table.addAttribute("test1", "test * 50.4");
   // for (unsigned int j = 0; j < 1000; j++) {
   //   std::cout << table.getValByIndex(j, "test").val << std::endl;
   // }
