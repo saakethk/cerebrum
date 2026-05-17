@@ -10,15 +10,6 @@
 
 using Attribute = std::string;
 
-enum Operation {
-  ADD,
-  SUBTRACT,
-  MULTIPLY,
-  DIVIDE,
-  EXPONENT,
-  INVALID
-};
-
 struct ValResult {
   bool valid;
   Value val;
@@ -41,12 +32,7 @@ class Table {
     LeafChunk* getFirst() const;
     LeafChunk* getLast() const;
     LeafChunk* getLeaf(Key key) const;
-
-    Value evalOperation(Value v1, Operation op, Value v2);
-    bool isConstant(std::string val);
-    Operation isOperator(std::string val);
-    bool isAttribute(std::string val);
-    bool isVirtualAttribute(std::string val);
+    
     Value evalEquation(Key key, std::string equation);
 
     void printHeaders();
@@ -60,8 +46,11 @@ class Table {
 
     ValResult getValIndex(Index index, Attribute attribute); // TODO: store the index last accessed and go form there
     ValResult getVal(Key key, Attribute attribute);
+    // ValResult getValOffset(Key key, Attribute attribute, int offset);
+
     RowResult getRowIndex(Index index); // same as ValIndex
     RowResult getRow(Key key);
+    // RowResult getRowOffset(Key key, int offset);
 
     bool addAttribute(std::string name, std::string equation);
     // bool removeAttribute(std::string name);

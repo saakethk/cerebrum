@@ -10,7 +10,7 @@
 #include "chunks/leaf_chunk.hpp"
 
 Table::Table(std::vector<Attribute> attributes) {
-  // attribute size has to be known at initalization time
+  // attribute size has to be known at inxitalization time
   this->num_rows = 0;
   this->num_attributes = 0;
   this->root = new LeafChunk(attributes.size());
@@ -187,85 +187,6 @@ RowResult Table::getRowIndex(Index index) {
   return {false, {}};
 }
 
-Value Table::evalOperation(Value v1, Operation op, Value v2) {
-  // performs operation
-  switch (op) {
-    case ADD:
-      return v1 + v2;
-    case MULTIPLY:
-      return v1 * v2;
-    case DIVIDE:
-      return v1 / v2;
-    case EXPONENT:
-      // TODO: write exponent function
-      return 0;
-    case SUBTRACT:
-      return v1 - v2;
-    default:
-      return -1;
-  }
-
-  // operation not found
-  return -1;
-}
-
-bool Table::isConstant(std::string val) {
-  // checks if string represent a float
-  std::regex is_float(R"([+-]?([0-9]*\.[0-9]+|[0-9]+))");
-
-  if (std::regex_match(val, is_float) == true) {
-    // is a constant
-    return true;
-  }
-
-  // is not a constant
-  return false;
-}
-
-Operation Table::isOperator(std::string val) {
-  // checks if string is supported operator
-  std::vector<std::string> supported = {"+", "-", "*", "/", "^"};
-  
-  Operation op = INVALID;
-  if (val == "+") {
-    op = ADD;
-  } else if (val == "-") {
-    op = SUBTRACT;
-  } else if (val == "*") {
-    op = MULTIPLY;
-  } else if (val == "/") {
-    op = DIVIDE;
-  } else if (val == "^") {
-    op = EXPONENT;
-  }
-
-  return op;
-}
-
-bool Table::isAttribute(std::string val) {
-  // checks if string is valid attribute
-
-  bool is_attribute = false;
-  for (auto& pair: this->attr_map) {
-    if (pair.first == val) {
-      is_attribute = true;
-    }
-  }
-  return is_attribute;
-}
-
-bool Table::isVirtualAttribute(std::string val) {
-  // checks if string is valid virtual attribute
-
-  bool is_virtual_attr = false;
-  for (auto& pair: this->virtual_attr_map) {
-    if (pair.first == val) {
-      is_virtual_attr = true;
-    }
-  }
-  return is_virtual_attr;
-}
-
 Value Table::evalEquation(Key key, std::string equation) {
 
   // assumes equation is validated
@@ -340,6 +261,7 @@ Value Table::evalEquation(Key key, std::string equation) {
   }
   return res;
 }
+
 bool Table::addAttribute(std::string name, std::string equation) {
 
   if (this->attr_map.find(name) != this->attr_map.end()) {
@@ -358,91 +280,6 @@ bool Table::addAttribute(std::string name, std::string equation) {
   this->virtual_attr_map[name] = equation;
 
   return true;
-}
-
-bool Table::insert(Key key, std::vector<Value>& row) {
-
-  // traverse down to find leaf
-  std::stack<InternalChunk*> path;
-  Chunk* current = this->root;
-  while (current->isLeaf() == false) {
-    path.push(static_cast<InternalChunk*>(current));
-    current = static_cast<InternalChunk*>(current)->getNext(key);
-  }
-
-  // insert into leaf
-  LeafChunk* leaf = static_cast<LeafChunk*>(current);
-  InsertStatus status = leaf->insert(key, row);
-  if (status == Invalid) {
-    return false;
-  } else if (status == Success) {
-    this->num_rows += 1;
-    return true;
-  }
-
-  // when leaf is full
-  SplitChunk split = leaf->split();
-  while (true) {
-
-    if (path.empty()) {
-      // when root doesn't exist
-      InternalChunk* new_root = new InternalChunk();
-      new_root->insert(split.key);
-      new_root->insertChild(this->root);
-      new_root->insertChild(split.chunk);
-      this->root = new_root;
-      return this->insert(key, row);
-    }
-
-    // starts at parent of leaf node
-    InternalChunk* parent = path.top(); 
-    path.pop();
-    if (parent->isFull() == false) {
-      // if parent not full
-      status = parent->insertChild(split.key, split.chunk);
-
-      if (status == Success) 
-        return this->insert(key, row);
-      if (status == Invalid)
-        return false;
-    }
-
-    // splits parent if full
-    SplitChunk parent_split = parent->split();
-    if (split.key < parent_split.key) {
-      // inserts into left half
-      parent->insertChild(split.key, split.chunk);
-    } else {
-      // inserts into right half
-      InternalChunk* right = static_cast<InternalChunk*>(parent_split.chunk);
-      right->insertChild(split.key, split.chunk);
-    }
-    split = parent_split;
-
-  }
-}
-
-bool Table::remove(Key key) {
-
-  Chunk* current = this->root;
-
-  while (current->isLeaf() == false) {
-    // traverse down to find leaf
-    InternalChunk* i_cur = static_cast<InternalChunk*>(current);
-    current = i_cur->getNext(key);
-  }
-
-  // remove from leaf 
-  LeafChunk* leaf = static_cast<LeafChunk*>(current);
-  bool valid = leaf->remove(key);
-
-  if (valid == false) {
-    // remove failed
-    return valid;
-  }
-  
-  this->num_rows -= 1;
-  return valid;
 }
 
 void Table::printHeaders() {
