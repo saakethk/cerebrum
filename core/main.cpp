@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "chunks/leaf_chunk.hpp"
-#include "table.hpp"
+#include "table/table.hpp"
 
 int main() {
 

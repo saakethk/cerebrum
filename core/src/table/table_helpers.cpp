@@ -40,4 +40,9 @@ bool isOperator(std::string val,
   std::unordered_map<std::string, OpFunc>& op_map) {
   // checks if valid supported operation
 
+  if (op_map.find(val) == op_map.end()) {
+    // not valid
+    return false;
+  }
+  return true; // valid
 }

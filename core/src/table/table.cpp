@@ -1,5 +1,5 @@
 
-#include "table.hpp"
+#include "table/table.hpp"
 
 Table::Table(std::vector<Attribute> attributes) {
   // attribute size has to be known at inxitalization time
