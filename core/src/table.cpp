@@ -223,6 +223,7 @@ Value Table::evalEquation(Key key, std::string equation) {
   // TODO: implement this
   // parses whole equation according to PEMDAS
   // example
+  // assumes equation is validated
   // std::stack<std::string> vals;
   std::stringstream e(equation);
   std::queue<std::string> vals;
@@ -233,8 +234,30 @@ Value Table::evalEquation(Key key, std::string equation) {
     vals.push(val);
   }
 
+  Value res = 0;
   while (vals.empty() == false) {
-    // 
+    // parses equation from left to right
+
+    if (vals.front() == "(") {
+      // find value of paranthesis
+      vals.pop();
+
+      std::string sub_equation;
+      while (vals.front() != ")") {
+        // go till end paranthesis found
+        sub_equation += vals.front();
+        vals.pop();
+      }
+
+      // evaluate the sub equation
+      res += this->evalEquation(key, sub_equation);
+    }
+
+    // example: test + test * 15 + 10 * test2
+    // if (isNumber(vals.front()) == false)
+    // add the val to res
+    // else expect an operator followed by a value
+    // perform operation and add to res
   }
 
 
