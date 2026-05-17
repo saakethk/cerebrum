@@ -86,8 +86,8 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
     
     for (unsigned int i = 0; i < num_vals; i++) {
       if (j + i == index) {
-        // correct index found
         
+        // updates cache
         this->last_accessed_index = j;
         this->last_accessed_chunk = cur;
 
@@ -155,11 +155,15 @@ RowResult Table::getRowIndex(Index index) {
     unsigned int num_vals = cur->getNumVals();
     
     for (unsigned int i = 0; i < num_vals; i++) {
-      if (j == index) {
-        std::vector<Value> row = cur->getRowByIndex(i);
+      if (j + i == index) {
 
-        // get key val for index
+        // updates cache
+        this->last_accessed_index = j;
+        this->last_accessed_chunk = cur;
+
+        // get key and row
         Key key = cur->getKeys()[i];
+        std::vector<Value> row = cur->getRowByIndex(i);
 
         for (auto& pair: this->virtual_attr_map) {
           // add virtual vals
@@ -167,10 +171,15 @@ RowResult Table::getRowIndex(Index index) {
         }
         return {true, row};
       }
-      j++;
     }
     
-    cur = cur->getNext();
+    if (index > j) {
+      cur = cur->getNext();
+      j += num_vals;
+    } else {
+      cur = cur->getPrevious();
+      j -= num_vals;
+    }
   }
   
   return {false, {}};
