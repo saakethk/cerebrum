@@ -201,6 +201,8 @@ Value Table::evalOperation(Value v1, Operation op, Value v2) {
       return 0;
     case SUBTRACT:
       return v1 - v2;
+    default:
+      return -1;
   }
 
   // operation not found
@@ -291,25 +293,29 @@ Value Table::evalEquation(Key key, std::string equation) {
       std::string sub_equation;
       while (vals.front() != ")") {
         // go till end paranthesis found
+
+        if (sub_equation.empty() == false) {
+          // adds space between vals
+          sub_equation += " ";
+        }
+
         sub_equation += vals.front();
         vals.pop();
       }
+      vals.pop();
 
       // evaluate the sub equation
       Value sub_res = this->evalEquation(key, sub_equation);
       res = this->evalOperation(res, op, sub_res);
       
-    }
-
-    // example: test + test * 15 + 10 * test2
-    if (this->isConstant(vals.front()) == true) {
+    } else if (this->isConstant(vals.front()) == true) {
 
       // if constant
       Value constant = std::stof(vals.front());
       res = this->evalOperation(res, op, constant);
       vals.pop();
 
-    } else if (this->isOperator(vals.front()) == INVALID) {
+    } else if (this->isOperator(vals.front()) != INVALID) {
       
       // if operator
       op = this->isOperator(vals.front());
@@ -325,14 +331,16 @@ Value Table::evalEquation(Key key, std::string equation) {
       res = this->evalOperation(res, op, attr_val);
       vals.pop();
 
+    } else {
+      return -1;
     }
   }
 
 
 
-  std::string test = equation;
+  // std::string test = equation;
   // checks attribute exists
-  return 0;
+  return res;
 }
 
 bool Table::addAttribute(std::string name, std::string equation) {
