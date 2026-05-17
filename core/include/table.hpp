@@ -41,8 +41,9 @@ class Table {
     LeafChunk* getLast() const;
     LeafChunk* getLeaf(Key key) const;
 
-    Value parseOperation(std::string attribute_1, Operation op, std::string attribute_2, std::vector<Value> &row);
-    Value parseEquation(std::string equation, std::vector<Value> &row);
+    Value parseOperation(std::string attribute_1, Operation op, 
+      std::string attribute_2, std::vector<Value> &row);
+    Value evalEquation(Key key, std::string equation);
 
     void printHeaders();
     void printValues();

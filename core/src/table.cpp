@@ -1,6 +1,7 @@
-#include <stack>
+#include <queue>
 #include <iostream>
 #include <array>
+#include <sstream>
 
 #include "table.hpp"
 #include "chunks/internal_chunk.hpp"
@@ -72,7 +73,7 @@ ValResult Table::getVal(Key key, Attribute attribute) {
   if (exists_virtual == true) {
     // attribute exists in virtual map
     std::vector<Value> row = leaf->getRow(loc.index);
-    val = this->parseEquation(this->virtual_attr_map[attribute], row);
+    val = this->evalEquation(key, this->virtual_attr_map[attribute]);
   } else {
     // attribute exists in normal map
     val = leaf->getRowValByIndex(loc.index, this->attr_map[attribute]);
@@ -96,7 +97,7 @@ RowResult Table::getRow(Key key) {
 
   for (auto& pair: this->virtual_attr_map) {
     // add virtual vals
-    row.push_back(this->parseEquation(pair.second, row));
+    row.push_back(this->evalEquation(key, pair.second));
   }
   return {true, row};
 }
@@ -126,14 +127,21 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
       if (j == index) {
         // correct index found
 
+        // get key val for index
+        Key key = cur->getKeys()[i];
+
         Value val;
         if (exists_virtual == true) {
+
           // attribute exists in virtual map
           std::vector<Value> row = cur->getRowByIndex(i);
-          val = this->parseEquation(this->virtual_attr_map[attribute], row);
+          val = this->evalEquation(key, this->virtual_attr_map[attribute]);
+
         } else {
+
           // attribute exists in normal map
           val = cur->getRowValByIndex(i, this->attr_map[attribute]);
+
         }
         return {true, val};
 
@@ -159,9 +167,12 @@ RowResult Table::getRowIndex(Index index) {
       if (j == index) {
         std::vector<Value> row = cur->getRowByIndex(i);
 
+        // get key val for index
+        Key key = cur->getKeys()[i];
+
         for (auto& pair: this->virtual_attr_map) {
           // add virtual vals
-          row.push_back(this->parseEquation(pair.second, row));
+          row.push_back(this->evalEquation(key, pair.second));
         }
         return {true, row};
       }
@@ -208,14 +219,29 @@ Value Table::parseOperation(std::string attribute_1, Operation op, std::string a
   return -1;
 }
 
-Value Table::parseEquation(std::string equation, std::vector<Value> &row) {
+Value Table::evalEquation(Key key, std::string equation) {
   // TODO: implement this
   // parses whole equation according to PEMDAS
   // example
   // std::stack<std::string> vals;
+  std::stringstream e(equation);
+  std::queue<std::string> vals;
+
+  std::string val;
+  while (e >> val) {
+    // populates queue for equation
+    vals.push(val);
+  }
+
+  while (vals.empty() == false) {
+    // 
+  }
+
+
+
   std::string test = equation;
   // checks attribute exists
-  return row[0];
+  return 0;
 }
 
 bool Table::addAttribute(std::string name, std::string equation) {
