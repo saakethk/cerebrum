@@ -19,4 +19,8 @@ Table::Table(std::vector<Attribute> attributes) {
   this->ops["*"] = multiply;
   this->ops["/"] = divide;
   this->ops["^"] = exp;
+
+  // for improving access time
+  this->last_accessed_index = 0;
+  this->last_accessed_chunk = this->getFirst();
 }

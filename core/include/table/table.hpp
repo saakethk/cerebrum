@@ -37,6 +37,10 @@ class Table {
     std::unordered_map<std::string, std::string> virtual_attr_map;
     Chunk* root;
 
+    // improves indexed retrieval speed
+    unsigned int last_accessed_index;
+    LeafChunk* last_accessed_chunk;
+
     LeafChunk* getFirst() const;
     LeafChunk* getLast() const;
     LeafChunk* getLeaf(Key key) const;
@@ -54,12 +58,12 @@ class Table {
     bool remove(Key key);
 
     ValResult getValIndex(Index index, Attribute attribute); // TODO: store the index last accessed and go form there
-    ValResult getVal(Key key, Attribute attribute);
     // ValResult getValOffset(Key key, Attribute attribute, int offset);
+    ValResult getVal(Key key, Attribute attribute);
 
     RowResult getRowIndex(Index index); // same as ValIndex
-    RowResult getRow(Key key);
     // RowResult getRowOffset(Key key, int offset);
+    RowResult getRow(Key key);
 
     bool addAttribute(std::string name, std::string equation);
     // bool removeAttribute(std::string name);

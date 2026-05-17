@@ -34,8 +34,8 @@ LeafChunk* Table::getLeaf(Key key) const {
 
 ValResult Table::getVal(Key key, Attribute attribute) {
 
-  bool exists_attr = this->attr_map.find(attribute) != this->attr_map.end();
-  bool exists_virtual = this->virtual_attr_map.find(attribute) != this->virtual_attr_map.end();
+  bool exists_attr = isAttribute(attribute, this->attr_map);
+  bool exists_virtual = isVirtualAttribute(attribute, this->virtual_attr_map);
   if ((exists_attr == false) && (exists_virtual == false)) {
     // attribute doesn't exist
     return {false, 0};
@@ -63,26 +63,6 @@ ValResult Table::getVal(Key key, Attribute attribute) {
   return {true, val};
 }
 
-RowResult Table::getRow(Key key) {
-
-  // search leaf chunk
-  LeafChunk* leaf = this->getLeaf(key);
-  KeyLoc loc = leaf->searchKey(key);
-
-  if (loc.valid == false) {
-    // if key not found
-    return {false, {}};
-  }
-
-  std::vector<Value> row = leaf->getRow(loc.index);
-
-  for (auto& pair: this->virtual_attr_map) {
-    // add virtual vals
-    row.push_back(this->evalEquation(key, pair.second));
-  }
-  return {true, row};
-}
-
 ValResult Table::getValIndex(Index index, Attribute attribute) {
   // gets value at a index starting from first
 
@@ -98,15 +78,18 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
     return {false, 0};
   }
 
-  LeafChunk* cur = this->getFirst();
+  LeafChunk* cur = this->last_accessed_chunk;
   
-  unsigned int j = 0; // counts for valid indices
+  unsigned int j = this->last_accessed_index; // counts for valid indices
   while (cur != nullptr) {
     unsigned int num_vals = cur->getNumVals();
     
     for (unsigned int i = 0; i < num_vals; i++) {
-      if (j == index) {
+      if (j + i == index) {
         // correct index found
+        
+        this->last_accessed_index = j;
+        this->last_accessed_chunk = cur;
 
         // get key val for index
         Key key = cur->getKeys()[i];
@@ -127,13 +110,40 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
         return {true, val};
 
       }
-      j++;
     }
     
-    cur = cur->getNext();
+    if (index > j) {
+      cur = cur->getNext();
+      j += num_vals;
+    } else {
+      cur = cur->getPrevious();
+      j -= num_vals;
+    }
   }
   
   return {false, 0};
+}
+
+
+
+RowResult Table::getRow(Key key) {
+
+  // search leaf chunk
+  LeafChunk* leaf = this->getLeaf(key);
+  KeyLoc loc = leaf->searchKey(key);
+
+  if (loc.valid == false) {
+    // if key not found
+    return {false, {}};
+  }
+
+  std::vector<Value> row = leaf->getRow(loc.index);
+
+  for (auto& pair: this->virtual_attr_map) {
+    // add virtual vals
+    row.push_back(this->evalEquation(key, pair.second));
+  }
+  return {true, row};
 }
 
 RowResult Table::getRowIndex(Index index) {
