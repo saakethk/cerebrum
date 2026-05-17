@@ -2,6 +2,7 @@
 #include <iostream>
 #include <array>
 #include <sstream>
+#include <string>
 #include <regex>
 
 #include "table.hpp"
@@ -186,34 +187,20 @@ RowResult Table::getRowIndex(Index index) {
   return {false, {}};
 }
 
-Value Table::parseOperation(std::string attribute_1, Operation op, std::string attribute_2, std::vector<Value> &row) {
-
-  if (this->attr_map.find(attribute_1) == this->attr_map.end()) {
-    // attribute 1 doesn't exist
-    return -1;
-  } 
-  
-  if (this->attr_map.find(attribute_2) == this->attr_map.end()) {
-    // attribute 2 doesn't exist
-    return -1;
-  }
-
-  Value first = row[this->attr_map[attribute_1]];
-  Value second = row[this->attr_map[attribute_2]];
-
+Value Table::evalOperation(Value v1, Operation op, Value v2) {
   // performs operation
   switch (op) {
     case ADD:
-      return first + second;
+      return v1 + v2;
     case MULTIPLY:
-      return first * second;
+      return v1 * v2;
     case DIVIDE:
-      return first / second;
+      return v1 / v2;
     case EXPONENT:
       // TODO: write exponent function
       return 0;
     case SUBTRACT:
-      return first - second;
+      return v1 - v2;
   }
 
   // operation not found
@@ -233,6 +220,50 @@ bool Table::isConstant(std::string val) {
   return false;
 }
 
+Operation Table::isOperator(std::string val) {
+  // checks if string is supported operator
+  std::vector<std::string> supported = {"+", "-", "*", "/", "^"};
+  
+  Operation op = INVALID;
+  if (val == "+") {
+    op = ADD;
+  } else if (val == "-") {
+    op = SUBTRACT;
+  } else if (val == "*") {
+    op = MULTIPLY;
+  } else if (val == "/") {
+    op = DIVIDE;
+  } else if (val == "^") {
+    op = EXPONENT;
+  }
+
+  return op;
+}
+
+bool Table::isAttribute(std::string val) {
+  // checks if string is valid attribute
+
+  bool is_attribute = false;
+  for (auto& pair: this->attr_map) {
+    if (pair.first == val) {
+      is_attribute = true;
+    }
+  }
+  return is_attribute;
+}
+
+bool Table::isVirtualAttribute(std::string val) {
+  // checks if string is valid virtual attribute
+
+  bool is_virtual_attr = false;
+  for (auto& pair: this->virtual_attr_map) {
+    if (pair.first == val) {
+      is_virtual_attr = true;
+    }
+  }
+  return is_virtual_attr;
+}
+
 Value Table::evalEquation(Key key, std::string equation) {
   // TODO: implement this
   // parses whole equation according to PEMDAS
@@ -249,6 +280,7 @@ Value Table::evalEquation(Key key, std::string equation) {
   }
 
   Value res = 0;
+  Operation op = ADD;
   while (vals.empty() == false) {
     // parses equation from left to right
 
@@ -264,14 +296,36 @@ Value Table::evalEquation(Key key, std::string equation) {
       }
 
       // evaluate the sub equation
-      res += this->evalEquation(key, sub_equation);
+      Value sub_res = this->evalEquation(key, sub_equation);
+      res = this->evalOperation(res, op, sub_res);
+      
     }
 
     // example: test + test * 15 + 10 * test2
-    // if (isNumber(vals.front()) == false)
-    // add the val to res
-    // else expect an operator followed by a value
-    // perform operation and add to res
+    if (this->isConstant(vals.front()) == true) {
+
+      // if constant
+      Value constant = std::stof(vals.front());
+      res = this->evalOperation(res, op, constant);
+      vals.pop();
+
+    } else if (this->isOperator(vals.front()) == INVALID) {
+      
+      // if operator
+      op = this->isOperator(vals.front());
+      vals.pop();
+
+    } else if (
+      (this->isAttribute(vals.front()) == true)
+      || (this->isVirtualAttribute(vals.front()) == true)
+    ) {
+      
+      // if attribute
+      Value attr_val = this->getVal(key, vals.front()).val;
+      res = this->evalOperation(res, op, attr_val);
+      vals.pop();
+
+    }
   }
 
 

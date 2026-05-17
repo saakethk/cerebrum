@@ -15,7 +15,8 @@ enum Operation {
   SUBTRACT,
   MULTIPLY,
   DIVIDE,
-  EXPONENT
+  EXPONENT,
+  INVALID
 };
 
 struct ValResult {
@@ -41,9 +42,11 @@ class Table {
     LeafChunk* getLast() const;
     LeafChunk* getLeaf(Key key) const;
 
-    Value parseOperation(std::string attribute_1, Operation op, 
-      std::string attribute_2, std::vector<Value> &row); // helper for evalEquation
-    bool isConstant(std::string val); // helper for evalEquation
+    Value evalOperation(Value v1, Operation op, Value v2);
+    bool isConstant(std::string val);
+    Operation isOperator(std::string val);
+    bool isAttribute(std::string val);
+    bool isVirtualAttribute(std::string val);
     Value evalEquation(Key key, std::string equation);
 
     void printHeaders();
