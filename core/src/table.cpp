@@ -2,6 +2,7 @@
 #include <iostream>
 #include <array>
 #include <sstream>
+#include <regex>
 
 #include "table.hpp"
 #include "chunks/internal_chunk.hpp"
@@ -217,6 +218,19 @@ Value Table::parseOperation(std::string attribute_1, Operation op, std::string a
 
   // operation not found
   return -1;
+}
+
+bool Table::isConstant(std::string val) {
+  // checks if string represent a float
+  std::regex is_float(R"([+-]?([0-9]*\.[0-9]+|[0-9]+))");
+
+  if (std::regex_match(val, is_float) == true) {
+    // is a constant
+    return true;
+  }
+
+  // is not a constant
+  return false;
 }
 
 Value Table::evalEquation(Key key, std::string equation) {

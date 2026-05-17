@@ -42,7 +42,8 @@ class Table {
     LeafChunk* getLeaf(Key key) const;
 
     Value parseOperation(std::string attribute_1, Operation op, 
-      std::string attribute_2, std::vector<Value> &row);
+      std::string attribute_2, std::vector<Value> &row); // helper for evalEquation
+    bool isConstant(std::string val); // helper for evalEquation
     Value evalEquation(Key key, std::string equation);
 
     void printHeaders();
