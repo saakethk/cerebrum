@@ -24,9 +24,17 @@ int main() {
   Table table = Table({"stuff", "stuff1", "stuff2", "stuff3", "stuff4"});
 
   std::vector<Value> row = {1, 2, 3, 4, 5};
-  for (unsigned int i = 0; i < 1000; i++) {
-    table.insert(i, row);
-  }
+  std::vector<Value> row1 = {2, 3, 4, 5, 6};
+  std::vector<Value> row2 = {3, 4, 5, 6, 7};
+  // for (unsigned int i = 0; i < 1000; i++) {
+  //   table.insert(i, row);
+  // }
+  
+  table.insert(0, row);
+  table.insert(1, row1);
+  table.insert(2, row2);
+
+  std::cout << table.getVal(2, "stuff", -1).val << std::endl;
 
   table.addAttribute("test", "( ( stuff + stuff1 ) + ( stuff2 * stuff3 ) ) / stuff4");
   table.addAttribute("test1", "test * 50.4");
@@ -69,7 +77,7 @@ int main() {
   //   std::cout << table.remove(i) << std::endl;
   // }
 
-  table.print();
+  // table.print();
 
   // std::cout << table << std::endl;
 
