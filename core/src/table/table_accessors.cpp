@@ -112,19 +112,19 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
       }
     }
     
-    if (index > j) {
+    if (index >= j + num_vals) {
+      // index in next chunk
       cur = cur->getNext();
       j += num_vals;
     } else {
+      // index in previous chunk
       cur = cur->getPrevious();
-      j -= num_vals;
+      j -= cur->getNumItems();
     }
   }
   
   return {false, 0};
 }
-
-
 
 RowResult Table::getRow(Key key) {
 
@@ -173,12 +173,14 @@ RowResult Table::getRowIndex(Index index) {
       }
     }
     
-    if (index > j) {
+    if (index >= j + num_vals) {
+      // index in next chunk
       cur = cur->getNext();
       j += num_vals;
     } else {
+      // index in previous chunk
       cur = cur->getPrevious();
-      j -= num_vals;
+      j -= cur->getNumItems();
     }
   }
   

@@ -24,7 +24,7 @@ int main() {
   Table table = Table({"stuff", "stuff1", "stuff2", "stuff3", "stuff4"});
 
   std::vector<Value> row = {1, 2, 3, 4, 5};
-  for (unsigned int i = 0; i < 1000; i++) {
+  for (unsigned int i = 999; i > 0; i--) {
     table.insert(i, row);
   }
 

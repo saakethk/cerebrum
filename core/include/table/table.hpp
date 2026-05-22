@@ -58,7 +58,6 @@ class Table {
     bool remove(Key key);
 
     ValResult getValIndex(Index index, Attribute attribute); // TODO: store the index last accessed and go form there
-    // ValResult getValOffset(Key key, Attribute attribute, int offset);
     ValResult getVal(Key key, Attribute attribute);
 
     RowResult getRowIndex(Index index); // same as ValIndex
