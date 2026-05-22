@@ -1,4 +1,4 @@
-// TODO: fix the accessors and make cleaner
+
 #include "table/table.hpp"
 
 LeafChunk* Table::getFirst() const {
