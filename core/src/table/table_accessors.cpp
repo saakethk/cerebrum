@@ -136,9 +136,56 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
     return {false, 0};
   }
 
+<<<<<<< HEAD
   return this->getValOffset(
     this->last_accessed_chunk, attribute, 
     this->last_accessed_index, index);
+=======
+  LeafChunk* cur = this->last_accessed_chunk;
+  
+  unsigned int j = this->last_accessed_index; // counts for valid indices
+  while (cur != nullptr) {
+    unsigned int num_vals = cur->getNumVals();
+    
+    for (unsigned int i = 0; i < num_vals; i++) {
+      if (j + i == index) {
+        // correct index found
+        
+        this->last_accessed_index = j;
+        this->last_accessed_chunk = cur;
+
+        // get key val for index
+        Key key = cur->getKeys()[i];
+
+        Value val;
+        if (exists_virtual == true) {
+
+          // attribute exists in virtual map
+          std::vector<Value> row = cur->getRowByIndex(i);
+          val = this->evalEquation(key, this->virtual_attr_map[attribute]);
+
+        } else {
+
+          // attribute exists in normal map
+          val = cur->getRowValByIndex(i, this->attr_map[attribute]);
+
+        }
+        return {true, val};
+
+      }
+    }
+    
+    if (index > j) {
+      cur = cur->getNext();
+      j += num_vals;
+    } else {
+      cur = cur->getPrevious();
+      j -= num_vals;
+    }
+  }
+  
+  return {false, 0};
+>>>>>>> parent of 778d4c4 (fixed getRowIndex)
 }
 
 RowResult Table::getRow(Key key, int offset) {
@@ -175,6 +222,7 @@ RowResult Table::getRowOffset(LeafChunk* chunk, Index cur_i, Index target_i) {
     unsigned int num_vals = cur->getNumVals();
     
     for (unsigned int i = 0; i < num_vals; i++) {
+<<<<<<< HEAD
       if (j + i == target_i) {
 
         // updates cache
@@ -183,7 +231,13 @@ RowResult Table::getRowOffset(LeafChunk* chunk, Index cur_i, Index target_i) {
 
         // get key and row
         Key key = cur->getKeys()[i];
+=======
+      if (j == index) {
+>>>>>>> parent of 778d4c4 (fixed getRowIndex)
         std::vector<Value> row = cur->getRowByIndex(i);
+
+        // get key val for index
+        Key key = cur->getKeys()[i];
 
         for (auto& pair: this->virtual_attr_map) {
           // add virtual vals
@@ -191,8 +245,10 @@ RowResult Table::getRowOffset(LeafChunk* chunk, Index cur_i, Index target_i) {
         }
         return {true, row};
       }
+      j++;
     }
     
+<<<<<<< HEAD
     if (target_i >= j + num_vals) {
       cur = cur->getNext();
       j += num_vals;
@@ -208,6 +264,9 @@ RowResult Table::getRowOffset(LeafChunk* chunk, Index cur_i, Index target_i) {
       cur = previous;
       j -= previous_num_vals;
     }
+=======
+    cur = cur->getNext();
+>>>>>>> parent of 778d4c4 (fixed getRowIndex)
   }
   
   return {false, {}};
