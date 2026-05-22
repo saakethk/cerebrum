@@ -65,7 +65,7 @@ Value Table::evalEquation(Key key, std::string equation) {
     ) {
       
       // if attribute
-      Value attr_val = this->getVal(key, vals.front(), 0).val;
+      Value attr_val = this->getVal(key, vals.front()).val;
       this->ops[op](res, attr_val);
       vals.pop();
 
