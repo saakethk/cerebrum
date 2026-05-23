@@ -10,24 +10,33 @@ void Table::printHeaders() {
 
   for (Attribute attr: headers) {
     // print normal attributes
-    std::cout << attr << " ";
+    std::cout << " | " << std::setw(print_width) << attr;
   }
 
   for (auto& pair: this->virtual_attr_map) {
     // print virtual attributes
-    std::cout << pair.first << " ";
+    std::cout << " | " << std::setw(print_width) << pair.first;
   }
+  std::cout << " | " << std::endl;
 
-  std::cout << std::endl;
+  unsigned int num_attributes = (this->virtual_attr_map.size() + headers.size());
+  for (unsigned int i = 0; i < num_attributes; i++) {
+    // prints the divider
+    std::cout << " | ";
+    for (unsigned int j = 0; j < print_width; j++) {
+      std::cout << "-";
+    }
+  }
+  std::cout << " | " << std::endl;
 }
 
 void Table::printValues() {
   // values in order
   for (unsigned int i = 0; i < this->num_rows; i++) {
     for (Value res: this->getRowIndex(i).row) {
-      std::cout << res << " ";
+      std::cout << " | " << std::setw(print_width) << res;
     }
-    std::cout << std::endl;
+    std::cout << " | " << std::endl;
   }
 }
 

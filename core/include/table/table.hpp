@@ -8,6 +8,7 @@
 #include <functional>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 #include "table/table_helpers.hpp"
 #include "table/table_ops.hpp"
@@ -48,6 +49,8 @@ class Table {
     std::unordered_map<std::string, OpFunc> ops;
     Value evalEquation(Key key, std::string equation);
 
+    // for printing
+    const unsigned int print_width = 10;
     void printHeaders();
     void printValues();
     
