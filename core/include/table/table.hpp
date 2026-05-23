@@ -29,6 +29,12 @@ struct RowResult {
   std::vector<Value> row;
 };
 
+struct ChunkLoc {
+  bool valid;
+  LeafChunk* chunk;
+  unsigned int offset;
+};
+
 class Table {
   private:
   
@@ -54,6 +60,11 @@ class Table {
     void printDivider();
     void printHeaders();
     void printValues();
+
+    ValResult getValLocal(LeafChunk* leaf, Attribute attr, unsigned int offset, bool is_virtual);
+
+    // helper for delay operator
+    ChunkLoc getValOffset(LeafChunk* chunk, Index loc_index, int offset);
     
   public:
     Table(std::vector<Attribute> attributes);
@@ -61,7 +72,7 @@ class Table {
     bool insert(Key key, std::vector<Value>& row);
     bool remove(Key key);
 
-    ValResult getValIndex(Index index, Attribute attribute); // TODO: store the index last accessed and go form there
+    ValResult getValIndex(Index index, Attribute attribute);
     ValResult getVal(Key key, Attribute attribute);
 
     RowResult getRowIndex(Index index); // same as ValIndex
