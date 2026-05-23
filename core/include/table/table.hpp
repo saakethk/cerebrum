@@ -55,9 +55,11 @@ class Table {
     std::unordered_map<std::string, OpFunc> ops;
     Value evalEquation(Key key, std::string equation);
 
-    // val helpers
+    // accessor helpers
+    ChunkLoc getChunkOffset(LeafChunk* chunk, Index loc_index, int offset);
+
     ValResult getValLocal(LeafChunk* leaf, Attribute attr, unsigned int offset, bool is_virtual);
-    ChunkLoc getValOffset(LeafChunk* chunk, Index loc_index, int offset);
+    RowResult getRowLocal(LeafChunk* leaf, unsigned int offset);
 
     // for printing
     const unsigned int print_width = 12;
@@ -75,8 +77,7 @@ class Table {
     ValResult getVal(Key key, Attribute attribute, int offset);
 
     RowResult getRowIndex(Index index); // same as ValIndex
-    // RowResult getRowOffset(Key key, int offset);
-    RowResult getRow(Key key);
+    RowResult getRow(Key key, int offset);
 
     bool addAttribute(std::string name, std::string equation);
     // bool removeAttribute(std::string name);

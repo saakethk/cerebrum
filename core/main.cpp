@@ -33,6 +33,7 @@ int main() {
   table.addAttribute("test1", "test * 50.4");
   // TODO: add previous and future
   // TODO: validate equation
+  // TODO: warnings for wrong equation vals
   // for (unsigned int j = 0; j < 1000; j++) {
   //   std::cout << table.getValByIndex(j, "test").val << std::endl;
   // }

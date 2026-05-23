@@ -32,7 +32,7 @@ LeafChunk* Table::getLeaf(Key key) const {
   return static_cast<LeafChunk*>(cur);
 }
 
-ChunkLoc Table::getValOffset(LeafChunk* chunk, Index loc_index, int offset) {
+ChunkLoc Table::getChunkOffset(LeafChunk* chunk, Index loc_index, int offset) {
   // get value at a specific offset from a chunk and its local index
 
   LeafChunk* cur = chunk;
@@ -102,7 +102,7 @@ ValResult Table::getVal(Key key, Attribute attribute, int offset) {
     return {false, 0};
   }
 
-  ChunkLoc found = this->getValOffset(leaf, loc.index, offset);
+  ChunkLoc found = this->getChunkOffset(leaf, loc.index, offset);
   if (found.valid == false) {
     // offset out of bounds
     return {false, 0};
@@ -179,7 +179,21 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
   return {false, 0};
 }
 
-RowResult Table::getRow(Key key) {
+RowResult Table::getRowLocal(LeafChunk* leaf, unsigned int offset) {
+  // gets local row in chunk
+
+  Key key = leaf->getKeys()[offset];
+  std::vector<Value> row = leaf->getRowByIndex(offset);
+
+  for (auto& pair: this->virtual_attr_map) {
+    // add virtual vals
+    row.push_back(this->evalEquation(key, pair.second));
+  }
+
+  return {true, row};
+}
+
+RowResult Table::getRow(Key key, int offset) {
 
   // search leaf chunk
   LeafChunk* leaf = this->getLeaf(key);
@@ -190,13 +204,13 @@ RowResult Table::getRow(Key key) {
     return {false, {}};
   }
 
-  std::vector<Value> row = leaf->getRow(loc.index);
-
-  for (auto& pair: this->virtual_attr_map) {
-    // add virtual vals
-    row.push_back(this->evalEquation(key, pair.second));
+  ChunkLoc found = this->getChunkOffset(leaf, loc.index, offset);
+  if (found.valid == false) {
+    // offset out of bounds
+    return {false, {}};
   }
-  return {true, row};
+
+  return this->getRowLocal(found.chunk, found.offset);
 }
 
 RowResult Table::getRowIndex(Index index) {
@@ -220,15 +234,7 @@ RowResult Table::getRowIndex(Index index) {
         this->last_accessed_index = j;
         this->last_accessed_chunk = cur;
 
-        // get key and row
-        Key key = cur->getKeys()[i];
-        std::vector<Value> row = cur->getRowByIndex(i);
-
-        for (auto& pair: this->virtual_attr_map) {
-          // add virtual vals
-          row.push_back(this->evalEquation(key, pair.second));
-        }
-        return {true, row};
+        return this->getRowLocal(cur, i);
       }
     }
     
