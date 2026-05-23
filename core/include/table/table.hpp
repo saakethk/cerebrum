@@ -55,16 +55,15 @@ class Table {
     std::unordered_map<std::string, OpFunc> ops;
     Value evalEquation(Key key, std::string equation);
 
+    // val helpers
+    ValResult getValLocal(LeafChunk* leaf, Attribute attr, unsigned int offset, bool is_virtual);
+    ChunkLoc getValOffset(LeafChunk* chunk, Index loc_index, int offset);
+
     // for printing
     const unsigned int print_width = 12;
     void printDivider();
     void printHeaders();
     void printValues();
-
-    ValResult getValLocal(LeafChunk* leaf, Attribute attr, unsigned int offset, bool is_virtual);
-
-    // helper for delay operator
-    ChunkLoc getValOffset(LeafChunk* chunk, Index loc_index, int offset);
     
   public:
     Table(std::vector<Attribute> attributes);
@@ -73,7 +72,7 @@ class Table {
     bool remove(Key key);
 
     ValResult getValIndex(Index index, Attribute attribute);
-    ValResult getVal(Key key, Attribute attribute);
+    ValResult getVal(Key key, Attribute attribute, int offset);
 
     RowResult getRowIndex(Index index); // same as ValIndex
     // RowResult getRowOffset(Key key, int offset);

@@ -42,11 +42,6 @@ ChunkLoc Table::getValOffset(LeafChunk* chunk, Index loc_index, int offset) {
   while (cur_offset != offset) {
     // move till offset reached
 
-    if (cur == nullptr) {
-      // offset is out of bounds
-      return {false, cur, loc_index};
-    }
-
     if (offset < cur_offset) {
 
       // move backwards
@@ -55,8 +50,14 @@ ChunkLoc Table::getValOffset(LeafChunk* chunk, Index loc_index, int offset) {
 
       if (index == cur->getNumVals()) {
         // end of chunk reached
-        index = 0;
         cur = cur->getPrevious();
+
+        if (cur == nullptr) {
+          // offset is out of bounds
+          return {false, cur, loc_index};
+        }
+
+        index = cur->getNumVals() - 1;
       }
 
     } else if (offset > cur_offset) {
@@ -67,8 +68,14 @@ ChunkLoc Table::getValOffset(LeafChunk* chunk, Index loc_index, int offset) {
 
       if (index == cur->getNumVals()) {
         // end of chunk reached
-        index = 0;
         cur = cur->getNext();
+
+        if (cur == nullptr) {
+          // offset is out of bounds
+          return {false, cur, loc_index};
+        }
+
+        index = 0;
       }
 
     }
@@ -77,7 +84,7 @@ ChunkLoc Table::getValOffset(LeafChunk* chunk, Index loc_index, int offset) {
   return {true, cur, index};
 }
 
-ValResult Table::getVal(Key key, Attribute attribute) {
+ValResult Table::getVal(Key key, Attribute attribute, int offset) {
 
   bool exists_attr = isAttribute(attribute, this->attr_map);
   bool exists_virtual = isVirtualAttribute(attribute, this->virtual_attr_map);
@@ -95,8 +102,8 @@ ValResult Table::getVal(Key key, Attribute attribute) {
     return {false, 0};
   }
 
-  ChunkLoc found = this->getValOffset(leaf, loc.index, 0);
-  if (loc.valid == false) {
+  ChunkLoc found = this->getValOffset(leaf, loc.index, offset);
+  if (found.valid == false) {
     // offset out of bounds
     return {false, 0};
   }
