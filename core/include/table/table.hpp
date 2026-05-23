@@ -50,7 +50,8 @@ class Table {
     Value evalEquation(Key key, std::string equation);
 
     // for printing
-    const unsigned int print_width = 10;
+    const unsigned int print_width = 12;
+    void printDivider();
     void printHeaders();
     void printValues();
     
