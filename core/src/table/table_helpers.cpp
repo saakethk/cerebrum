@@ -18,11 +18,42 @@ bool isAttribute(std::string val,
   std::unordered_map<std::string, unsigned int>& attr_map) {
   // checks if in attribute map
 
+  for ()
+
   if (attr_map.find(val) == attr_map.end()) {
     // not valid
     return false;
   }
   return true; // valid
+}
+
+ParsedAttribute parseAttribute(std::string attr_str) {
+  // splits attributes with offset into respective parts
+
+  bool has_offset = false;
+  std::string attribute;
+  std::string offset;
+
+  for (char l: attr_str) {
+
+    if (l == '_') {
+      // offset start here
+      has_offset = true;
+      continue;
+    }
+
+    if (has_offset == true) {
+      offset += l;
+    } else {
+      attribute += l;
+    }
+
+  }
+
+  if (has_offset == true) {
+    return {attribute, has_offset, std::stoi(offset)};
+  }
+  return {attribute, has_offset, 0};
 }
 
 bool isVirtualAttribute(std::string val, 

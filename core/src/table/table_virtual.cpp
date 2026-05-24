@@ -63,9 +63,12 @@ Value Table::evalEquation(Key key, std::string equation) {
       (isAttribute(vals.front(), this->attr_map) == true)
       || (isVirtualAttribute(vals.front(), this->virtual_attr_map) == true)
     ) {
+
+      // split up offset and attribute
+      ParsedAttribute p_attr = parseAttribute(vals.front());
       
       // if attribute
-      Value attr_val = this->getVal(key, vals.front(), 0).val;
+      Value attr_val = this->getVal(key, p_attr.attribute, p_attr.offset).val;
       this->ops[op](res, attr_val);
       vals.pop();
 
