@@ -14,18 +14,44 @@ bool isConstant(std::string val) {
   return false;
 }
 
+template <typename T>
 bool isAttribute(std::string val, 
-  std::unordered_map<std::string, unsigned int>& attr_map) {
-  // checks if in attribute map
+  const std::unordered_map<std::string, T>& attr_map) {
+  // checks if valid attribute
 
-  for ()
+  for (auto& pair: attr_map) {
+    // go through every attribute
 
-  if (attr_map.find(val) == attr_map.end()) {
-    // not valid
-    return false;
+    if (val.size() < pair.first.size()) {
+      continue;
+    }
+
+    bool matches = true;
+    for (unsigned int i = 0; i < pair.first.size(); i++) {
+      // checks that string contains attribute
+      if (pair.first[i] != val[i]) {
+        matches = false;
+      }
+    }
+
+    if (matches == false) {
+      continue;
+    }
+
+    return true; // valid
   }
-  return true; // valid
+
+  return false; // invalid
 }
+
+// allows function above to be used for virtual attributes
+template bool isAttribute<unsigned int>(
+  std::string val,
+  const std::unordered_map<std::string, unsigned int>& attr_map);
+
+template bool isAttribute<std::string>(
+  std::string val,
+  const std::unordered_map<std::string, std::string>& attr_map);
 
 ParsedAttribute parseAttribute(std::string attr_str) {
   // splits attributes with offset into respective parts
@@ -56,24 +82,23 @@ ParsedAttribute parseAttribute(std::string attr_str) {
   return {attribute, has_offset, 0};
 }
 
-bool isVirtualAttribute(std::string val, 
-  std::unordered_map<std::string, std::string>& virtual_attr_map) {
-  // checks if in virtual attribute map
+// bool isVirtualAttribute(std::string val, 
+//   const std::unordered_map<std::string, std::string>& virtual_attr_map) {
+//   // checks if in virtual attribute map
 
-  if (virtual_attr_map.find(val) == virtual_attr_map.end()) {
-    // not valid
-    return false;
-  }
-  return true; // valid
-}
+//   if (virtual_attr_map.find(val) == virtual_attr_map.end()) {
+//     // not valid
+//     return false;
+//   }
+//   return true; // valid
+// }
 
 bool isOperator(std::string val, 
-  std::unordered_map<std::string, OpFunc>& op_map) {
+  const std::unordered_map<std::string, OpFunc>& op_map) {
   // checks if valid supported operation
 
   if (op_map.find(val) == op_map.end()) {
-    // not valid
-    return false;
+    return false; // not valid
   }
   return true; // valid
 }

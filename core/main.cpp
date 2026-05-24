@@ -29,7 +29,7 @@ int main() {
     table.insert(i, row);
   }
 
-  table.addAttribute("test", "( ( stuff + stuff1 ) + ( stuff2 * stuff3 ) ) / stuff4");
+  table.addAttribute("test", "( ( stuff_-1 + stuff1 ) + ( stuff2 * stuff3 ) ) / stuff4");
   table.addAttribute("test1", "test * 50.4");
   // TODO: add previous and future
   // TODO: validate equation

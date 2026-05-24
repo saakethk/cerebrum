@@ -36,7 +36,7 @@ ChunkLoc Table::getChunkOffset(LeafChunk* chunk, Index loc_index, int offset) {
   // get value at a specific offset from a chunk and its local index
 
   LeafChunk* cur = chunk;
-  unsigned int index = loc_index;
+  Index index = loc_index;
   int cur_offset = 0;
 
   while (cur_offset != offset) {
@@ -45,10 +45,9 @@ ChunkLoc Table::getChunkOffset(LeafChunk* chunk, Index loc_index, int offset) {
     if (offset < cur_offset) {
 
       // move backwards
-      index -= 1;
       cur_offset -= 1;
 
-      if (index == cur->getNumVals()) {
+      if (index == 0) {
         // end of chunk reached
         cur = cur->getPrevious();
 
@@ -58,6 +57,9 @@ ChunkLoc Table::getChunkOffset(LeafChunk* chunk, Index loc_index, int offset) {
         }
 
         index = cur->getNumVals() - 1;
+      } else {
+        // to prevent index overflow
+        index -= 1;
       }
 
     } else if (offset > cur_offset) {
@@ -87,7 +89,7 @@ ChunkLoc Table::getChunkOffset(LeafChunk* chunk, Index loc_index, int offset) {
 ValResult Table::getVal(Key key, Attribute attribute, int offset) {
 
   bool exists_attr = isAttribute(attribute, this->attr_map);
-  bool exists_virtual = isVirtualAttribute(attribute, this->virtual_attr_map);
+  bool exists_virtual = isAttribute(attribute, this->virtual_attr_map);
   if ((exists_attr == false) && (exists_virtual == false)) {
     // attribute doesn't exist
     return {false, 0};

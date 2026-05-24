@@ -61,7 +61,7 @@ Value Table::evalEquation(Key key, std::string equation) {
 
     } else if (
       (isAttribute(vals.front(), this->attr_map) == true)
-      || (isVirtualAttribute(vals.front(), this->virtual_attr_map) == true)
+      || (isAttribute(vals.front(), this->virtual_attr_map) == true)
     ) {
 
       // split up offset and attribute
