@@ -3,9 +3,10 @@
 
 Table::Table(std::vector<Attribute> attributes) {
   // attribute size has to be known at inxitalization time
+  this->chunk_size = 5;
   this->num_rows = 0;
   this->num_attributes = 0;
-  this->root = new LeafChunk(attributes.size());
+  this->root = new LeafChunk(chunk_size, attributes.size());
 
   for (Attribute attr: attributes) {
     // initalizes mapping from attribute to index

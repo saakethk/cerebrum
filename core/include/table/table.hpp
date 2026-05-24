@@ -38,6 +38,7 @@ struct ChunkLoc {
 class Table {
   private:
   
+    unsigned int chunk_size;
     unsigned int num_rows;
     unsigned int num_attributes;
     std::unordered_map<std::string, unsigned int> attr_map;

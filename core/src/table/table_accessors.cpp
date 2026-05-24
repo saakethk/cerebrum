@@ -56,7 +56,7 @@ ChunkLoc Table::getChunkOffset(LeafChunk* chunk, Index loc_index, int offset) {
           return {false, cur, loc_index};
         }
 
-        index = cur->getNumVals() - 1;
+        index = cur->getNumItems() - 1;
       } else {
         // to prevent index overflow
         index -= 1;
@@ -68,7 +68,7 @@ ChunkLoc Table::getChunkOffset(LeafChunk* chunk, Index loc_index, int offset) {
       index += 1;
       cur_offset += 1;
 
-      if (index == cur->getNumVals()) {
+      if (index == cur->getNumItems()) {
         // end of chunk reached
         cur = cur->getNext();
 
@@ -153,7 +153,7 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
   unsigned int j = this->last_accessed_index; // counts for valid indices
 
   while (cur != nullptr) {
-    unsigned int num_vals = cur->getNumVals();
+    unsigned int num_vals = cur->getNumItems();
     
     for (unsigned int i = 0; i < num_vals; i++) {
       if (j + i == index) {
@@ -185,7 +185,9 @@ RowResult Table::getRowLocal(LeafChunk* leaf, unsigned int offset) {
   // gets local row in chunk
 
   Key key = leaf->getKeys()[offset];
-  std::vector<Value> row = leaf->getRowByIndex(offset);
+  std::vector<Value> row;
+  row.resize(num_attributes);
+  leaf->getRowByIndex(offset, row);
 
   for (auto& pair: this->virtual_attr_map) {
     // add virtual vals
@@ -227,7 +229,7 @@ RowResult Table::getRowIndex(Index index) {
   unsigned int j = 0; // counts for valid indices
 
   while (cur != nullptr) {
-    unsigned int num_vals = cur->getNumVals();
+    unsigned int num_vals = cur->getNumItems();
     
     for (unsigned int i = 0; i < num_vals; i++) {
       if (j + i == index) {

@@ -1,8 +1,7 @@
 #include "chunks/chunk.hpp"
 
-Chunk::Chunk() {
-  this->num_filled = 0;
-  this->keys.resize(CHUNK_SIZE, 0); // does not construct
+Chunk::Chunk(unsigned int chunk_size): chunk_size(chunk_size), num_filled(0) {
+  this->keys.resize(chunk_size, 0); // default constructs
 }
 
 KeyLoc Chunk::searchKey(Key key) const {
@@ -56,7 +55,7 @@ void Chunk::removeKey(unsigned int index) {
 
 bool Chunk::isFull() const {
   // ensures chunk size constraint satisfied
-  if (this->num_filled < CHUNK_SIZE) {
+  if (this->num_filled < chunk_size) {
     return false;
   }
   return true;

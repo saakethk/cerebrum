@@ -4,14 +4,14 @@
 
 #include "chunks/leaf_chunk.hpp"
 
-LeafChunk::LeafChunk(unsigned int num_attributes) {
+LeafChunk::LeafChunk(unsigned int chunk_size, unsigned int num_attributes): Chunk(chunk_size) {
   this->num_attributes = num_attributes;
   this->next = nullptr;
   this->previous = nullptr;
 
   this->values.resize(num_attributes);
   for (std::vector<Value>& val: this->values) {
-    val.resize(CHUNK_SIZE, 0);
+    val.resize(chunk_size, 0);
   }
 }
 
@@ -47,7 +47,7 @@ void LeafChunk::removeValue(Index key_index) {
   }
 }
 
-InsertStatus LeafChunk::insert(Key key, std::vector<Value>& row) {
+InsertStatus LeafChunk::insert(Key key, const std::vector<Value>& row) {
   // find key before checking fullness so duplicate keys are rejected even in a full chunk
   KeyLoc loc = this->searchKey(key);
   if (loc.valid == true) {
@@ -84,23 +84,25 @@ SplitChunk LeafChunk::split() {
   // splits chunk across middle and returns pointers
   const unsigned int num_full = this->num_filled;
   const unsigned int middle = std::floor(this->num_filled / 2.0f);
-  LeafChunk* new_chunk = new LeafChunk(this->num_attributes);
+  LeafChunk* new_chunk = new LeafChunk(this->chunk_size, this->num_attributes);
   const Key split_key = this->keys[middle];
 
+  std::vector<Value> res;
+  res.resize(num_attributes);
   for (unsigned int i = middle; i < num_full; i++) {
     // insert the middle and all to right to new chunk
-    std::vector<Value> res = this->getRowByIndex(i);
+    this->getRowByIndex(i, res);
     new_chunk->insert(this->keys[i], res);
   }
 
   // delete the ones from middle onward in this chunk (inclusive)
   (this->keys).erase((this->keys).begin() + middle, (this->keys).end());
-  this->keys.resize(CHUNK_SIZE, 0);
+  this->keys.resize(this->chunk_size, 0);
 
   for (std::vector<Value>& val: this->values) {
     // erase attribute values
     val.erase(val.begin() + middle, val.end());
-    val.resize(CHUNK_SIZE, 0);
+    val.resize(this->chunk_size, 0);
   }
 
   // set links between split nodes
@@ -120,14 +122,6 @@ bool LeafChunk::isLeaf() const {
   return true;
 }
 
-unsigned int LeafChunk::getNumAttributes() const {
-  return this->num_attributes;
-}
-
-unsigned int LeafChunk::getNumVals() const {
-  return this->num_filled;
-}
-
 LeafChunk* LeafChunk::getNext() {
   return this->next;
 }
@@ -136,13 +130,13 @@ LeafChunk* LeafChunk::getPrevious() {
   return this->previous;
 }
 
-std::vector<Value> LeafChunk::getRowByIndex(Index index) {
+void LeafChunk::getRowByIndex(Index index, std::vector<Value>& row) {
   // gets row of values
-  std::vector<Value> row;
+
   for (unsigned int i = 0; i < this->num_attributes; i++) {
-    row.push_back(this->getRowValByIndex(index, i));
+    // assumes that row is resized to attribute size
+    row[i] = this->getRowValByIndex(index, i);
   }
-  return row;
 }
 
 Value LeafChunk::getRowValByIndex(Index index, Index attr_index) {
@@ -150,9 +144,9 @@ Value LeafChunk::getRowValByIndex(Index index, Index attr_index) {
   return this->values[attr_index][index];
 }
 
-std::vector<Value> LeafChunk::getRow(Index index) {
+void LeafChunk::getRow(Key index, std::vector<Value>& row) {
   // gets row of values
-  return this->getRowByIndex(index);
+  this->getRowByIndex(index, row);
 }
 
 std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk) {

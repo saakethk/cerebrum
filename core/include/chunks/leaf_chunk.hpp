@@ -17,23 +17,21 @@ class LeafChunk: public Chunk {
     void removeValue(Index key_index);
     void removeAttributeValue(Index index, Index attr_index);
 
-    std::vector<Value> getRowByIndex(Index index);
+    void getRowByIndex(Index index, std::vector<Value>& row); // modifies row in-place
     Value getRowValByIndex(Index index, Index attr_index);
 
   public:
 
-    LeafChunk(unsigned int num_attributes);
+    LeafChunk(unsigned int chunk_size, unsigned int num_attributes);
 
-    InsertStatus insert(Key key, std::vector<Value>& row);
+    InsertStatus insert(Key key, const std::vector<Value>& row);
     bool remove(Key key) override;
     SplitChunk split() override;
 
     bool isLeaf() const override;
-    unsigned int getNumAttributes() const;
-    unsigned int getNumVals() const;
+    void getRow(Key key, std::vector<Value>& row); // modifies row in-place
     LeafChunk* getNext();
     LeafChunk* getPrevious();
-    std::vector<Value> getRow(Key key);
     
     friend std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk); // for debugging
     friend class Table;

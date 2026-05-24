@@ -2,8 +2,6 @@
 
 #include <vector>
 
-constexpr unsigned int CHUNK_SIZE = 5;
-
 using Key = unsigned int;
 using Value = double;
 using Index = unsigned int;
@@ -30,6 +28,7 @@ class Chunk {
 
   protected:
 
+    unsigned int chunk_size;
     unsigned int num_filled;
     std::vector<Key> keys; // chunk size
 
@@ -39,7 +38,7 @@ class Chunk {
 
   public:
 
-    Chunk();
+    Chunk(unsigned int chunk_size);
 
     virtual bool remove(Key key) = 0;
     virtual SplitChunk split() = 0;
@@ -48,7 +47,7 @@ class Chunk {
     bool isFull() const;
 
     std::vector<Key>& getKeys();
-    unsigned int getNumItems() const;
+    virtual unsigned int getNumItems() const;
     
     virtual ~Chunk() = default;
     friend class Table;

@@ -27,7 +27,7 @@ bool Table::insert(Key key, std::vector<Value>& row) {
 
     if (path.empty()) {
       // when root doesn't exist
-      InternalChunk* new_root = new InternalChunk();
+      InternalChunk* new_root = new InternalChunk(this->chunk_size);
       new_root->insert(split.key);
       new_root->insertChild(this->root);
       new_root->insertChild(split.chunk);

@@ -3,8 +3,8 @@
 #include "chunks/internal_chunk.hpp"
 #include "chunks/leaf_chunk.hpp"
 
-InternalChunk::InternalChunk() {
-  this->children.reserve(CHUNK_SIZE + 1);
+InternalChunk::InternalChunk(unsigned int chunk_size): Chunk(chunk_size) {
+  this->children.reserve(chunk_size + 1);
 }
 
 Chunk* InternalChunk::getNext(Key key) {
@@ -81,7 +81,7 @@ SplitChunk InternalChunk::split() {
   // splits chunk across middle and returns pointers
   const unsigned int num_full = this->num_filled;
   const unsigned int middle = std::floor(this->num_filled / 2.0f);
-  InternalChunk* new_chunk = new InternalChunk();
+  InternalChunk* new_chunk = new InternalChunk(this->chunk_size);
   const Key split_key = this->keys[middle];
 
   for (unsigned int i = middle + 1; i < num_full; i++) {
@@ -97,7 +97,7 @@ SplitChunk InternalChunk::split() {
 
   this->num_filled = middle;
   (this->keys).erase((this->keys).begin() + middle, (this->keys).end());
-  this->keys.resize(CHUNK_SIZE, 0);
+  this->keys.resize(chunk_size, 0);
   this->children.erase(this->children.begin() + middle + 1, this->children.end());
 
   return {split_key, new_chunk};

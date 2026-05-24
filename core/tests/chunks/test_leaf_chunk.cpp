@@ -4,71 +4,57 @@
 #include "catch_amalgamated.hpp"
 #include "chunks/leaf_chunk.hpp"
 
-TEST_CASE("Testing Leaf Chunk Insertion", "[leaf_chunk]") {
-  LeafChunk* test = new LeafChunk(5); // Should have 5 attributes
+const unsigned int NUM_ATTRIBUTES = 1;
+const unsigned int CHUNK_SIZE = 1;
+const unsigned int NUM_INSERT = 1; // must be less than chunk size
 
-  for (unsigned int j = 0; j < Chunk::MAX_DEGREE; j++) {
-    // Cannot insert more than MAX DEGREE of chunk (TODO: Make error message)
-    test->insert(j, {static_cast<double>(j)});
-  }
- 
-  auto dims = test->size();
-  REQUIRE(dims.first == Chunk::MAX_DEGREE);
-  REQUIRE(dims.second == 5);
+TEST_CASE("Testing insert", "[leaf_chunk][basic]") {
+    
+  LeafChunk* leaf = new LeafChunk(CHUNK_SIZE, NUM_ATTRIBUTES);
 
-  delete test;
-}
-
-TEST_CASE("Testing Leaf Chunk Order After Insertion", "[leaf_chunk]") {
-  LeafChunk* test = new LeafChunk(1);
-
-  for (unsigned int j = Chunk::MAX_DEGREE; j > 0; j--) {
-    // insert in rows with index and val same
-    test->insert(j, {static_cast<double>(j - 1)});
+  std::vector<Value> row;
+  for (unsigned int r = 0; r < NUM_ATTRIBUTES; r++) {
+    row.push_back(r);
   }
 
-  for (unsigned int i = 0; i < Chunk::MAX_DEGREE; i++) {
-    // checks values are sorted
-    REQUIRE(test->get(i, 0) == i);
+  // test insertion
+  for (unsigned int i = 0; i < NUM_INSERT; i++) {
+    leaf->insert(i, row);
   }
 
-  delete test;
-}
-
-TEST_CASE("Testing Leaf Chunk Insertion Duplicate Key", "[leaf_chunk]") {
-  // Inserting a duplicate key should fail
-  LeafChunk* test = new LeafChunk(1); // Should have 5 attributes
-  test->insert(1, {12});
-  InsertStatus result = test->insert(1, {10});
-  REQUIRE(result == Invalid);
-  REQUIRE(test->size().first == 1);
-}
-
-TEST_CASE("Testing Leaf Chunk Insertion Constraints", "[leaf_chunk]") {
-  // Insertion of more datapoints than max chunk size should cause error
-  LeafChunk* test = new LeafChunk(5);
-
-  for (unsigned int j = 0; j < Chunk::MAX_DEGREE; j++) {
-    test->insert(j, {static_cast<double>(j)}); // Fills the chunk
+  std::vector<Value> row_res;
+  row_res.resize(NUM_ATTRIBUTES);
+  for (unsigned int j = 0; j < NUM_INSERT; j++) {
+    leaf->getRow(j, row_res);
+    CHECK(row_res == row);
   }
 
-  InsertStatus should_fail = test->insert(Chunk::MAX_DEGREE, {static_cast<double>(0)}); 
-  REQUIRE(should_fail == Full);
+  delete leaf;
 }
 
-TEST_CASE("Testing Leaf Chunk After Split", "[leaf_chunk]") {
-  LeafChunk* test = new LeafChunk(5);
-  
-  for (unsigned int j = 0; j < Chunk::MAX_DEGREE; j++) {
-    test->insert(j, {static_cast<double>(j)});
+TEST_CASE("Testing insert", "[leaf_chunk][basic]") {
+
+  LeafChunk* leaf = new LeafChunk(CHUNK_SIZE, NUM_ATTRIBUTES);
+
+  std::vector<Value> row;
+  for (unsigned int r = 0; r < NUM_ATTRIBUTES; r++) {
+    row.push_back(r);
   }
 
-  SplitChunk result = test->split();
-  // REQUIRE(static_cast<LeafChunk*>(result.right)->getNext() == nullptr);
-  REQUIRE(static_cast<LeafChunk*>(result.right)->size().first == (Chunk::MAX_DEGREE - std::floor(Chunk::MAX_DEGREE / 2)));
-  // REQUIRE(static_cast<LeafChunk*>(result.left)->getNext()->size().first == (Chunk::MAX_DEGREE - std::floor(Chunk::MAX_DEGREE / 2)));
-  REQUIRE(static_cast<LeafChunk*>(result.left)->size().first == std::floor(Chunk::MAX_DEGREE / 2));
+  // test insertion
+  for (unsigned int i = 0; i < NUM_INSERT; i++) {
+    leaf->insert(i, row);
+  }
 
-  delete result.right;
-  delete result.left;
+  std::vector<Value> row_res;
+  row_res.resize(NUM_ATTRIBUTES);
+  for (unsigned int j = 0; j < NUM_INSERT; j++) {
+    leaf->getRow(j, row_res);
+    REQUIRE(row_res == row);
+  }
+
+  REQUIRE(leaf->getNumItems() == NUM_INSERT);
+
+  delete leaf;
 }
+

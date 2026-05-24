@@ -19,7 +19,7 @@ class InternalChunk: public Chunk {
 
   public:
 
-    InternalChunk();
+    InternalChunk(unsigned int chunk_size);
 
     InsertStatus insert(Key key);
     void insertChild(Chunk* chunk);
