@@ -144,9 +144,14 @@ Value LeafChunk::getRowValByIndex(Index index, Index attr_index) {
   return this->values[attr_index][index];
 }
 
-void LeafChunk::getRow(Key index, std::vector<Value>& row) {
-  // gets row of values
-  this->getRowByIndex(index, row);
+void LeafChunk::getRow(Key key, std::vector<Value>& row) {
+  // gets row of values for key
+  KeyLoc loc = this->searchKey(key);
+  if (loc.valid == false) {
+    throw std::runtime_error("Invalid key supplied to getRow");
+  }
+
+  this->getRowByIndex(loc.index, row);
 }
 
 std::ostream& operator<<(std::ostream& os, const LeafChunk& chunk) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <vector>
 
 using Key = unsigned int;
@@ -43,10 +44,10 @@ class Chunk {
     virtual bool remove(Key key) = 0;
     virtual SplitChunk split() = 0;
 
+    bool exists(Key key) const;
     virtual bool isLeaf() const = 0;
     bool isFull() const;
-
-    std::vector<Key>& getKeys();
+    Key getKey(unsigned int offset) const;
     virtual unsigned int getNumItems() const;
     
     virtual ~Chunk() = default;

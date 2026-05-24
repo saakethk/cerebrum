@@ -53,6 +53,10 @@ void Chunk::removeKey(unsigned int index) {
   this->num_filled -= 1;
 }
 
+bool Chunk::exists(Key key) const {
+  return (this->searchKey(key)).valid;
+}
+
 bool Chunk::isFull() const {
   // ensures chunk size constraint satisfied
   if (this->num_filled < chunk_size) {
@@ -61,8 +65,13 @@ bool Chunk::isFull() const {
   return true;
 }
 
-std::vector<Key>& Chunk::getKeys() {
-  return this->keys;
+Key Chunk::getKey(unsigned int offset) const {
+
+  if (offset > this->num_filled) {
+    throw std::runtime_error("offset is invalid for getKey");
+  }
+
+  return this->keys.at(offset);
 }
 
 unsigned int Chunk::getNumItems() const {

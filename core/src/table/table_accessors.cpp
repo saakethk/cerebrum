@@ -117,7 +117,7 @@ ValResult Table::getVal(Key key, Attribute attribute, int offset) {
 ValResult Table::getValLocal(LeafChunk* leaf, Attribute attr, unsigned int offset, bool is_virtual) {
   // gets local val in chunk
 
-  Key key = leaf->getKeys()[offset];
+  Key key = leaf->getKey(offset);
   Value val;
 
   if (is_virtual== true) {
@@ -184,7 +184,7 @@ ValResult Table::getValIndex(Index index, Attribute attribute) {
 RowResult Table::getRowLocal(LeafChunk* leaf, unsigned int offset) {
   // gets local row in chunk
 
-  Key key = leaf->getKeys()[offset];
+  Key key = leaf->getKey(offset);
   std::vector<Value> row;
   row.resize(num_attributes);
   leaf->getRowByIndex(offset, row);
