@@ -29,6 +29,13 @@ KeyLoc Chunk::searchKey(Key key) const {
 
 bool Chunk::insertKey(unsigned int index, Key key) {
   // inserts key at provided index
+
+  KeyLoc loc = this->searchKey(key);
+  if (loc.valid == true) {
+    // key already exists
+    return false;
+  }
+
   if (this->isFull()) {
     return false;
   }

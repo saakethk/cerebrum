@@ -1,51 +1,50 @@
 #include <iostream>
 #include <limits>
-#include <stack>
 
 #include "catch_amalgamated.hpp"
-#include "chunks/leaf_chunk.hpp"
 #include "chunks/internal_chunk.hpp"
 
 const unsigned int NUM_ATTRIBUTES = 1;
 const unsigned int CHUNK_SIZE = 10;
 const unsigned int NUM_INSERT = 5; // must be less than chunk size
 
-TEST_CASE("Testing Leafchunk", "[leaf_chunk][basic]") {
+TEST_CASE("Testing Internal Chunk", "[internal_chunk][basic]") {
 
-  LeafChunk* leaf = new LeafChunk(CHUNK_SIZE, NUM_ATTRIBUTES);
+  InternalChunk* c = new InternalChunk(CHUNK_SIZE);
+  Chunk* dummy = new InternalChunk(CHUNK_SIZE);
 
-  std::vector<Value> dummy_row;
-  for (unsigned int r = 0; r < NUM_ATTRIBUTES; r++) {
-    dummy_row.push_back(r);
-  }
+  // std::vector<Value> dummy_row;
+  // for (unsigned int r = 0; r < NUM_ATTRIBUTES; r++) {
+  //   dummy_row.push_back(r);
+  // }
 
   SECTION("Testing isLeaf") {
-    REQUIRE(leaf->isLeaf() == true);
+    REQUIRE(c->isLeaf() == false);
   }
 
   SECTION("Testing Valid Insertion") {
 
-    std::vector<Value> row_res;
-    row_res.resize(NUM_ATTRIBUTES);
+    // testing insert
+    c->insertChild(dummy);
 
     for (unsigned int j = 0; j < NUM_INSERT; j++) {
-      REQUIRE(leaf->insert(j, dummy_row) == Success);
-      REQUIRE(leaf->exists(j) == true);
-      leaf->getRow(j, row_res);
-      REQUIRE(row_res == dummy_row);
+      REQUIRE(c->insert(j, dummy) == Success);
+      REQUIRE(c->exists(j) == true);
+      REQUIRE(c->getNext(j) == dummy);
     }
 
-    REQUIRE(leaf->getNumItems() == NUM_INSERT);
+    REQUIRE(c->getNumItems() == NUM_INSERT);
+
   }
 
   SECTION("Testing Invalid Insertion") {
 
     for (unsigned int j = 0; j < CHUNK_SIZE; j++) {
-      REQUIRE(leaf->insert(j, dummy_row) == Success);
+      REQUIRE(c->insert(j, dummy) == Success);
     }
 
     for (unsigned int j = 0; j < CHUNK_SIZE; j++) {
-      REQUIRE(leaf->insert(j, dummy_row) == Invalid);
+      REQUIRE(c->insert(j, dummy) == Invalid);
     }
 
     for (unsigned int j = CHUNK_SIZE; j < (CHUNK_SIZE + CHUNK_SIZE); j++) {
@@ -53,6 +52,8 @@ TEST_CASE("Testing Leafchunk", "[leaf_chunk][basic]") {
     }
 
     REQUIRE(leaf->getNumItems() == CHUNK_SIZE);
+
+
   }
 
   SECTION("Testing Key Insertion Order") {
@@ -69,6 +70,8 @@ TEST_CASE("Testing Leafchunk", "[leaf_chunk][basic]") {
   }
 
   SECTION("Testing Chunk Splitting") {
+
+    // testing chunk splitting
 
     for (unsigned int j = 0; j < CHUNK_SIZE; j++) {
       REQUIRE(leaf->insert(j, dummy_row) == Success);

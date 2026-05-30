@@ -13,7 +13,6 @@ class InternalChunk: public Chunk {
 
     std::vector<Chunk*> children; // chunk size + 1
 
-    Chunk* getNext(Key key);
     Chunk* getFirst() const;
     Chunk* getLast() const;
 
@@ -21,10 +20,11 @@ class InternalChunk: public Chunk {
 
     InternalChunk(unsigned int chunk_size);
 
-    InsertStatus insert(Key key);
-    void insertChild(Chunk* chunk);
-    InsertStatus insertChild(Key key, Chunk* chunk);
+    InsertStatus insert(Key key, Chunk* chunk); // inserts chunk with key
+    void insertChild(Chunk* chunk); // inserts chunk without key
 
+    Chunk* getNext(Key key);
+    unsigned int getNumChildren() const;
     bool remove(Key key) override;
     SplitChunk split() override;
     bool isLeaf() const override;

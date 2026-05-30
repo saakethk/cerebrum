@@ -26,28 +26,11 @@ Chunk* InternalChunk::getLast() const {
   return this->children[this->num_filled];
 }
 
-InsertStatus InternalChunk::insert(Key key) {
-  KeyLoc loc = this->searchKey(key);
-  if (loc.valid == true) {
-    // key already exists
-    return Invalid;
-  }
-
-  if (this->isFull() == true) {
-    // checks if full
-    return Full;
-  }
-
-  // insertion successful
-  this->insertKey(loc.index, key);
-  return Success;
-}
-
 void InternalChunk::insertChild(Chunk* chunk) {
   this->children.push_back(chunk);
 }
 
-InsertStatus InternalChunk::insertChild(Key key, Chunk* chunk) {
+InsertStatus InternalChunk::insert(Key key, Chunk* chunk) {
   KeyLoc loc = this->searchKey(key);
   if (loc.valid == true) {
     // key already exists
@@ -106,6 +89,10 @@ SplitChunk InternalChunk::split() {
 bool InternalChunk::isLeaf() const {
   // internal chunk
   return false;
+}
+
+unsigned int InternalChunk::getNumChildren() const {
+  return this->children.size();
 }
 
 std::ostream& operator<<(std::ostream& os, const InternalChunk& chunk) {

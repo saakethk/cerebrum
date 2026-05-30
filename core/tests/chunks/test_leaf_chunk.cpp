@@ -8,7 +8,7 @@ const unsigned int NUM_ATTRIBUTES = 1;
 const unsigned int CHUNK_SIZE = 10;
 const unsigned int NUM_INSERT = 5; // must be less than chunk size
 
-TEST_CASE("Testing Leafchunk", "[leaf_chunk][basic]") {
+TEST_CASE("Testing Leaf Chunk", "[leaf_chunk][basic]") {
 
   LeafChunk* leaf = new LeafChunk(CHUNK_SIZE, NUM_ATTRIBUTES);
 

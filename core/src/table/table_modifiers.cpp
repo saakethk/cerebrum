@@ -28,9 +28,8 @@ bool Table::insert(Key key, std::vector<Value>& row) {
     if (path.empty()) {
       // when root doesn't exist
       InternalChunk* new_root = new InternalChunk(this->chunk_size);
-      new_root->insert(split.key);
       new_root->insertChild(this->root);
-      new_root->insertChild(split.chunk);
+      new_root->insert(split.key, split.chunk);
       this->root = new_root;
       return this->insert(key, row);
     }
@@ -40,7 +39,7 @@ bool Table::insert(Key key, std::vector<Value>& row) {
     path.pop();
     if (parent->isFull() == false) {
       // if parent not full
-      status = parent->insertChild(split.key, split.chunk);
+      status = parent->insert(split.key, split.chunk);
 
       if (status == Success) 
         return this->insert(key, row);
@@ -52,11 +51,11 @@ bool Table::insert(Key key, std::vector<Value>& row) {
     SplitChunk parent_split = parent->split();
     if (split.key < parent_split.key) {
       // inserts into left half
-      parent->insertChild(split.key, split.chunk);
+      parent->insert(split.key, split.chunk);
     } else {
       // inserts into right half
       InternalChunk* right = static_cast<InternalChunk*>(parent_split.chunk);
-      right->insertChild(split.key, split.chunk);
+      right->insert(split.key, split.chunk);
     }
     split = parent_split;
 
