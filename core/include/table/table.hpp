@@ -81,7 +81,7 @@ class Table {
     RowResult getRow(Key key, int offset);
 
     bool addAttribute(std::string name, std::string equation);
-    // bool removeAttribute(std::string name);
+    bool removeAttribute(std::string name);
 
     // void save(std::string path);
     // void load(std::string path);

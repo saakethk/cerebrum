@@ -98,3 +98,16 @@ bool Table::addAttribute(std::string name, std::string equation) {
 
   return true;
 }
+
+ bool Table::removeAttribute(std::string name) {
+
+  if (this->virtual_attr_map.find(name) == this->virtual_attr_map.end()) {
+    // name does not exist in virtual attributes
+    return false;
+  }
+
+  // erases from map
+  this->virtual_attr_map.erase(name);
+
+  return true;
+}
