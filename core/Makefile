@@ -1,7 +1,7 @@
 # Variables
 CXX = g++
 CXXFLAGS = -I include -I libs -std=c++20 -Wall -Werror -Wextra -g
-TEST_FILES = libs/catch_amalgamated.cpp tests/chunks/*.cpp tests/*.cpp
+TEST_FILES = libs/catch_amalgamated.cpp tests/chunks/*.cpp tests/table/*.cpp tests/*.cpp
 SRC_FILES = src/chunks/*.cpp src/table/*.cpp
 
 main:

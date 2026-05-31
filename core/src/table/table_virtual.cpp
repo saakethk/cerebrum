@@ -46,19 +46,6 @@ Value Table::evalEquation(Key key, std::string equation) {
       Value sub_res = this->evalEquation(key, sub_equation);
       this->ops[op](res, sub_res);
       
-    } else if (isConstant(vals.front()) == true) {
-
-      // if constant
-      Value constant = std::stof(vals.front());
-      this->ops[op](res, constant);
-      vals.pop();
-
-    } else if (isOperator(vals.front(), this->ops) == true) {
-      
-      // if operator
-      op = vals.front();
-      vals.pop();
-
     } else if (
       (isAttribute(vals.front(), this->attr_map) == true)
       || (isAttribute(vals.front(), this->virtual_attr_map) == true)
@@ -70,6 +57,19 @@ Value Table::evalEquation(Key key, std::string equation) {
       // if attribute
       Value attr_val = this->getVal(key, p_attr.attribute, p_attr.offset).val;
       this->ops[op](res, attr_val);
+      vals.pop();
+
+    } else if (isConstant(vals.front()) == true) {
+
+      // if constant
+      Value constant = std::stof(vals.front());
+      this->ops[op](res, constant);
+      vals.pop();
+
+    } else if (isOperator(vals.front(), this->ops) == true) {
+      
+      // if operator
+      op = vals.front();
       vals.pop();
 
     } else if (vals.front() == ")") {

@@ -24,7 +24,6 @@ TEST_CASE("Testing Table", "[table][basic]") {
   Table t = Table(header);
 
   SECTION("Testing insert") {
-    // test insert, val accessor, row accessor
 
     // initial insertion should be valid
     RowResult row_res;
@@ -71,96 +70,49 @@ TEST_CASE("Testing Table", "[table][basic]") {
     for (unsigned int l = 0; l < NUM_INSERT; l++) {
       // add in dummy data
 
-      REQUIRE(t.insert(l, dummy) == false);
+      REQUIRE(t.insert(l, dummy) == true);
     }
 
+    RowResult row_res;
+    ValResult val_res;
     for (unsigned int x = 0; x < NUM_INSERT; x++) {
       // removing existing should succeed
 
       REQUIRE(t.remove(x) == true);
+
+      row_res = t.getRow(x, 0);
+      REQUIRE(row_res.valid == false);
+
+      for (unsigned int y = 0; y < NUM_ATTRIBUTES; y++) {
+
+        val_res = t.getVal(x, std::to_string(y), 0);
+        REQUIRE(val_res.valid == false);
+
+      }
     }
 
   }
 
-  SECTION("Testing virtual attributes") {
+  SECTION("Testing attributes") {
 
-  }
+    for (unsigned int k = NUM_ATTRIBUTES; k < NUM_ATTRIBUTES + NUM_ATTRIBUTES; k++) {
+      // removing nonexistant attributes
 
-  SECTION("Testing Key Insertion Order") {
-
-    c->insertChild(dummy);
-
-    for (unsigned int i = NUM_INSERT; i > 0 ; i--) {
-      // i is key
-      REQUIRE(c->insert(i, dummy) == Success);
+      REQUIRE(t.removeAttribute(std::to_string(k)) == false);
     }
     
-    for (unsigned int j = 0; j < NUM_INSERT; j++) {
-      // j is offset here
-      REQUIRE(c->getKey(j) == j + 1);
-    }
-  }
+    for (unsigned int l = NUM_ATTRIBUTES; l < NUM_ATTRIBUTES + NUM_ATTRIBUTES; l++) {
+      // inserting attributes
 
-  SECTION("Testing Chunk Splitting") {
-
-    c->insertChild(dummy);
-
-    for (unsigned int j = 0; j < CHUNK_SIZE; j++) {
-      REQUIRE(c->insert(j, dummy) == Success);
-      REQUIRE(c->getNext(j) == dummy);
+      REQUIRE(t.addAttribute(std::to_string(l), "0 + 1") == true);
     }
 
-    REQUIRE(c->getNumItems() == CHUNK_SIZE);
+    for (unsigned int x = NUM_ATTRIBUTES; x < NUM_ATTRIBUTES + NUM_ATTRIBUTES; x++) {
+      // removing existing attributes
 
-    SplitChunk res = c->split();
-    InternalChunk* right_chunk = static_cast<InternalChunk*>(res.chunk);
-    
-    // checking chunk size - 1 because the split key should be moved up
-    REQUIRE((right_chunk->getNumItems() + c->getNumItems()) == (CHUNK_SIZE - 1));
+      REQUIRE(t.removeAttribute(std::to_string(x)) == true);
+    }
 
   }
-
-  SECTION("Testing Filling Chunk") {
-
-    c->insertChild(dummy);
-
-    for (unsigned int j = 0; j < CHUNK_SIZE; j++) {
-      CHECK(c->insert(j, dummy) == Success);
-    }
-
-    REQUIRE(c->isFull() == true);
-
-  }
-
-  SECTION("Testing Valid Deletion") {
-
-    c->insertChild(dummy);
-
-    for (unsigned int j = 0; j < NUM_INSERT; j++) {
-      REQUIRE(c->insert(j, dummy) == Success);
-      REQUIRE(c->exists(j) == true);
-      REQUIRE(c->remove(j) == true);
-    }
-
-    REQUIRE(c->getNumItems() == 0);
-  }
-
-  SECTION("Testing Invalid Deletion") {
-
-    c->insertChild(dummy);
-
-    for (unsigned int j = 0; j < NUM_INSERT; j++) {
-      REQUIRE(c->exists(j) == false);
-      REQUIRE(c->remove(j) == false);
-    }
-
-    REQUIRE(c->getNumItems() == 0);
-  }  
-
-  delete c;
-  delete dummy;
   
 }
-
-bool addAttribute(std::string name, std::string equation);
-bool removeAttribute(std::string name);

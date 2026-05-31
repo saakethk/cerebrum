@@ -42,10 +42,6 @@ InsertStatus InternalChunk::insert(Key key, Chunk* chunk) {
     return Full;
   }
 
-  if (this->children.empty()) {
-    this->children.push_back(chunk);
-  }
-
   this->insertKey(loc.index, key);
   this->children.insert(this->children.begin() + loc.index + 1, chunk);
   return Success;
@@ -61,9 +57,6 @@ bool InternalChunk::remove(Key key) {
   }
 
   this->removeKey(loc.index);
-  if (this->children.size() > loc.index + 1) {
-    this->children.erase(this->children.begin() + loc.index + 1);
-  }
   return true;
 }
 
