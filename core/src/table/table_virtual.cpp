@@ -47,7 +47,7 @@ bool Table::isValidEquation(std::string equation) {
 
       // ensures flip-flop order
       prev_was_op = !prev_was_op;
-      
+
     }
 
     // reset vars
@@ -155,7 +155,10 @@ bool Table::addAttribute(std::string name, std::string equation) {
     return false;
   }
 
-  // TODO: validate equation
+  if (this->isValidEquation(equation) == false) {
+    // equation is not valid
+    return false;
+  }
 
   // adds the attribute to virtual_attr_map
   this->virtual_attr_map[name] = equation;
