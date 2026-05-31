@@ -20,7 +20,7 @@ int main() {
   // SplitChunk result = test->split();
   // std::cout << (*(static_cast<LeafChunk*>(result.left))) << std::endl;
   // std::cout << (*(static_cast<LeafChunk*>(result.right))) << std::endl;
-
+  // TODO: make tests more scalable
   // TODO: deal with nan vals
   Table table = Table({"stuff", "stuff1", "stuff2", "stuff3", "stuff4"});
 
@@ -31,7 +31,6 @@ int main() {
 
   table.addAttribute("test", "( ( stuff_-1 + stuff1 ) + ( stuff2 * stuff3 ) ) / stuff4");
   table.addAttribute("test1", "test * 50.4");
-  // TODO: add previous and future
   // TODO: validate equation
   // TODO: warnings for wrong equation vals
   // for (unsigned int j = 0; j < 1000; j++) {

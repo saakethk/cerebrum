@@ -12,11 +12,6 @@ TEST_CASE("Testing Internal Chunk", "[internal_chunk][basic]") {
   InternalChunk* c = new InternalChunk(CHUNK_SIZE);
   Chunk* dummy = new InternalChunk(CHUNK_SIZE);
 
-  // std::vector<Value> dummy_row;
-  // for (unsigned int r = 0; r < NUM_ATTRIBUTES; r++) {
-  //   dummy_row.push_back(r);
-  // }
-
   SECTION("Testing isLeaf") {
     REQUIRE(c->isLeaf() == false);
   }
