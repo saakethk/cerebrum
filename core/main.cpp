@@ -21,9 +21,9 @@ int main() {
   // std::cout << (*(static_cast<LeafChunk*>(result.left))) << std::endl;
   // std::cout << (*(static_cast<LeafChunk*>(result.right))) << std::endl;
   // TODO: make tests more scalable
-  // TODO: deal with nan vals
   // TODO: rehaul equation parser
   // TODO: warnings for wrong equation vals
+  // TODO: implement correct exponent implementation
   Table table = Table({"stuff", "stuff1", "stuff2", "stuff3", "stuff4"});
 
   std::vector<Value> row = {1, 2, 3, 4, 5};

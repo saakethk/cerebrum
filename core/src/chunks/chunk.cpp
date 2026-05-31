@@ -75,7 +75,7 @@ bool Chunk::isFull() const {
 Key Chunk::getKey(unsigned int offset) const {
 
   if (offset > this->num_filled) {
-    throw std::runtime_error("offset is invalid for getKey");
+    throw std::runtime_error("Offset is invalid for getKey");
   }
 
   return this->keys.at(offset);

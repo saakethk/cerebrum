@@ -10,6 +10,11 @@ void subtract(Value& res, Value val) {
 }
 
 void divide(Value& res, Value val) {
+
+  if (val == 0) {
+    throw std::runtime_error("Your virtual attribute divides by zero");
+  }
+
   res /= val;
 }
 
@@ -18,6 +23,13 @@ void multiply(Value& res, Value val) {
 }
 
 void exp(Value& res, Value val) {
+
+  // TODO: implement correct exponent
+
+  if (val < 0) {
+    // square root instead of conventional integer exponent
+  }
+
   Value start_res = res;
   for (unsigned int i = 0; i < val; i++) {
     res *= start_res;
