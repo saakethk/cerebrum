@@ -83,6 +83,8 @@ class Table {
     bool addAttribute(std::string name, std::string equation);
     bool removeAttribute(std::string name);
 
+    bool isValidEquation(std::string equation);
+
     // void save(std::string path);
     // void load(std::string path);
 

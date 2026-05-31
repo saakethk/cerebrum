@@ -31,8 +31,23 @@ int main() {
     table.insert(i, row);
   }
 
-  table.addAttribute("test", "( ( stuff_-1 + stuff1 ) + ( stuff2 * stuff3 ) ) / stuff4");
-  table.addAttribute("test1", "test * 50.4");
+  // test cases for equations
+  // valid
+  std::cout << std::boolalpha << table.isValidEquation("1 + 23") << std::endl;
+  std::cout << std::boolalpha << table.isValidEquation("( 1 + 5 ) + ( 3 + 7 )") << std::endl;
+  std::cout << std::boolalpha << table.isValidEquation("5 + ( 1 + 5 ) + ( 3 + 7 )") << std::endl;
+
+  std::cout << std::boolalpha << table.isValidEquation("1 ++ 23") << std::endl;
+  std::cout << std::boolalpha << table.isValidEquation("1 1 + 23") << std::endl;
+  std::cout << std::boolalpha << table.isValidEquation("1 1 ++ 23") << std::endl;
+  std::cout << std::boolalpha << table.isValidEquation("+ 1 + 23") << std::endl;
+  
+  // 1 ++ 5
+  // (1 + 5) - (2 + 4)
+  // 1 1 + 1
+
+  // table.addAttribute("test", "( ( stuff_-1 + stuff1 ) + ( stuff2 * stuff3 ) ) / stuff4");
+  // table.addAttribute("test1", "test * 50.4");
   
   // for (unsigned int j = 0; j < 1000; j++) {
   //   std::cout << table.getValByIndex(j, "test").val << std::endl;
@@ -71,7 +86,7 @@ int main() {
   //   std::cout << table.remove(i) << std::endl;
   // }
 
-  table.print();
+  // table.print();
 
   // std::cout << table << std::endl;
 

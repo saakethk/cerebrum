@@ -1,6 +1,70 @@
 
 #include "table/table.hpp"
 
+bool Table::isValidEquation(std::string equation) {
+  // check if equation is valid
+
+  unsigned int index = 0;
+  unsigned int nesting_index = 0; // how many () deep
+
+  std::string op = "+";
+  std::string cur_val = "";
+  bool prev_was_op = true;
+
+  while (index < equation.size()) {
+
+    while (
+      (index < equation.size()) 
+      && (equation[index] != ' ')
+    ) {
+      // iterate until space hit
+      cur_val += equation[index];
+      index += 1;
+    }
+
+    
+    
+    if (cur_val == "(") {
+
+      // paranthesis open
+      nesting_index += 1;
+
+    } else if (cur_val == ")") {
+      // paranthesis close
+
+      if (nesting_index == 0) {
+        // ) paranthesis cannot exist without (
+        return false;
+      }
+      nesting_index -= 1;
+
+    } else if (isOperator(cur_val, this->ops) == prev_was_op) {
+      
+      // ensures flip-flop order
+      return false;
+
+    } else {
+
+      // ensures flip-flop order
+      prev_was_op = !prev_was_op;
+      
+    }
+
+    // reset vars
+    cur_val = "";
+    index += 1;
+
+  }
+
+  if (nesting_index != 0) {
+    // uneven mix of open and close paranthesis
+    return false;
+  }
+
+  return true;
+
+}
+
 Value Table::evalEquation(Key key, std::string equation) {
 
   // assumes equation is validated

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <unordered_set>
 #include <regex>
@@ -30,9 +31,6 @@ bool isAttribute(std::string val,
   const std::unordered_map<std::string, T>& attr_map);
 
 ParsedAttribute parseAttribute(std::string attr_str);
-
-// bool isVirtualAttribute(std::string val, 
-//   const std::unordered_map<std::string, std::string>& virtual_attr_map);
 
 bool isOperator(std::string val, 
   const std::unordered_map<std::string, OpFunc>& op_map);

@@ -82,17 +82,6 @@ ParsedAttribute parseAttribute(std::string attr_str) {
   return {attribute, has_offset, 0};
 }
 
-// bool isVirtualAttribute(std::string val, 
-//   const std::unordered_map<std::string, std::string>& virtual_attr_map) {
-//   // checks if in virtual attribute map
-
-//   if (virtual_attr_map.find(val) == virtual_attr_map.end()) {
-//     // not valid
-//     return false;
-//   }
-//   return true; // valid
-// }
-
 bool isOperator(std::string val, 
   const std::unordered_map<std::string, OpFunc>& op_map) {
   // checks if valid supported operation
