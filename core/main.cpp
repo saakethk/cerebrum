@@ -22,6 +22,8 @@ int main() {
   // std::cout << (*(static_cast<LeafChunk*>(result.right))) << std::endl;
   // TODO: make tests more scalable
   // TODO: deal with nan vals
+  // TODO: validate equation
+  // TODO: warnings for wrong equation vals
   Table table = Table({"stuff", "stuff1", "stuff2", "stuff3", "stuff4"});
 
   std::vector<Value> row = {1, 2, 3, 4, 5};
@@ -31,8 +33,7 @@ int main() {
 
   table.addAttribute("test", "( ( stuff_-1 + stuff1 ) + ( stuff2 * stuff3 ) ) / stuff4");
   table.addAttribute("test1", "test * 50.4");
-  // TODO: validate equation
-  // TODO: warnings for wrong equation vals
+  
   // for (unsigned int j = 0; j < 1000; j++) {
   //   std::cout << table.getValByIndex(j, "test").val << std::endl;
   // }
