@@ -21,8 +21,6 @@ bool Table::isValidEquation(std::string equation) {
       cur_val += equation[index];
       index += 1;
     }
-
-    
     
     if (cur_val == "(") {
 

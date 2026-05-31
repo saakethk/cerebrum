@@ -101,16 +101,27 @@ TEST_CASE("Testing Table", "[table][basic]") {
       REQUIRE(t.removeAttribute(std::to_string(k)) == false);
     }
     
-    for (unsigned int l = NUM_ATTRIBUTES; l < NUM_ATTRIBUTES + NUM_ATTRIBUTES; l++) {
-      // inserting attributes
+    
+    // valid attributes
+    REQUIRE(t.addAttribute(std::to_string(NUM_ATTRIBUTES), "0 + 1") == true);
+    REQUIRE(t.addAttribute(std::to_string(NUM_ATTRIBUTES + 1), "( 0 + 1 ) + ( 2 + 3 )") == true);
+    REQUIRE(t.addAttribute(std::to_string(NUM_ATTRIBUTES + 2), "4 + ( 0 + 1 ) + ( 2 + 3 )") == true);
 
-      REQUIRE(t.addAttribute(std::to_string(l), "0 + 1") == true);
-    }
+    // invalid attributes
+    REQUIRE(t.addAttribute(std::to_string(NUM_ATTRIBUTES + 3), "1 ++ 2") == false);
+    REQUIRE(t.addAttribute(std::to_string(NUM_ATTRIBUTES + 4), "1 1 + 2") == false);
+    REQUIRE(t.addAttribute(std::to_string(NUM_ATTRIBUTES + 5), "+ 1 + 2") == false);
 
-    for (unsigned int x = NUM_ATTRIBUTES; x < NUM_ATTRIBUTES + NUM_ATTRIBUTES; x++) {
-      // removing existing attributes
+    for (unsigned int x = NUM_ATTRIBUTES; x <= NUM_ATTRIBUTES + 2; x++) {
+      // removing valid added attributes
 
       REQUIRE(t.removeAttribute(std::to_string(x)) == true);
+    }
+
+    for (unsigned int x = NUM_ATTRIBUTES + 3; x <= NUM_ATTRIBUTES + 5; x++) {
+      // removing invalid added attributes should fail
+
+      REQUIRE(t.removeAttribute(std::to_string(x)) == false);
     }
 
   }

@@ -23,7 +23,6 @@ int main() {
   // TODO: make tests more scalable
   // TODO: deal with nan vals
   // TODO: rehaul equation parser
-  // TODO: put validation run in the add attribute function
   // TODO: warnings for wrong equation vals
   Table table = Table({"stuff", "stuff1", "stuff2", "stuff3", "stuff4"});
 
